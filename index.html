@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>G30 - Inteligência em Venda Consultiva</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #FDFCFB;
+            color: #1A1A1A;
+        }
+        .step-active {
+            border-bottom: 3px solid #FF6B00;
+            color: #FF6B00;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .transition-all-300 { transition: all 0.3s ease; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header Navigation -->
+    <header class="bg-white border-b border-gray-100 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-[#FF6B00] w-10 h-10 rounded-lg flex items-center justify-center">
+                    <span class="text-white font-extrabold text-xl">G</span>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold leading-none">Consultoria CS</h1>
+                    <p class="text-[10px] uppercase tracking-widest text-gray-400 font-semibold">Arquitetura de Receita</p>
+                </div>
+            </div>
+            <nav class="hidden md:flex gap-8">
+                <button onclick="switchPhase(1)" id="nav-1" class="text-sm font-bold step-active pb-1 transition-all-300">1. Alinhamento</button>
+                <button onclick="switchPhase(2)" id="nav-2" class="text-sm font-bold text-gray-400 pb-1 transition-all-300">2. Investigação</button>
+                <button onclick="switchPhase(3)" id="nav-3" class="text-sm font-bold text-gray-400 pb-1 transition-all-300">3. Impacto Financeiro</button>
+                <button onclick="switchPhase(4)" id="nav-4" class="text-sm font-bold text-gray-400 pb-1 transition-all-300">4. Solução</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6 py-12">
+        
+        <!-- INTRO SECTION -->
+        <section class="mb-16">
+            <div class="max-w-3xl">
+                <span class="inline-block py-1 px-3 bg-orange-50 text-[#FF6B00] text-xs font-bold rounded-full mb-4">MÉTODO G30</span>
+                <h2 class="text-4xl font-extrabold text-gray-900 mb-6 tracking-tight">Transforme conversas técnicas em expansão de negócio.</h2>
+                <p class="text-lg text-gray-600 leading-relaxed">
+                    Este guia interativo ajuda o CS a navegar pelas dores do cliente utilizando a **Arquitetura de Receita**. O objetivo é identificar "vazamentos de dinheiro" e posicionar novas soluções como a ponte para o lucro.
+                </p>
+            </div>
+        </section>
+
+        <!-- PHASE 1: ALINHAMENTO -->
+        <div id="phase-1" class="phase-content">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="space-y-8">
+                    <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+                        <h3 class="text-2xl font-bold mb-4 flex items-center gap-3">
+                            <span class="w-8 h-8 bg-orange-100 text-[#FF6B00] rounded-full flex items-center justify-center text-sm">01</span>
+                            Abertura Estratégica
+                        </h3>
+                        <p class="text-gray-600 mb-6 italic border-l-4 border-orange-200 pl-4">
+                            "Olá, [Nome]. O objetivo hoje é olhar para o seu negócio como um todo. Qual sua meta de faturamento para este trimestre?"
+                        </p>
+                        <ul class="space-y-4">
+                            <li class="flex items-start gap-3">
+                                <div class="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#FF6B00] shrink-0"></div>
+                                <span class="text-sm text-gray-700">Tire o cliente do "suporte" e coloque-o na "estratégia".</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <div class="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#FF6B00] shrink-0"></div>
+                                <span class="text-sm text-gray-700">Valide se ele está no ritmo certo para bater as metas.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="bg-orange-50 rounded-3xl p-10">
+                    <h4 class="font-bold text-gray-900 mb-4">Checklist de Mindset:</h4>
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3 p-4 bg-white rounded-xl shadow-sm">
+                            <input type="checkbox" class="w-5 h-5 accent-[#FF6B00]">
+                            <span class="text-sm font-medium">Eu sei a meta principal do cliente?</span>
+                        </div>
+                        <div class="flex items-center gap-3 p-4 bg-white rounded-xl shadow-sm">
+                            <input type="checkbox" class="w-5 h-5 accent-[#FF6B00]">
+                            <span class="text-sm font-medium">Ele se sente confortável em falar de números comigo?</span>
+                        </div>
+                    </div>
+                    <button onclick="switchPhase(2)" class="mt-8 w-full py-4 bg-[#1A1A1A] text-white rounded-xl font-bold hover:bg-black transition-all">Ir para Investigação →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PHASE 2: INVESTIGAÇÃO -->
+        <div id="phase-2" class="phase-content hidden">
+            <div class="mb-10 text-center max-w-2xl mx-auto">
+                <h3 class="text-3xl font-bold mb-4 text-gray-900">Mapeando o Gargalo</h3>
+                <p class="text-gray-500">Selecione abaixo onde o cliente relatou a maior dificuldade durante a conversa.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <!-- Card 1 -->
+                <div onclick="selectGargalo('volume')" id="card-volume" class="cursor-pointer border-2 border-transparent bg-white p-8 rounded-3xl shadow-sm hover:border-orange-200 transition-all text-center">
+                    <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <i class="font-bold">1</i>
+                    </div>
+                    <h4 class="font-bold text-lg mb-2">Volume (Atração)</h4>
+                    <p class="text-xs text-gray-400">Leads insuficientes ou de baixa qualidade.</p>
+                </div>
+                <!-- Card 2 -->
+                <div onclick="selectGargalo('engajamento')" id="card-engajamento" class="cursor-pointer border-2 border-transparent bg-white p-8 rounded-3xl shadow-sm hover:border-orange-200 transition-all text-center">
+                    <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <i class="font-bold">2</i>
+                    </div>
+                    <h4 class="font-bold text-lg mb-2">Engajamento</h4>
+                    <p class="text-xs text-gray-400">Leads não agendam ou não comparecem.</p>
+                </div>
+                <!-- Card 3 -->
+                <div onclick="selectGargalo('conversao')" id="card-conversao" class="cursor-pointer border-2 border-transparent bg-white p-8 rounded-3xl shadow-sm hover:border-orange-200 transition-all text-center">
+                    <div class="w-12 h-12 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <i class="font-bold">3</i>
+                    </div>
+                    <h4 class="font-bold text-lg mb-2">Conversão</h4>
+                    <p class="text-xs text-gray-400">Time perde vendas no fechamento/negociação.</p>
+                </div>
+            </div>
+
+            <div id="pergunta-guiada" class="bg-gray-900 text-white p-8 rounded-3xl hidden">
+                <p id="texto-pergunta" class="text-xl font-medium mb-4 italic"></p>
+                <button onclick="switchPhase(3)" class="bg-[#FF6B00] px-6 py-2 rounded-lg font-bold text-sm">Quantificar esse impacto →</button>
+            </div>
+        </div>
+
+        <!-- PHASE 3: IMPACTO FINANCEIRO (CALCULADORA INTEGRADA) -->
+        <div id="phase-3" class="phase-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <!-- Coluna Calculadora -->
+                <div class="space-y-6">
+                    <div class="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
+                        <h4 class="text-xl font-bold mb-6">Simulador de "Aha! Moment"</h4>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="text-xs font-bold text-gray-400 uppercase">Leads Atuais (Mês)</label>
+                                <input type="number" id="sim-leads" value="200" oninput="updateImpact()" class="w-full mt-1 p-4 bg-gray-50 border border-gray-100 rounded-xl font-bold focus:outline-orange-500">
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-xs font-bold text-gray-400 uppercase">Conversão Atual (%)</label>
+                                    <input type="number" id="sim-conv-atual" value="10" oninput="updateImpact()" class="w-full mt-1 p-4 bg-gray-50 border border-gray-100 rounded-xl font-bold focus:outline-orange-500">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-gray-400 uppercase">Ticket Médio (R$)</label>
+                                    <input type="number" id="sim-ticket" value="50000" oninput="updateImpact()" class="w-full mt-1 p-4 bg-gray-50 border border-gray-100 rounded-xl font-bold focus:outline-orange-500">
+                                </div>
+                            </div>
+                            <div class="pt-4 border-t border-dashed">
+                                <label class="text-xs font-bold text-[#FF6B00] uppercase">Ganho com Melhoria de 20% no Gargalo</label>
+                                <div class="flex items-center gap-4 mt-2">
+                                    <span class="text-3xl font-black text-gray-900" id="receita-extra">R$ 0,00</span>
+                                    <span class="text-xs font-bold text-green-500 bg-green-50 px-2 py-1 rounded">Venda Extra</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-orange-600 text-white p-8 rounded-3xl">
+                        <p class="text-lg font-bold mb-2">A frase de impacto:</p>
+                        <p class="text-sm opacity-90 italic">"Ou seja, [Nome], hoje por não ter esse processo otimizado na etapa de <span id="gargalo-label" class="underline">Conversão</span>, vocês estão deixando aproximadamente <span class="font-black" id="receita-frase">R$ 50.000</span> na mesa todos os meses."</p>
+                    </div>
+                </div>
+
+                <!-- Coluna Visualização -->
+                <div class="flex flex-col justify-center">
+                    <div class="chart-container">
+                        <canvas id="impactChart"></canvas>
+                    </div>
+                    <p class="text-center text-xs text-gray-400 mt-8">Projeção baseada na otimização da Arquitetura de Receita.</p>
+                    <button onclick="switchPhase(4)" class="mt-8 py-4 border-2 border-gray-900 text-gray-900 rounded-xl font-bold hover:bg-gray-900 hover:text-white transition-all">Apresentar a Solução →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PHASE 4: SOLUÇÃO -->
+        <div id="phase-4" class="phase-content hidden">
+            <div class="max-w-4xl mx-auto space-y-12">
+                <div class="text-center">
+                    <h3 class="text-3xl font-extrabold mb-4">A Ponte para a Solução</h3>
+                    <p class="text-gray-500">Não ofereça um produto, ofereça o estancamento do vazamento financeiro.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-orange-50 rounded-bl-full -mr-12 -mt-12 transition-all group-hover:bg-orange-100"></div>
+                        <h4 class="text-xl font-bold mb-4">Se for Automação/CRM</h4>
+                        <p class="text-sm text-gray-600 mb-6">Foco: "O objetivo é que você pare de perder leads que não agendam por falta de acompanhamento imediato."</p>
+                        <div class="bg-gray-50 p-4 rounded-xl text-xs font-mono text-gray-500">
+                            "Faz sentido entendermos como plugar isso para buscar os R$ <span class="extra-val">0</span>?"
+                        </div>
+                    </div>
+                    <div class="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-bl-full -mr-12 -mt-12 transition-all group-hover:bg-blue-100"></div>
+                        <h4 class="text-xl font-bold mb-4">Se for Treinamento</h4>
+                        <p class="text-sm text-gray-600 mb-6">Foco: "Vamos transformar os vendedores em consultores para aumentar a taxa de fechamento em cada visita."</p>
+                        <div class="bg-gray-50 p-4 rounded-xl text-xs font-mono text-gray-500">
+                            "Com apenas 2 vendas a mais no mês, o investimento já se paga 10x."
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dicas Niche Automotivas -->
+                <div class="pt-12 border-t">
+                    <h5 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-8 text-center">Táticas Niche Automotivas (G30)</h5>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                        <div class="p-6 bg-[#1A1A1A] text-white rounded-2xl">
+                            <h6 class="font-bold text-orange-400 mb-2">CPL vs CPA</h6>
+                            <p class="text-xs leading-relaxed opacity-80">"Não precisamos de mais leads caros, precisamos extrair ouro dos que já estão no seu CRM."</p>
+                        </div>
+                        <div class="p-6 bg-[#1A1A1A] text-white rounded-2xl">
+                            <h6 class="font-bold text-orange-400 mb-2">Lead para Visita</h6>
+                            <p class="text-xs leading-relaxed opacity-80">O maior gargalo de concessionárias é a 'morte' do lead entre o clique e a chegada na loja.</p>
+                        </div>
+                        <div class="p-6 bg-[#1A1A1A] text-white rounded-2xl">
+                            <h6 class="font-bold text-orange-400 mb-2">Reativação</h6>
+                            <p class="text-xs leading-relaxed opacity-80">Usar base fria para gerar vendas rápidas sem custo de mídia é o melhor gancho de Upsell.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-white border-t border-gray-100 py-12 mt-24">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <p class="text-sm text-gray-400 font-medium">© 2024 G30 Inteligência Automotiva - Script de Expansão de Receita</p>
+        </div>
+    </footer>
+
+    <script>
+        let currentPhase = 1;
+        let selectedGargaloKey = 'conversao';
+        let impactChart = null;
+
+        const gargaloData = {
+            volume: {
+                label: 'Volume (Atração)',
+                pergunta: 'Como está o volume de leads entregues hoje? É quantidade ou qualidade o problema?',
+                color: '#3B82F6'
+            },
+            engajamento: {
+                label: 'Engajamento',
+                pergunta: 'Desses leads, qual a maior dificuldade? Não respondem ou não comparecem à loja?',
+                color: '#A855F7'
+            },
+            conversao: {
+                label: 'Conversão',
+                pergunta: 'Quando o cliente senta na frente do vendedor, vocês perdem por processo ou por preço?',
+                color: '#22C55E'
+            }
+        };
+
+        function switchPhase(phase) {
+            document.querySelectorAll('.phase-content').forEach(p => p.classList.add('hidden'));
+            document.getElementById(`phase-${phase}`).classList.remove('hidden');
+            
+            // Update Nav
+            document.querySelectorAll('nav button').forEach(b => {
+                b.classList.remove('step-active');
+                b.classList.add('text-gray-400');
+            });
+            document.getElementById(`nav-${phase}`).classList.add('step-active');
+            document.getElementById(`nav-${phase}`).classList.remove('text-gray-400');
+            
+            currentPhase = phase;
+            if (phase === 3) initChart();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function selectGargalo(key) {
+            selectedGargaloKey = key;
+            document.querySelectorAll('[id^="card-"]').forEach(c => c.classList.remove('border-orange-500', 'bg-orange-50'));
+            document.getElementById(`card-${key}`).classList.add('border-orange-500', 'bg-orange-50');
+            
+            document.getElementById('pergunta-guiada').classList.remove('hidden');
+            document.getElementById('texto-pergunta').innerText = gargaloData[key].pergunta;
+            document.getElementById('gargalo-label').innerText = gargaloData[key].label;
+            
+            updateImpact();
+        }
+
+        function updateImpact() {
+            const leads = parseFloat(document.getElementById('sim-leads').value) || 0;
+            const convAtual = parseFloat(document.getElementById('sim-conv-atual').value) || 0;
+            const ticket = parseFloat(document.getElementById('sim-ticket').value) || 0;
+            
+            const vendasAtuais = leads * (convAtual / 100);
+            const receitaAtual = vendasAtuais * ticket;
+            
+            // Simulando uma melhoria de 20% na eficiência da etapa (ex: aumentar a conv de 10% para 12%)
+            const convOtimizada = convAtual * 1.20;
+            const vendasOtimizadas = leads * (convOtimizada / 100);
+            const receitaOtimizada = vendasOtimizadas * ticket;
+            
+            const receitaExtra = receitaOtimizada - receitaAtual;
+            
+            const format = (v) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
+            
+            document.getElementById('receita-extra').innerText = format(receitaExtra);
+            document.getElementById('receita-frase').innerText = format(receitaExtra);
+            document.querySelectorAll('.extra-val').forEach(el => el.innerText = format(receitaExtra));
+
+            if (impactChart) {
+                impactChart.data.datasets[0].data = [receitaAtual, receitaOtimizada];
+                impactChart.update();
+            }
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('impactChart').getContext('2d');
+            if (impactChart) return;
+
+            impactChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Atual', 'Otimizado'],
+                    datasets: [{
+                        label: 'Receita Mensal',
+                        data: [0, 0],
+                        backgroundColor: ['#E5E7EB', '#FF6B00'],
+                        borderRadius: 12,
+                        barThickness: 60
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { 
+                            beginAtZero: true,
+                            grid: { display: false },
+                            ticks: { display: false }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { weight: 'bold' } }
+                        }
+                    }
+                }
+            });
+            updateImpact();
+        }
+
+        // Initialize first state
+        window.onload = () => {
+            selectGargalo('conversao');
+        };
+    </script>
+</body>
+</html>
