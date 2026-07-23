@@ -58,6 +58,7 @@
                 <button onclick="switchPhase(2)" id="nav-2" class="text-sm font-bold text-gray-400 pb-1 transition-all-300">2. Investigação</button>
                 <button onclick="switchPhase(3)" id="nav-3" class="text-sm font-bold text-gray-400 pb-1 transition-all-300">3. Impacto Financeiro</button>
                 <button onclick="switchPhase(4)" id="nav-4" class="text-sm font-bold text-gray-400 pb-1 transition-all-300">4. Solução</button>
+                <button onclick="switchPhase(5)" id="nav-5" class="text-sm font-bold text-gray-400 pb-1 transition-all-300">5. Script Completo</button>
             </nav>
         </div>
     </header>
@@ -249,6 +250,73 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- PHASE 5: SCRIPT COMPLETO -->
+        <div id="phase-5" class="phase-content hidden">
+            <div class="max-w-4xl mx-auto bg-white p-8 md:p-12 rounded-3xl border border-gray-100 shadow-sm space-y-10 text-gray-800">
+                
+                <div class="border-b border-gray-100 pb-8">
+                    <h2 class="text-3xl font-extrabold text-gray-900 mb-4">Script Estratégico de Venda Consultiva para CS <span class="text-[#FF6B00]">(Upsell e Cross-sell)</span></h2>
+                    <div class="bg-orange-50 p-6 rounded-2xl space-y-3">
+                        <p><strong>Objetivo:</strong> Transitar de uma conversa de acompanhamento (Business Review) para uma oportunidade de expansão de receita, diagnosticando gargalos na Arquitetura de Receita do cliente.</p>
+                        <p><strong>Postura do CS:</strong> Consultor de negócios. O foco não é "empurrar" um produto, mas encontrar "vazamentos de dinheiro" na operação do cliente e oferecer a ferramenta/serviço para estancar esse vazamento.</p>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <h3 class="text-2xl font-bold flex items-center gap-2"><span class="text-[#FF6B00]">Fase 1:</span> Abertura e Alinhamento Estratégico</h3>
+                    <p class="text-gray-500 italic">O objetivo aqui é tirar o cliente da operação do dia a dia e fazê-lo pensar na estratégia global do negócio.</p>
+                    <div class="space-y-4 pl-4 border-l-4 border-gray-200">
+                        <p><strong>CS:</strong> "Olá, [Nome do Cliente]. Muito bom falar com você hoje. O objetivo da nossa reunião não é apenas ver como vocês estão usando nossa solução atual, mas olhar para o negócio de vocês como um todo. Qual é a principal meta de faturamento (ou vendas) de vocês para este trimestre/semestre?"</p>
+                        <p><strong>Cliente:</strong> (Responde com a meta).</p>
+                        <p><strong>CS:</strong> "Perfeito. E hoje, olhando para o ritmo atual, vocês estão na velocidade certa para bater essa meta ou sentem que estão ficando um pouco para trás?"</p>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <h3 class="text-2xl font-bold flex items-center gap-2"><span class="text-[#FF6B00]">Fase 2:</span> Investigação Guiada (Mapeando a Arquitetura de Receita)</h3>
+                    <p class="text-gray-500 italic">Aqui, você vai usar o conceito do Funil de Vendas (o mesmo da calculadora) para encontrar onde está o maior problema (gargalo). Se o cliente relatar que está difícil bater a meta, investigue de cima para baixo:</p>
+                    <ul class="space-y-4 list-disc pl-6">
+                        <li><strong>Volume (Atração):</strong> "Para chegar nessa meta, como está o volume de oportunidades (Leads) que o marketing tem entregado hoje? É um problema de quantidade ou de qualidade?"</li>
+                        <li><strong>Engajamento (Agendamentos/Visitas):</strong> "Desses leads que chegam, qual é a maior dificuldade hoje? Eles não respondem, não agendam, ou agendam e não comparecem à loja?"</li>
+                        <li><strong>Conversão (Vendas):</strong> "Quando o cliente senta na frente do vendedor (ou visita a loja), a taxa de fechamento está dentro do esperado? Vocês sentem que perdem vendas por falta de processo, preço ou negociação?"</li>
+                    </ul>
+                </div>
+
+                <div class="space-y-6">
+                    <h3 class="text-2xl font-bold flex items-center gap-2"><span class="text-[#FF6B00]">Fase 3:</span> O "Aha! Moment" e a Quantificação da Dor</h3>
+                    <p class="text-gray-500 italic">O cliente acabou de confessar onde está o problema. Agora você precisa fazer ele sentir o peso financeiro disso (usando os números reais dele).</p>
+                    <div class="space-y-4 pl-4 border-l-4 border-gray-200">
+                        <p><strong>CS:</strong> "Entendi, [Nome]. Então o que você está me dizendo é que o marketing até traz volume, mas a taxa de agendamento está muito baixa (ou outro problema relatado).</p>
+                        <p><strong>CS (O Gancho Financeiro):</strong> "Se você mantivesse o mesmo investimento de hoje, mas nós conseguíssemos aumentar essa conversão de agendamento em apenas 15%... você tem ideia de quanto de receita extra isso traria para vocês no final do mês?" <span class="text-gray-400 italic">(Deixe o cliente pensar ou faça a conta com ele usando a Calculadora de Funil)</span>.</p>
+                        <p><strong>Cliente:</strong> "Nossa, daria uma diferença de uns R$ 50.000..."</p>
+                        <p><strong>CS:</strong> "Exato. Ou seja, hoje, por não ter esse processo otimizado, vocês estão deixando R$ 50.000 na mesa todos os meses."</p>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <h3 class="text-2xl font-bold flex items-center gap-2"><span class="text-[#FF6B00]">Fase 4:</span> O Gancho e a Solução (Pitch de Vendas)</h3>
+                    <p class="text-gray-500 italic">Apresente o seu produto adicional não como um custo, mas como a ponte para recuperar o dinheiro que ele está perdendo.</p>
+                    <div class="space-y-4 pl-4 border-l-4 border-gray-200">
+                        <p><strong>CS:</strong> "O que está impedindo vocês de resolverem esse gargalo hoje? É falta de braço, falta de tecnologia ou falta de processo?"</p>
+                        <p><strong>Cliente:</strong> (Geralmente dirá que é falta de tempo/ferramenta).</p>
+                        <p><strong>CS:</strong> "Foi exatamente por ver vários clientes com esse mesmo desafio na arquitetura de receita que nós desenvolvemos o [Nome do Produto/Serviço Adicional].</p>
+                        <p><strong>CS:</strong> "Ele se encaixa exatamente nessa etapa do funil. O objetivo do [Produto] é [explicar o benefício prático: ex: automatizar a qualificação / treinar o time em fechamento / reativar leads frios], para que você pare de perder esse dinheiro na etapa de [etapa do problema]. Faz sentido para você entendermos como plugar isso na sua operação hoje para buscar esses R$ 50.000?"</p>
+                    </div>
+                </div>
+
+                <div class="mt-8 pt-8 border-t border-gray-100">
+                    <h4 class="text-xl font-bold mb-4">Dicas Extras para o Nicho Automotivo (G30):</h4>
+                    <ul class="space-y-3 list-disc pl-6 text-gray-700">
+                        <li><strong>Foque no Custo do Lead (CPL) vs. Custo por Aquisição (CPA):</strong> Em concessionárias e lojas de veículos, o lead costuma ser caro. O CS deve sempre bater na tecla: <em>"Não precisamos comprar mais leads, precisamos extrair mais vendas dos leads que você já pagou e estão parados no CRM."</em></li>
+                        <li><strong>Se o produto extra for Treinamento:</strong> O gancho é a taxa de "Visita para Venda".</li>
+                        <li><strong>Se o produto extra for Automação/CRM:</strong> O gancho é a taxa de "Lead para Agendamento".</li>
+                        <li><strong>Se o produto extra for Tráfego:</strong> O gancho é o volume no "Topo do Funil".</li>
+                    </ul>
+                </div>
+
             </div>
         </div>
 
