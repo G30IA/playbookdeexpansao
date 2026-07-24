@@ -3,379 +3,1280 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>G30 - Inteligência em Venda Consultiva</title>
+    <title>G30 Hub - Inteligência Automotiva</title>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Google Fonts: Inter (Funil) e Plus Jakarta Sans (Guia) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        jakarta: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            orange: '#FF6B00',
+                            dark: '#E65C00',
+                            light: '#FF8533',
+                            bg: '#FFF5EB'
+                        },
+                        funnel: {
+                            1: '#FF4D4D',
+                            2: '#E63939',
+                            3: '#CC2929',
+                            4: '#B31919',
+                            5: '#800000'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #FDFCFB;
-            color: #1A1A1A;
+        /* Estilos Globais e Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #4B5563; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #FF6B00; }
+
+        /* Estilos do Funil (Dark Mode) */
+        .funnel-step { transition: all 0.3s ease; }
+        .funnel-step:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
-        .step-active {
-            border-bottom: 3px solid #FF6B00;
-            color: #FF6B00;
-        }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(226, 232, 240, 0.8);
-        }
-        .chart-container {
-            position: relative;
-            width: 100%;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            height: 300px;
-            max-height: 400px;
-        }
-        input::-webkit-outer-spin-button,
-        input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
+        .clip-funnel-1 { clip-path: polygon(0% 0%, 100% 0%, 95% 100%, 5% 100%); }
+        .clip-funnel-2 { clip-path: polygon(5% 0%, 95% 0%, 90% 100%, 10% 100%); }
+        .clip-funnel-3 { clip-path: polygon(10% 0%, 90% 0%, 85% 100%, 15% 100%); }
+        .clip-funnel-4 { clip-path: polygon(15% 0%, 85% 0%, 80% 100%, 20% 100%); }
+        
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type="number"] { -moz-appearance: textfield; }
+        .funnel-input::placeholder { color: rgba(255, 255, 255, 0.4); }
+
+        /* Estilos do Guia (Light Mode) */
+        .step-active { border-bottom: 3px solid #FF6B00; color: #FF6B00 !important; }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin: 0 auto; height: 300px; max-height: 400px; }
         .transition-all-300 { transition: all 0.3s ease; }
+
+        /* Sidebar Transition */
+        .sidebar-transition { transition: transform 0.3s ease-in-out; }
+
+        .fade-in { animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .spinner { border: 3px solid rgba(255, 107, 0, 0.1); border-left-color: #FF6B00; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="antialiased">
+<body class="bg-[#11131a] flex h-screen overflow-hidden antialiased selection:bg-brand-orange selection:text-white">
 
-    <!-- Header Navigation -->
-    <header class="bg-white border-b border-gray-100 sticky top-0 z-50">
-        <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="bg-[#FF6B00] w-10 h-10 rounded-lg flex items-center justify-center">
-                    <span class="text-white font-extrabold text-xl">G</span>
+    <!-- Mobile overlay -->
+    <div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar-transition fixed lg:static inset-y-0 left-0 w-64 bg-[#11131a] border-r border-gray-800 z-50 flex flex-col transform -translate-x-full lg:translate-x-0">
+        
+        <!-- Logo Area -->
+        <div class="h-20 flex items-center justify-center border-b border-gray-800 border-t-[4px] border-t-brand-orange bg-[#0a0b0f] relative px-4">
+            <img src="https://raw.githubusercontent.com/G30IA/g30-summit-dashboard/44186b90d876cbf1a86191c78bf3ff02c34299cd/G30logonova" alt="G30 Logo" class="h-10 w-auto object-contain">
+            <button onclick="toggleSidebar()" class="lg:hidden absolute right-4 text-gray-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="flex-1 overflow-y-auto py-6 px-3 space-y-2">
+            <p class="px-3 text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Início</p>
+            
+            <button onclick="switchAppView('home')" id="link-home" class="sidebar-link w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all bg-brand-orange text-white group shadow-lg shadow-brand-orange/20">
+                <i class="fa-solid fa-house text-lg group-hover:scale-110 transition-transform"></i>
+                Tela Inicial
+            </button>
+
+            <p class="px-3 text-xs font-bold text-gray-500 uppercase tracking-wider mt-6 mb-2">Ferramentas</p>
+            
+            <button onclick="switchAppView('funil')" id="link-funil" class="sidebar-link w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all text-gray-400 hover:bg-gray-800 hover:text-white group">
+                <i class="fa-solid fa-filter-circle-dollar text-lg group-hover:scale-110 transition-transform"></i>
+                Dashboard de Funil
+            </button>
+            
+            <button onclick="switchAppView('guia')" id="link-guia" class="sidebar-link w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all text-gray-400 hover:bg-gray-800 hover:text-white group">
+                <i class="fa-solid fa-book-open-reader text-lg group-hover:scale-110 transition-transform"></i>
+                Guia de Vendas Navegador
+            </button>
+
+            <button onclick="switchAppView('motor')" id="link-motor" class="sidebar-link w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all text-gray-400 hover:bg-gray-800 hover:text-white group">
+                <i class="fa-solid fa-microchip text-lg group-hover:scale-110 transition-transform"></i>
+                Motor I.A. Receita
+            </button>
+            
+            <p class="px-3 text-xs font-bold text-gray-500 uppercase tracking-wider mt-6 mb-2">Documentação</p>
+            
+            <button onclick="switchAppView('g30pro')" id="link-g30pro" class="sidebar-link w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all text-gray-400 hover:bg-gray-800 hover:text-white group">
+                <i class="fa-solid fa-bullseye text-lg group-hover:scale-110 transition-transform"></i>
+                Análise G30 PRO
+            </button>
+        </nav>
+
+        <!-- User/Footer Area -->
+        <div class="p-4 border-t border-gray-800">
+            <div class="flex items-center gap-3 px-2">
+                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-brand-orange font-bold text-sm">
+                    NAV
                 </div>
                 <div>
-                    <h1 class="text-lg font-bold leading-none">Consultoria CS</h1>
-                    <p class="text-[10px] uppercase tracking-widest text-gray-400 font-semibold">Arquitetura de Receita</p>
+                    <p class="text-sm font-medium text-white">Equipe de Sucesso</p>
+                    <p class="text-xs text-gray-500">G30 Inteligência</p>
                 </div>
             </div>
-            <nav class="hidden md:flex gap-8">
-                <button onclick="switchPhase(1)" id="nav-1" class="text-sm font-bold step-active pb-1 transition-all-300">1. Alinhamento</button>
-                <button onclick="switchPhase(2)" id="nav-2" class="text-sm font-bold text-gray-400 pb-1 transition-all-300">2. Investigação</button>
-                <button onclick="switchPhase(3)" id="nav-3" class="text-sm font-bold text-gray-400 pb-1 transition-all-300">3. Impacto Financeiro</button>
-                <button onclick="switchPhase(4)" id="nav-4" class="text-sm font-bold text-gray-400 pb-1 transition-all-300">4. Solução</button>
-                <button onclick="switchPhase(5)" id="nav-5" class="text-sm font-bold text-gray-400 pb-1 transition-all-300">5. Script Completo</button>
-            </nav>
         </div>
-    </header>
+    </aside>
 
-    <main class="max-w-6xl mx-auto px-6 py-12">
+    <main class="flex-1 flex flex-col h-screen overflow-hidden relative bg-[#1a1c23]">
         
-        <!-- INTRO SECTION -->
-        <section class="mb-16">
-            <div class="max-w-3xl">
-                <span class="inline-block py-1 px-3 bg-orange-50 text-[#FF6B00] text-xs font-bold rounded-full mb-4">MÉTODO G30</span>
-                <h2 class="text-4xl font-extrabold text-gray-900 mb-6 tracking-tight">Transforme conversas técnicas em expansão de negócio.</h2>
-                <p class="text-lg text-gray-600 leading-relaxed">
-                    Este guia interativo ajuda o CS a navegar pelas dores do cliente utilizando a **Arquitetura de Receita**. O objetivo é identificar "vazamentos de dinheiro" e posicionar novas soluções como a ponte para o lucro.
-                </p>
-            </div>
-        </section>
-
-        <!-- PHASE 1: ALINHAMENTO -->
-        <div id="phase-1" class="phase-content">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <div class="space-y-8">
-                    <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
-                        <h3 class="text-2xl font-bold mb-4 flex items-center gap-3">
-                            <span class="w-8 h-8 bg-orange-100 text-[#FF6B00] rounded-full flex items-center justify-center text-sm">01</span>
-                            Abertura Estratégica
-                        </h3>
-                        <p class="text-gray-600 mb-6 italic border-l-4 border-orange-200 pl-4">
-                            "Olá, [Nome]. O objetivo hoje é olhar para o seu negócio como um todo. Qual sua meta de faturamento para este trimestre?"
-                        </p>
-                        <ul class="space-y-4">
-                            <li class="flex items-start gap-3">
-                                <div class="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#FF6B00] shrink-0"></div>
-                                <span class="text-sm text-gray-700">Tire o cliente do "suporte" e coloque-o na "estratégia".</span>
-                            </li>
-                            <li class="flex items-start gap-3">
-                                <div class="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#FF6B00] shrink-0"></div>
-                                <span class="text-sm text-gray-700">Valide se ele está no ritmo certo para bater as metas.</span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="bg-orange-50 rounded-3xl p-10">
-                    <h4 class="font-bold text-gray-900 mb-4">Checklist de Mindset:</h4>
-                    <div class="space-y-4">
-                        <div class="flex items-center gap-3 p-4 bg-white rounded-xl shadow-sm">
-                            <input type="checkbox" class="w-5 h-5 accent-[#FF6B00]">
-                            <span class="text-sm font-medium">Eu sei a meta principal do cliente?</span>
-                        </div>
-                        <div class="flex items-center gap-3 p-4 bg-white rounded-xl shadow-sm">
-                            <input type="checkbox" class="w-5 h-5 accent-[#FF6B00]">
-                            <span class="text-sm font-medium">Ele se sente confortável em falar de números comigo?</span>
-                        </div>
-                    </div>
-                    <button onclick="switchPhase(2)" class="mt-8 w-full py-4 bg-[#1A1A1A] text-white rounded-xl font-bold hover:bg-black transition-all">Ir para Investigação →</button>
-                </div>
-            </div>
+        <!-- Mobile Header Toggle -->
+        <div class="lg:hidden h-16 bg-[#11131a] border-b border-gray-800 flex items-center px-4 shrink-0">
+            <button onclick="toggleSidebar()" class="text-gray-300 hover:text-white focus:outline-none">
+                <i class="fa-solid fa-bars text-xl"></i>
+            </button>
+            <img src="https://raw.githubusercontent.com/G30IA/g30-summit-dashboard/44186b90d876cbf1a86191c78bf3ff02c34299cd/G30logonova" alt="G30 Logo" class="h-6 w-auto ml-4">
         </div>
 
-        <!-- PHASE 2: INVESTIGAÇÃO -->
-        <div id="phase-2" class="phase-content hidden">
-            <div class="mb-10 text-center max-w-2xl mx-auto">
-                <h3 class="text-3xl font-bold mb-4 text-gray-900">Mapeando o Gargalo</h3>
-                <p class="text-gray-500">Selecione abaixo onde o cliente relatou a maior dificuldade durante a conversa.</p>
-            </div>
+        <!-- Scrollable Content Area -->
+        <div class="flex-1 overflow-y-auto">
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                <!-- Card 1 -->
-                <div onclick="selectGargalo('volume')" id="card-volume" class="cursor-pointer border-2 border-transparent bg-white p-8 rounded-3xl shadow-sm hover:border-orange-200 transition-all text-center">
-                    <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <i class="font-bold">1</i>
+            <!-- ========================================== -->
+            <!-- APP 0: TELA INICIAL (HOME)                 -->
+            <!-- ========================================== -->
+            <div id="view-home" class="view-section w-full min-h-full flex flex-col items-center justify-center bg-[#1a1c23] p-4 sm:p-8">
+                <div class="max-w-5xl w-full flex flex-col items-center space-y-8 mt-4 lg:mt-0 pb-12">
+                    
+                    <!-- Banner da Equipe -->
+                    <div class="w-full rounded-3xl overflow-hidden shadow-2xl border border-gray-800 bg-[#11131a] relative group">
+                        <div class="absolute inset-0 bg-brand-orange/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                        <img src="https://raw.githubusercontent.com/G30IA/analisedefunilcross-sell/0b165f57eb093b9aa23edee4df734a1ab5e02a2a/611023d7-13d9-48a3-a409-a3e72ff9aa59.jpg" alt="Equipe Navegador G30" class="w-full h-auto object-cover transform group-hover:scale-[1.01] transition-transform duration-700 max-h-[450px]">
                     </div>
-                    <h4 class="font-bold text-lg mb-2">Volume (Atração)</h4>
-                    <p class="text-xs text-gray-400">Leads insuficientes ou de baixa qualidade.</p>
-                </div>
-                <!-- Card 2 -->
-                <div onclick="selectGargalo('engajamento')" id="card-engajamento" class="cursor-pointer border-2 border-transparent bg-white p-8 rounded-3xl shadow-sm hover:border-orange-200 transition-all text-center">
-                    <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <i class="font-bold">2</i>
+                    
+                    <!-- Textos de Boas Vindas -->
+                    <div class="text-center space-y-3 px-4">
+                        <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Hub Operacional <span class="text-brand-orange">Time Navegador G30</span></h1>
+                        <p class="text-gray-400 text-lg max-w-2xl mx-auto font-medium">Foco, Empatia e Ação. Conectamos pessoas e aceleramos resultados.</p>
                     </div>
-                    <h4 class="font-bold text-lg mb-2">Engajamento</h4>
-                    <p class="text-xs text-gray-400">Leads não agendam ou não comparecem.</p>
-                </div>
-                <!-- Card 3 -->
-                <div onclick="selectGargalo('conversao')" id="card-conversao" class="cursor-pointer border-2 border-transparent bg-white p-8 rounded-3xl shadow-sm hover:border-orange-200 transition-all text-center">
-                    <div class="w-12 h-12 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <i class="font-bold">3</i>
-                    </div>
-                    <h4 class="font-bold text-lg mb-2">Conversão</h4>
-                    <p class="text-xs text-gray-400">Time perde vendas no fechamento/negociação.</p>
-                </div>
-            </div>
-
-            <div id="pergunta-guiada" class="bg-gray-900 text-white p-8 rounded-3xl hidden">
-                <p id="texto-pergunta" class="text-xl font-medium mb-4 italic"></p>
-                <button onclick="switchPhase(3)" class="bg-[#FF6B00] px-6 py-2 rounded-lg font-bold text-sm">Quantificar esse impacto →</button>
-            </div>
-        </div>
-
-        <!-- PHASE 3: IMPACTO FINANCEIRO (CALCULADORA INTEGRADA) -->
-        <div id="phase-3" class="phase-content hidden">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                <!-- Coluna Calculadora -->
-                <div class="space-y-6">
-                    <div class="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
-                        <h4 class="text-xl font-bold mb-6">Simulador de "Aha! Moment"</h4>
-                        <div class="space-y-4">
+                    
+                    <!-- Acesso Rápido -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-4xl mt-8">
+                        <button onclick="switchAppView('funil')" class="bg-[#11131a] hover:bg-gray-800 border border-gray-800 hover:border-brand-orange/50 transition-all p-6 rounded-2xl flex flex-col items-center text-center gap-3 shadow-lg group">
+                            <div class="w-14 h-14 rounded-full bg-brand-orange/10 text-brand-orange flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-filter-circle-dollar"></i>
+                            </div>
                             <div>
-                                <label class="text-xs font-bold text-gray-400 uppercase">Leads Atuais (Mês)</label>
-                                <input type="number" id="sim-leads" value="200" oninput="updateImpact()" class="w-full mt-1 p-4 bg-gray-50 border border-gray-100 rounded-xl font-bold focus:outline-orange-500">
+                                <h3 class="text-white font-bold mb-1">Calculadora de Funil</h3>
+                                <p class="text-xs text-gray-500">Analise métricas e conversões</p>
                             </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="text-xs font-bold text-gray-400 uppercase">Conversão Atual (%)</label>
-                                    <input type="number" id="sim-conv-atual" value="10" oninput="updateImpact()" class="w-full mt-1 p-4 bg-gray-50 border border-gray-100 rounded-xl font-bold focus:outline-orange-500">
-                                </div>
-                                <div>
-                                    <label class="text-xs font-bold text-gray-400 uppercase">Ticket Médio (R$)</label>
-                                    <input type="number" id="sim-ticket" value="50000" oninput="updateImpact()" class="w-full mt-1 p-4 bg-gray-50 border border-gray-100 rounded-xl font-bold focus:outline-orange-500">
-                                </div>
+                        </button>
+                        
+                        <button onclick="switchAppView('guia')" class="bg-[#11131a] hover:bg-gray-800 border border-gray-800 hover:border-brand-orange/50 transition-all p-6 rounded-2xl flex flex-col items-center text-center gap-3 shadow-lg group">
+                            <div class="w-14 h-14 rounded-full bg-brand-orange/10 text-brand-orange flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-book-open-reader"></i>
                             </div>
-                            <div class="pt-4 border-t border-dashed">
-                                <label class="text-xs font-bold text-[#FF6B00] uppercase">Ganho com Melhoria de 20% no Gargalo</label>
-                                <div class="flex items-center gap-4 mt-2">
-                                    <span class="text-3xl font-black text-gray-900" id="receita-extra">R$ 0,00</span>
-                                    <span class="text-xs font-bold text-green-500 bg-green-50 px-2 py-1 rounded">Venda Extra</span>
-                                </div>
+                            <div>
+                                <h3 class="text-white font-bold mb-1">Guia de Expansão De receita
+    
+                                </h3>
+                                <p class="text-xs text-gray-500">Script e arquitetura de receita</p>
                             </div>
-                        </div>
-                    </div>
-                    <div class="bg-orange-600 text-white p-8 rounded-3xl">
-                        <p class="text-lg font-bold mb-2">A frase de impacto:</p>
-                        <p class="text-sm opacity-90 italic">"Ou seja, [Nome], hoje por não ter esse processo otimizado na etapa de <span id="gargalo-label" class="underline">Conversão</span>, vocês estão deixando aproximadamente <span class="font-black" id="receita-frase">R$ 50.000</span> na mesa todos os meses."</p>
-                    </div>
-                </div>
+                        </button>
 
-                <!-- Coluna Visualização -->
-                <div class="flex flex-col justify-center">
-                    <div class="chart-container">
-                        <canvas id="impactChart"></canvas>
+                        <button onclick="switchAppView('g30pro')" class="bg-[#11131a] hover:bg-gray-800 border border-gray-800 hover:border-brand-orange/50 transition-all p-6 rounded-2xl flex flex-col items-center text-center gap-3 shadow-lg group">
+                            <div class="w-14 h-14 rounded-full bg-brand-orange/10 text-brand-orange flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-bullseye"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-white font-bold mb-1">Estratégia G30 PRO</h3>
+                                <p class="text-xs text-gray-500">Pilares e entregáveis oficiais</p>
+                            </div>
+                        </button>
                     </div>
-                    <p class="text-center text-xs text-gray-400 mt-8">Projeção baseada na otimização da Arquitetura de Receita.</p>
-                    <button onclick="switchPhase(4)" class="mt-8 py-4 border-2 border-gray-900 text-gray-900 rounded-xl font-bold hover:bg-gray-900 hover:text-white transition-all">Apresentar a Solução →</button>
-                </div>
-            </div>
-        </div>
 
-        <!-- PHASE 4: SOLUÇÃO -->
-        <div id="phase-4" class="phase-content hidden">
-            <div class="max-w-4xl mx-auto space-y-12">
-                <div class="text-center">
-                    <h3 class="text-3xl font-extrabold mb-4">A Ponte para a Solução</h3>
-                    <p class="text-gray-500">Não ofereça um produto, ofereça o estancamento do vazamento financeiro.</p>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden group">
-                        <div class="absolute top-0 right-0 w-24 h-24 bg-orange-50 rounded-bl-full -mr-12 -mt-12 transition-all group-hover:bg-orange-100"></div>
-                        <h4 class="text-xl font-bold mb-4">Se for Automação/CRM</h4>
-                        <p class="text-sm text-gray-600 mb-6">Foco: "O objetivo é que você pare de perder leads que não agendam por falta de acompanhamento imediato."</p>
-                        <div class="bg-gray-50 p-4 rounded-xl text-xs font-mono text-gray-500">
-                            "Faz sentido entendermos como plugar isso para buscar os R$ <span class="extra-val">0</span>?"
-                        </div>
-                    </div>
-                    <div class="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden group">
-                        <div class="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-bl-full -mr-12 -mt-12 transition-all group-hover:bg-blue-100"></div>
-                        <h4 class="text-xl font-bold mb-4">Se for Treinamento</h4>
-                        <p class="text-sm text-gray-600 mb-6">Foco: "Vamos transformar os vendedores em consultores para aumentar a taxa de fechamento em cada visita."</p>
-                        <div class="bg-gray-50 p-4 rounded-xl text-xs font-mono text-gray-500">
-                            "Com apenas 2 vendas a mais no mês, o investimento já se paga 10x."
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Dicas Niche Automotivas -->
-                <div class="pt-12 border-t">
-                    <h5 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-8 text-center">Táticas Niche Automotivas (G30)</h5>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                        <div class="p-6 bg-[#1A1A1A] text-white rounded-2xl">
-                            <h6 class="font-bold text-orange-400 mb-2">CPL vs CPA</h6>
-                            <p class="text-xs leading-relaxed opacity-80">"Não precisamos de mais leads caros, precisamos extrair ouro dos que já estão no seu CRM."</p>
-                        </div>
-                        <div class="p-6 bg-[#1A1A1A] text-white rounded-2xl">
-                            <h6 class="font-bold text-orange-400 mb-2">Lead para Visita</h6>
-                            <p class="text-xs leading-relaxed opacity-80">O maior gargalo de concessionárias é a 'morte' do lead entre o clique e a chegada na loja.</p>
-                        </div>
-                        <div class="p-6 bg-[#1A1A1A] text-white rounded-2xl">
-                            <h6 class="font-bold text-orange-400 mb-2">Reativação</h6>
-                            <p class="text-xs leading-relaxed opacity-80">Usar base fria para gerar vendas rápidas sem custo de mídia é o melhor gancho de Upsell.</p>
-                        </div>
+                    <!-- Banner Estratégia Operacional -->
+                    <div class="w-full max-w-4xl mt-12 rounded-3xl overflow-hidden shadow-2xl border border-gray-800 bg-[#11131a] relative group">
+                        <div class="absolute inset-0 bg-brand-orange/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                        <img src="https://raw.githubusercontent.com/G30IA/analisedefunilcross-sell/050bea6a1bedf9ca8518f1d8910e46a2512718ae/entregaveis-g30-pro%20(1).png" alt="Entregáveis G30 PRO" class="w-full h-auto object-contain transform group-hover:scale-[1.01] transition-transform duration-700">
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- PHASE 5: SCRIPT COMPLETO -->
-        <div id="phase-5" class="phase-content hidden">
-            <div class="max-w-4xl mx-auto bg-white p-8 md:p-12 rounded-3xl border border-gray-100 shadow-sm space-y-10 text-gray-800">
+            <!-- ========================================== -->
+            <!-- APP 1: DASHBOARD FUNIL DE VENDAS           -->
+            <!-- ========================================== -->
+            <div id="view-funil" class="view-section w-full min-h-full font-sans text-gray-200 hidden">
                 
-                <div class="border-b border-gray-100 pb-8">
-                    <h2 class="text-3xl font-extrabold text-gray-900 mb-4">Script Estratégico de Venda Consultiva para CS <span class="text-[#FF6B00]">(Upsell e Cross-sell)</span></h2>
-                    <div class="bg-orange-50 p-6 rounded-2xl space-y-3">
-                        <p><strong>Objetivo:</strong> Transitar de uma conversa de acompanhamento (Business Review) para uma oportunidade de expansão de receita, diagnosticando gargalos na Arquitetura de Receita do cliente.</p>
-                        <p><strong>Postura do CS:</strong> Consultor de negócios. O foco não é "empurrar" um produto, mas encontrar "vazamentos de dinheiro" na operação do cliente e oferecer a ferramenta/serviço para estancar esse vazamento.</p>
+                <!-- Header interno do Funil -->
+                <header class="bg-[#11131a] shadow-md border-b border-gray-800">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex items-center gap-3">
+                        <i class="fa-solid fa-chart-pie text-[#FF6B00] text-[24px]"></i>
+                        <h1 class="text-xl font-bold text-white tracking-tight">Calculadora de Funil</h1>
+                    </div>
+                </header>
+
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+                    <div class="bg-[#11131a] border border-gray-800 rounded-lg p-4 mb-8 shadow-sm flex items-start gap-4 max-w-4xl mx-auto">
+                        <div class="mt-1 text-brand-orange">
+                            <i class="fa-solid fa-circle-info text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-white mb-1">Como usar</h3>
+                            <p class="text-sm text-gray-400">
+                                <strong>Clique diretamente nos números dentro do funil</strong> para editá-los. Insira o <strong>Investimento</strong> no topo, seguido pela quantidade de <strong>Leads</strong>, <strong>Agendamentos</strong>, <strong>Visitas</strong> e <strong>Vendas</strong>. As taxas de conversão atualizarão automaticamente.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="max-w-4xl mx-auto">
+                        <div class="bg-[#11131a] rounded-xl shadow-xl p-6 sm:p-10 border border-gray-800 flex flex-col relative overflow-hidden">
+                            <!-- Efeito de brilho de fundo -->
+                            <div class="absolute top-0 right-0 w-64 h-64 bg-brand-orange/5 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none"></div>
+
+                            <button onclick="limparDados()" class="absolute top-6 right-6 text-sm text-gray-400 hover:text-brand-orange transition-colors flex items-center gap-2 font-medium bg-gray-900 px-4 py-2 rounded-lg border border-gray-800 hover:border-brand-orange/50 shadow-sm z-10">
+                                <i class="fa-solid fa-eraser"></i> <span class="hidden sm:inline">Zerar Funil</span>
+                            </button>
+
+                            <h2 class="text-2xl font-bold text-white mb-12 text-center">Métricas Diretas</h2>
+                            
+                            <div class="flex-grow flex flex-col justify-center items-center py-4 relative z-0">
+                                <div class="w-full max-w-2xl mx-auto space-y-1">
+                                    
+                                    <!-- Etapa 0: Valor Gasto -->
+                                    <div class="relative group mb-1">
+                                        <div class="bg-funnel-1 h-16 w-full rounded-t-lg flex items-center justify-center relative cursor-text transition-colors hover:brightness-110 shadow-inner">
+                                            <span class="text-white/80 font-bold text-xl mr-1 z-10">R$</span>
+                                            <input type="number" id="valorGasto" value="1500" class="funnel-input bg-transparent text-white font-bold text-2xl z-10 w-28 sm:w-36 text-center focus:outline-none focus:bg-white/10 rounded transition-all" placeholder="0" oninput="calcularFunil()">
+                                        </div>
+                                        <div class="absolute top-1/2 -translate-y-1/2 -left-4 md:-left-12 lg:-left-36 w-32 text-right hidden sm:block pointer-events-none">
+                                            <span class="text-sm font-bold text-gray-300 bg-gray-900 px-3 py-1.5 rounded-md shadow-md border border-gray-800">Investimento</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Taxa de Conversão Header -->
+                                    <div class="bg-black text-white text-center py-1.5 text-xs font-bold uppercase tracking-widest w-full mx-auto shadow-inner mb-2 cursor-default border border-gray-800 rounded-sm">
+                                        Taxa de conversão
+                                    </div>
+
+                                    <!-- Etapa 1: Leads -->
+                                    <div class="relative group">
+                                        <div class="funnel-step clip-funnel-1 bg-funnel-2 h-16 w-full flex items-center justify-center relative cursor-text hover:brightness-110">
+                                            <input type="number" id="qtdLeads" value="100" class="funnel-input bg-transparent text-white font-bold text-2xl z-10 w-32 text-center focus:outline-none focus:bg-white/10 rounded transition-all" placeholder="0" oninput="calcularFunil()">
+                                        </div>
+                                        <div class="absolute top-1/2 -translate-y-1/2 -left-4 md:-left-12 lg:-left-36 w-32 text-right hidden sm:block pointer-events-none">
+                                            <span class="text-sm font-bold text-gray-300 bg-gray-900 px-3 py-1.5 rounded-md shadow-md border border-gray-800">Leads</span>
+                                        </div>
+                                        <div class="absolute top-1/2 -translate-y-1/2 -right-4 md:-right-8 lg:-right-36 pointer-events-none">
+                                            <div class="bg-[#1a1c23] border border-gray-700 rounded-lg shadow-lg p-2 text-center w-28 md:w-32">
+                                                <div class="text-[10px] uppercase text-gray-400 font-bold mb-0.5">Custo p/ Lead</div>
+                                                <div id="displayCPL" class="font-bold text-white text-sm md:text-base">R$ 15,00</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Divisor 1 -->
+                                    <div class="flex justify-center h-8 relative my-1">
+                                        <div class="absolute inset-0 flex items-center justify-center"><div class="h-full w-px bg-gray-700"></div></div>
+                                        <div class="bg-black text-white border border-gray-700 text-xs font-bold px-3 py-1 rounded-full z-10 flex items-center shadow-md">
+                                            <span id="taxaLeadAgendamento">60.00%</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Etapa 2: Agendamentos -->
+                                    <div class="relative group">
+                                        <div class="funnel-step clip-funnel-2 bg-funnel-3 h-16 w-11/12 mx-auto flex items-center justify-center relative cursor-text hover:brightness-110">
+                                            <input type="number" id="qtdAgendamentos" value="60" class="funnel-input bg-transparent text-white font-bold text-2xl z-10 w-32 text-center focus:outline-none focus:bg-white/10 rounded transition-all" placeholder="0" oninput="calcularFunil()">
+                                        </div>
+                                        <div class="absolute top-1/2 -translate-y-1/2 -left-0 md:-left-4 lg:-left-32 w-32 text-right hidden sm:block pointer-events-none">
+                                            <span class="text-sm font-bold text-gray-300 bg-gray-900 px-3 py-1.5 rounded-md shadow-md border border-gray-800">Agendamentos</span>
+                                        </div>
+                                        <div class="absolute top-1/2 -translate-y-1/2 -right-4 md:-right-8 lg:-right-36 pointer-events-none">
+                                            <div class="bg-green-900/40 border border-green-700/50 rounded-md shadow-sm p-1.5 text-center w-20 md:w-24 backdrop-blur-sm">
+                                            <div class="font-bold text-green-400 text-sm" id="boxTaxaLeadAgendamento">60%</div>
+                                        </div>
+                                    </div>
+                                    </div>
+
+                                    <!-- Divisor 2 -->
+                                    <div class="flex justify-center h-8 relative my-1">
+                                        <div class="absolute inset-0 flex items-center justify-center"><div class="h-full w-px bg-gray-700"></div></div>
+                                        <div class="bg-black text-white border border-gray-700 text-xs font-bold px-3 py-1 rounded-full z-10 flex items-center shadow-md">
+                                            <span id="taxaAgendamentoVisita">70.00%</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Etapa 3: Visitas -->
+                                    <div class="relative group">
+                                        <div class="funnel-step clip-funnel-3 bg-funnel-4 h-16 w-10/12 mx-auto flex items-center justify-center relative cursor-text hover:brightness-110">
+                                            <input type="number" id="qtdVisitas" value="42" class="funnel-input bg-transparent text-white font-bold text-2xl z-10 w-28 text-center focus:outline-none focus:bg-white/10 rounded transition-all" placeholder="0" oninput="calcularFunil()">
+                                        </div>
+                                        <div class="absolute top-1/2 -translate-y-1/2 left-2 md:-left-0 lg:-left-28 w-32 text-right hidden sm:block pointer-events-none">
+                                            <span class="text-sm font-bold text-gray-300 bg-gray-900 px-3 py-1.5 rounded-md shadow-md border border-gray-800">Visitas</span>
+                                        </div>
+                                        <div class="absolute top-1/2 -translate-y-1/2 -right-4 md:-right-8 lg:-right-36 pointer-events-none">
+                                            <div class="bg-green-900/40 border border-green-700/50 rounded-md shadow-sm p-1.5 text-center w-20 md:w-24 backdrop-blur-sm">
+                                            <div class="font-bold text-green-400 text-sm" id="boxTaxaAgendamentoVisita">70%</div>
+                                        </div>
+                                    </div>
+                                    </div>
+
+                                    <!-- Divisor 3 -->
+                                    <div class="flex justify-center h-8 relative my-1">
+                                        <div class="absolute inset-0 flex items-center justify-center"><div class="h-full w-px bg-gray-700"></div></div>
+                                        <div class="bg-black text-white border border-gray-700 text-xs font-bold px-3 py-1 rounded-full z-10 flex items-center shadow-md">
+                                            <span id="taxaVisitaVenda">33.33%</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Etapa 4: Vendas -->
+                                    <div class="relative group">
+                                        <div class="funnel-step clip-funnel-4 bg-funnel-5 h-16 w-8/12 mx-auto flex items-center justify-center relative cursor-text hover:brightness-110">
+                                            <input type="number" id="qtdVendas" value="14" class="funnel-input bg-transparent text-white font-bold text-2xl z-10 w-24 text-center focus:outline-none focus:bg-white/10 rounded transition-all" placeholder="0" oninput="calcularFunil()">
+                                        </div>
+                                        <div class="absolute top-1/2 -translate-y-1/2 left-6 md:left-4 lg:-left-20 w-32 text-right hidden sm:block pointer-events-none">
+                                            <span class="text-sm font-bold text-gray-300 bg-gray-900 px-3 py-1.5 rounded-md shadow-md border border-gray-800">Vendas</span>
+                                        </div>
+                                        <div class="absolute top-1/2 -translate-y-1/2 -right-4 md:-right-8 lg:-right-36 pointer-events-none">
+                                            <div class="bg-red-900/40 border border-red-700/50 rounded-md shadow-sm p-1.5 text-center w-20 md:w-24 backdrop-blur-sm">
+                                            <div class="font-bold text-red-400 text-sm" id="boxTaxaVisitaVenda">33.3%</div>
+                                        </div>
+                                    </div>
+                                    </div>
+
+                                    <!-- Resumo Final -->
+                                    <div class="pt-12 flex justify-center">
+                                        <div class="bg-[#1a1c23] border border-gray-800 border-t-[3px] border-t-brand-orange rounded-xl p-5 shadow-2xl text-center max-w-xs w-full">
+                                            <h4 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Custo por Venda (CPA)</h4>
+                                            <p class="text-3xl font-black text-white" id="displayCPA">R$ 107,14</p>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
-                <div class="space-y-6">
-                    <h3 class="text-2xl font-bold flex items-center gap-2"><span class="text-[#FF6B00]">Fase 1:</span> Abertura e Alinhamento Estratégico</h3>
-                    <p class="text-gray-500 italic">O objetivo aqui é tirar o cliente da operação do dia a dia e fazê-lo pensar na estratégia global do negócio.</p>
-                    <div class="space-y-4 pl-4 border-l-4 border-gray-200">
-                        <p><strong>CS:</strong> "Olá, [Nome do Cliente]. Muito bom falar com você hoje. O objetivo da nossa reunião não é apenas ver como vocês estão usando nossa solução atual, mas olhar para o negócio de vocês como um todo. Qual é a principal meta de faturamento (ou vendas) de vocês para este trimestre/semestre?"</p>
-                        <p><strong>Cliente:</strong> (Responde com a meta).</p>
-                        <p><strong>CS:</strong> "Perfeito. E hoje, olhando para o ritmo atual, vocês estão na velocidade certa para bater essa meta ou sentem que estão ficando um pouco para trás?"</p>
-                    </div>
-                </div>
-
-                <div class="space-y-6">
-                    <h3 class="text-2xl font-bold flex items-center gap-2"><span class="text-[#FF6B00]">Fase 2:</span> Investigação Guiada (Mapeando a Arquitetura de Receita)</h3>
-                    <p class="text-gray-500 italic">Aqui, você vai usar o conceito do Funil de Vendas (o mesmo da calculadora) para encontrar onde está o maior problema (gargalo). Se o cliente relatar que está difícil bater a meta, investigue de cima para baixo:</p>
-                    <ul class="space-y-4 list-disc pl-6">
-                        <li><strong>Volume (Atração):</strong> "Para chegar nessa meta, como está o volume de oportunidades (Leads) que o marketing tem entregado hoje? É um problema de quantidade ou de qualidade?"</li>
-                        <li><strong>Engajamento (Agendamentos/Visitas):</strong> "Desses leads que chegam, qual é a maior dificuldade hoje? Eles não respondem, não agendam, ou agendam e não comparecem à loja?"</li>
-                        <li><strong>Conversão (Vendas):</strong> "Quando o cliente senta na frente do vendedor (ou visita a loja), a taxa de fechamento está dentro do esperado? Vocês sentem que perdem vendas por falta de processo, preço ou negociação?"</li>
-                    </ul>
-                </div>
-
-                <div class="space-y-6">
-                    <h3 class="text-2xl font-bold flex items-center gap-2"><span class="text-[#FF6B00]">Fase 3:</span> O "Aha! Moment" e a Quantificação da Dor</h3>
-                    <p class="text-gray-500 italic">O cliente acabou de confessar onde está o problema. Agora você precisa fazer ele sentir o peso financeiro disso (usando os números reais dele).</p>
-                    <div class="space-y-4 pl-4 border-l-4 border-gray-200">
-                        <p><strong>CS:</strong> "Entendi, [Nome]. Então o que você está me dizendo é que o marketing até traz volume, mas a taxa de agendamento está muito baixa (ou outro problema relatado).</p>
-                        <p><strong>CS (O Gancho Financeiro):</strong> "Se você mantivesse o mesmo investimento de hoje, mas nós conseguíssemos aumentar essa conversão de agendamento em apenas 15%... você tem ideia de quanto de receita extra isso traria para vocês no final do mês?" <span class="text-gray-400 italic">(Deixe o cliente pensar ou faça a conta com ele usando a Calculadora de Funil)</span>.</p>
-                        <p><strong>Cliente:</strong> "Nossa, daria uma diferença de uns R$ 50.000..."</p>
-                        <p><strong>CS:</strong> "Exato. Ou seja, hoje, por não ter esse processo otimizado, vocês estão deixando R$ 50.000 na mesa todos os meses."</p>
-                    </div>
-                </div>
-
-                <div class="space-y-6">
-                    <h3 class="text-2xl font-bold flex items-center gap-2"><span class="text-[#FF6B00]">Fase 4:</span> O Gancho e a Solução (Pitch de Vendas)</h3>
-                    <p class="text-gray-500 italic">Apresente o seu produto adicional não como um custo, mas como a ponte para recuperar o dinheiro que ele está perdendo.</p>
-                    <div class="space-y-4 pl-4 border-l-4 border-gray-200">
-                        <p><strong>CS:</strong> "O que está impedindo vocês de resolverem esse gargalo hoje? É falta de braço, falta de tecnologia ou falta de processo?"</p>
-                        <p><strong>Cliente:</strong> (Geralmente dirá que é falta de tempo/ferramenta).</p>
-                        <p><strong>CS:</strong> "Foi exatamente por ver vários clientes com esse mesmo desafio na arquitetura de receita que nós desenvolvemos o [Nome do Produto/Serviço Adicional].</p>
-                        <p><strong>CS:</strong> "Ele se encaixa exatamente nessa etapa do funil. O objetivo do [Produto] é [explicar o benefício prático: ex: automatizar a qualificação / treinar o time em fechamento / reativar leads frios], para que você pare de perder esse dinheiro na etapa de [etapa do problema]. Faz sentido para você entendermos como plugar isso na sua operação hoje para buscar esses R$ 50.000?"</p>
-                    </div>
-                </div>
-
-                <div class="mt-8 pt-8 border-t border-gray-100">
-                    <h4 class="text-xl font-bold mb-4">Dicas Extras para o Nicho Automotivo (G30):</h4>
-                    <ul class="space-y-3 list-disc pl-6 text-gray-700">
-                        <li><strong>Foque no Custo do Lead (CPL) vs. Custo por Aquisição (CPA):</strong> Em concessionárias e lojas de veículos, o lead costuma ser caro. O CS deve sempre bater na tecla: <em>"Não precisamos comprar mais leads, precisamos extrair mais vendas dos leads que você já pagou e estão parados no CRM."</em></li>
-                        <li><strong>Se o produto extra for Treinamento:</strong> O gancho é a taxa de "Visita para Venda".</li>
-                        <li><strong>Se o produto extra for Automação/CRM:</strong> O gancho é a taxa de "Lead para Agendamento".</li>
-                        <li><strong>Se o produto extra for Tráfego:</strong> O gancho é o volume no "Topo do Funil".</li>
-                    </ul>
-                </div>
-
             </div>
-        </div>
 
+            <!-- ========================================== -->
+            <!-- APP 2: GUIA DE VENDA CONSULTIVA            -->
+            <!-- ========================================== -->
+            <div id="view-guia" class="view-section w-full min-h-full font-jakarta bg-[#FDFCFB] text-[#1A1A1A] hidden">
+                
+                <!-- Header interno do Guia -->
+                <header class="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-sm">
+                    <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-graduation-cap text-brand-orange text-xl"></i>
+                            <h1 class="text-lg font-bold">Consultoria Navegador</h1>
+                        </div>
+                        <nav class="hidden md:flex gap-6 overflow-x-auto">
+                            <button onclick="switchPhase(1)" id="nav-1" class="text-xs lg:text-sm font-bold step-active pb-1 transition-all-300 whitespace-nowrap">1. Alinhamento</button>
+                            <button onclick="switchPhase(2)" id="nav-2" class="text-xs lg:text-sm font-bold text-gray-400 pb-1 transition-all-300 whitespace-nowrap">2. Investigação</button>
+                            <button onclick="switchPhase(3)" id="nav-3" class="text-xs lg:text-sm font-bold text-gray-400 pb-1 transition-all-300 whitespace-nowrap">3. Impacto</button>
+                            <button onclick="switchPhase(4)" id="nav-4" class="text-xs lg:text-sm font-bold text-gray-400 pb-1 transition-all-300 whitespace-nowrap">4. Solução</button>
+                            <button onclick="switchPhase(5)" id="nav-5" class="text-xs lg:text-sm font-bold text-gray-400 pb-1 transition-all-300 whitespace-nowrap">5. Script Completo</button>
+                        </nav>
+                        <!-- Mobile nav dropdown toggle could go here, but keeping simple for hub -->
+                    </div>
+                </header>
+
+                <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+                    
+                    <!-- Intro -->
+                    <div id="guia-intro" class="mb-12 max-w-3xl">
+                        <span class="inline-block py-1 px-3 bg-orange-100 text-[#FF6B00] text-xs font-bold rounded-full mb-4 uppercase tracking-wide">Método G30</span>
+                        <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-4 tracking-tight">Arquitetura de Receita</h2>
+                        <p class="text-base sm:text-lg text-gray-600 leading-relaxed">
+                            Navegue pelas fases abaixo para diagnosticar dores, quantificar o "vazamento de dinheiro" e usar dados lógicos para realizar Upsell e Cross-sell como um verdadeiro consultor.
+                        </p>
+                    </div>
+
+                    <!-- FASE 1 -->
+                    <div id="phase-1" class="phase-content">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+                            <div class="space-y-8">
+                                <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100">
+                                    <h3 class="text-xl sm:text-2xl font-bold mb-4 flex items-center gap-3">
+                                        <span class="w-8 h-8 bg-orange-100 text-[#FF6B00] rounded-full flex items-center justify-center text-sm">01</span>
+                                        Abertura Estratégica
+                                    </h3>
+                                    <p class="text-gray-600 mb-6 italic border-l-4 border-orange-200 pl-4 text-sm sm:text-base">
+                                        "Olá, [Nome]. O objetivo hoje é olhar para o seu negócio como um todo. Qual sua meta de faturamento para este trimestre?"
+                                    </p>
+                                    <ul class="space-y-4">
+                                        <li class="flex items-start gap-3">
+                                            <div class="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#FF6B00] shrink-0"></div>
+                                            <span class="text-sm text-gray-700">Tire o cliente do "suporte" e coloque-o na "estratégia".</span>
+                                        </li>
+                                        <li class="flex items-start gap-3">
+                                            <div class="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#FF6B00] shrink-0"></div>
+                                            <span class="text-sm text-gray-700">Valide se ele está no ritmo certo para bater as metas.</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="bg-orange-50/50 border border-orange-100 rounded-3xl p-6 sm:p-10">
+                                <h4 class="font-bold text-gray-900 mb-4">Checklist de Mindset:</h4>
+                                <div class="space-y-3">
+                                    <label class="flex items-center gap-3 p-4 bg-white rounded-xl shadow-sm cursor-pointer hover:bg-gray-50 transition-colors">
+                                        <input type="checkbox" class="w-5 h-5 accent-[#FF6B00]">
+                                        <span class="text-sm font-medium select-none">Eu sei a meta principal do cliente?</span>
+                                    </label>
+                                    <label class="flex items-center gap-3 p-4 bg-white rounded-xl shadow-sm cursor-pointer hover:bg-gray-50 transition-colors">
+                                        <input type="checkbox" class="w-5 h-5 accent-[#FF6B00]">
+                                        <span class="text-sm font-medium select-none">Ele se sente confortável em falar de números?</span>
+                                    </label>
+                                </div>
+                                <button onclick="switchPhase(2)" class="mt-8 w-full py-4 bg-gray-900 text-white rounded-xl font-bold hover:bg-black transition-all shadow-md">Ir para Investigação →</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FASE 2 -->
+                    <div id="phase-2" class="phase-content hidden">
+                        <div class="mb-10 text-center max-w-2xl mx-auto">
+                            <h3 class="text-2xl sm:text-3xl font-bold mb-3 text-gray-900">Mapeando o Gargalo</h3>
+                            <p class="text-sm sm:text-base text-gray-500">Selecione abaixo onde o cliente relatou a maior dificuldade durante a conversa.</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                            <div onclick="selectGargalo('volume')" id="card-volume" class="cursor-pointer border-2 border-transparent bg-white p-6 rounded-2xl shadow-sm hover:border-orange-200 hover:shadow-md transition-all text-center group">
+                                <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform"><i class="fa-solid fa-users font-bold"></i></div>
+                                <h4 class="font-bold text-lg mb-1">Volume (Atração)</h4>
+                                <p class="text-xs text-gray-500">Leads insuficientes ou desqualificados.</p>
+                            </div>
+                            <div onclick="selectGargalo('engajamento')" id="card-engajamento" class="cursor-pointer border-2 border-transparent bg-white p-6 rounded-2xl shadow-sm hover:border-orange-200 hover:shadow-md transition-all text-center group">
+                                <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform"><i class="fa-regular fa-calendar-check font-bold"></i></div>
+                                <h4 class="font-bold text-lg mb-1">Engajamento</h4>
+                                <p class="text-xs text-gray-500">Leads não agendam ou não comparecem.</p>
+                            </div>
+                            <div onclick="selectGargalo('conversao')" id="card-conversao" class="cursor-pointer border-2 border-transparent bg-white p-6 rounded-2xl shadow-sm hover:border-orange-200 hover:shadow-md transition-all text-center group border-orange-500 bg-orange-50/30">
+                                <div class="w-12 h-12 bg-green-50 text-green-600 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform"><i class="fa-solid fa-handshake font-bold"></i></div>
+                                <h4 class="font-bold text-lg mb-1">Conversão</h4>
+                                <p class="text-xs text-gray-500">Time perde vendas no fechamento.</p>
+                            </div>
+                        </div>
+
+                        <div id="pergunta-guiada" class="bg-gray-900 text-white p-6 sm:p-8 rounded-3xl shadow-lg relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-bl-full -mr-10 -mt-10 pointer-events-none"></div>
+                            <h5 class="text-brand-orange text-xs font-bold uppercase tracking-widest mb-2">Pergunta Estratégica</h5>
+                            <p id="texto-pergunta" class="text-lg sm:text-xl font-medium mb-6 italic leading-relaxed">Quando o cliente senta na frente do vendedor, vocês perdem por processo ou por preço?</p>
+                            <button onclick="switchPhase(3)" class="bg-brand-orange hover:bg-brand-dark text-white px-6 py-3 rounded-lg font-bold text-sm transition-colors shadow-md flex items-center gap-2">Quantificar este impacto <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- FASE 3 -->
+                    <div id="phase-3" class="phase-content hidden">
+                        <div class="mb-8 text-center sm:text-left">
+                            <h3 class="text-2xl font-bold text-gray-900">Simulador de "Aha! Moment"</h3>
+                            <p class="text-sm text-gray-500">Transforme a dor em dinheiro para criar o gancho de venda.</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                            <!-- Coluna Calculadora -->
+                            <div class="bg-white p-6 sm:p-8 rounded-3xl border border-gray-100 shadow-md">
+                                <div class="space-y-5">
+                                    <div>
+                                        <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">Volume de Leads (Mês)</label>
+                                        <input type="number" id="sim-leads" value="200" oninput="updateImpact()" class="w-full mt-1.5 p-3.5 bg-gray-50 border border-gray-200 rounded-xl font-bold text-gray-900 focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-shadow">
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">Conversão (%)</label>
+                                            <input type="number" id="sim-conv-atual" value="10" oninput="updateImpact()" class="w-full mt-1.5 p-3.5 bg-gray-50 border border-gray-200 rounded-xl font-bold text-gray-900 focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-shadow">
+                                        </div>
+                                        <div>
+                                            <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">Ticket Médio (R$)</label>
+                                            <input type="number" id="sim-ticket" value="50000" oninput="updateImpact()" class="w-full mt-1.5 p-3.5 bg-gray-50 border border-gray-200 rounded-xl font-bold text-gray-900 focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-shadow">
+                                        </div>
+                                    </div>
+                                    <div class="pt-5 border-t border-gray-100">
+                                        <label class="text-xs font-bold text-[#FF6B00] uppercase tracking-wide">Ganho com +20% de Eficiência em <span id="gargalo-label-calc">Conversão</span></label>
+                                        <div class="flex flex-wrap items-center gap-3 mt-2">
+                                            <span class="text-3xl sm:text-4xl font-black text-gray-900" id="receita-extra">R$ 0,00</span>
+                                            <span class="text-xs font-bold text-green-700 bg-green-100 border border-green-200 px-2 py-1 rounded">Nova Receita</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Coluna Frase e Gráfico -->
+                            <div class="space-y-6">
+                                <div class="bg-brand-orange text-white p-6 sm:p-8 rounded-3xl shadow-lg relative overflow-hidden">
+                                    <div class="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-bl-full -mr-8 -mt-8"></div>
+                                    <p class="text-sm font-bold mb-3 opacity-90 uppercase tracking-widest text-orange-100">O Gancho Financeiro:</p>
+                                    <p class="text-base sm:text-lg leading-relaxed font-medium">"Ou seja, [Nome], hoje por não ter esse processo otimizado em <span id="gargalo-label" class="underline decoration-orange-300 underline-offset-4">Conversão</span>, vocês estão deixando aproximadamente <span class="font-black bg-white/20 px-2 rounded" id="receita-frase">R$ 50.000</span> na mesa todos os meses."</p>
+                                </div>
+                                
+                                <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+                                    <div class="chart-container h-48 sm:h-64">
+                                        <canvas id="impactChart"></canvas>
+                                    </div>
+                                </div>
+                                <button onclick="switchPhase(4)" class="w-full py-4 border-2 border-gray-900 text-gray-900 rounded-xl font-bold hover:bg-gray-900 hover:text-white transition-all">Apresentar a Solução →</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FASE 4 -->
+                    <div id="phase-4" class="phase-content hidden">
+                        <div class="max-w-4xl mx-auto space-y-10">
+                            <div class="text-center">
+                                <h3 class="text-2xl sm:text-3xl font-extrabold mb-3 text-gray-900">A Ponte para a Solução</h3>
+                                <p class="text-gray-500">Ofereça o estancamento do vazamento financeiro, não apenas um produto.</p>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <div class="bg-white p-6 sm:p-8 rounded-2xl border border-gray-100 shadow-md relative overflow-hidden group hover:border-orange-200 transition-colors">
+                                    <h4 class="text-lg font-bold mb-3 text-gray-900 flex items-center gap-2"><i class="fa-solid fa-robot text-brand-orange"></i> Automação / CRM</h4>
+                                    <p class="text-sm text-gray-600 mb-5 leading-relaxed">Foco: "O objetivo é que você pare de perder leads que não agendam por falta de acompanhamento imediato."</p>
+                                    <div class="bg-orange-50 p-4 rounded-xl text-xs sm:text-sm font-medium text-gray-700 border border-orange-100">
+                                        "Faz sentido entendermos como plugar isso para buscar os <strong class="text-brand-orange extra-val">0</strong> perdidos?"
+                                    </div>
+                                </div>
+                                <div class="bg-white p-6 sm:p-8 rounded-2xl border border-gray-100 shadow-md relative overflow-hidden group hover:border-blue-200 transition-colors">
+                                    <h4 class="text-lg font-bold mb-3 text-gray-900 flex items-center gap-2"><i class="fa-solid fa-chalkboard-user text-blue-500"></i> Treinamento</h4>
+                                    <p class="text-sm text-gray-600 mb-5 leading-relaxed">Foco: "Vamos transformar os vendedores em consultores para aumentar a taxa de fechamento na loja."</p>
+                                    <div class="bg-blue-50 p-4 rounded-xl text-xs sm:text-sm font-medium text-gray-700 border border-blue-100">
+                                        "Recuperando essa receita de <strong class="text-blue-600 extra-val">0</strong>, o investimento se paga múltiplas vezes."
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pt-8 border-t border-gray-200">
+                                <h5 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6 text-center">Táticas Automotivas</h5>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                    <div class="p-5 bg-gray-900 text-white rounded-xl shadow-lg border-b-4 border-brand-orange">
+                                        <h6 class="font-bold text-orange-400 mb-2 text-sm">CPL vs CPA</h6>
+                                        <p class="text-xs leading-relaxed opacity-90 text-gray-300">"Não precisamos de mais leads caros, precisamos extrair ouro dos que já estão no seu CRM."</p>
+                                    </div>
+                                    <div class="p-5 bg-gray-900 text-white rounded-xl shadow-lg border-b-4 border-brand-orange">
+                                        <h6 class="font-bold text-orange-400 mb-2 text-sm">Lead para Visita</h6>
+                                        <p class="text-xs leading-relaxed opacity-90 text-gray-300">O maior gargalo é a 'morte' do lead entre o clique digital e a chegada física na loja.</p>
+                                    </div>
+                                    <div class="p-5 bg-gray-900 text-white rounded-xl shadow-lg border-b-4 border-brand-orange">
+                                        <h6 class="font-bold text-orange-400 mb-2 text-sm">Reativação</h6>
+                                        <p class="text-xs leading-relaxed opacity-90 text-gray-300">Usar base fria para gerar vendas rápidas sem custo de mídia é o melhor Upsell.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-center mt-8">
+                                <button onclick="switchPhase(5)" class="py-3 px-8 border border-gray-300 text-gray-600 bg-white rounded-xl font-bold hover:bg-gray-50 transition-all text-sm shadow-sm flex items-center gap-2">Ver Script Completo <i class="fa-solid fa-file-lines"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FASE 5: SCRIPT COMPLETO -->
+                    <div id="phase-5" class="phase-content hidden">
+                        <div class="max-w-4xl mx-auto bg-white p-6 sm:p-10 md:p-12 rounded-3xl border border-gray-100 shadow-md space-y-8 text-gray-800">
+                            
+                            <div class="border-b border-gray-200 pb-8">
+                                <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-4">Script Estratégico de Venda Consultiva para Navegador <span class="text-brand-orange block sm:inline text-xl sm:text-3xl mt-1 sm:mt-0">(Upsell e Cross-sell)</span></h2>
+                                <div class="bg-orange-50/50 p-5 sm:p-6 rounded-2xl space-y-4 border border-orange-100 text-sm sm:text-base text-gray-700">
+                                    <p><strong class="text-gray-900">Objetivo:</strong> Transitar de uma conversa de acompanhamento (Business Review) para uma oportunidade de expansão de receita, diagnosticando gargalos na Arquitetura de Receita do cliente.</p>
+                                    <p><strong class="text-gray-900">Postura do Navegador:</strong> Consultor de negócios. O foco não é "empurrar" um produto, mas encontrar "vazamentos de dinheiro" na operação do cliente e oferecer a ferramenta/serviço para estancar esse vazamento.</p>
+                                </div>
+                            </div>
+
+                            <div class="space-y-5">
+                                <h3 class="text-xl font-bold flex items-center gap-2 text-gray-900"><span class="bg-gray-900 text-white text-sm w-7 h-7 flex items-center justify-center rounded-md">1</span> Abertura e Alinhamento Estratégico</h3>
+                                <p class="text-sm text-gray-500 italic">O objetivo aqui é tirar o cliente da operação do dia a dia e fazê-lo pensar na estratégia global do negócio.</p>
+                                <div class="space-y-3 pl-4 border-l-[3px] border-orange-200 text-sm sm:text-base bg-gray-50/50 p-4 rounded-r-xl">
+                                    <p><strong>Navegador:</strong> "Olá, [Nome do Cliente]. Muito bom falar com você hoje. O objetivo da nossa reunião não é apenas ver como vocês estão usando nossa solução atual, mas olhar para o negócio de vocês como um todo. Qual é a principal meta de faturamento (ou vendas) de vocês para este trimestre/semestre?"</p>
+                                    <p><strong>Cliente:</strong> (Responde com a meta).</p>
+                                    <p><strong>Navegador:</strong> "Perfeito. E hoje, olhando para o ritmo atual, vocês estão na velocidade certa para bater essa meta ou sentem que estão ficando um pouco para trás?"</p>
+                                </div>
+                            </div>
+
+                            <div class="space-y-5">
+                                <h3 class="text-xl font-bold flex items-center gap-2 text-gray-900"><span class="bg-gray-900 text-white text-sm w-7 h-7 flex items-center justify-center rounded-md">2</span> Investigação Guiada (Mapeando a Arquitetura de Receita)</h3>
+                                <p class="text-sm text-gray-500 italic">Use o conceito do Funil de Vendas para encontrar onde está o maior problema (gargalo). Se o cliente relatar que está difícil bater a meta, investigue de cima para baixo:</p>
+                                <ul class="space-y-4 text-sm sm:text-base pl-2">
+                                    <li class="bg-white border border-gray-100 shadow-sm p-4 rounded-xl relative overflow-hidden"><div class="absolute left-0 top-0 bottom-0 w-1 bg-blue-500"></div><strong>Volume (Atração):</strong> "Para chegar nessa meta, como está o volume de oportunidades (Leads) que o marketing tem entregado hoje? É um problema de quantidade ou de qualidade?"</li>
+                                    <li class="bg-white border border-gray-100 shadow-sm p-4 rounded-xl relative overflow-hidden"><div class="absolute left-0 top-0 bottom-0 w-1 bg-purple-500"></div><strong>Engajamento (Agendamentos/Visitas):</strong> "Desses leads que chegam, qual é a maior dificuldade hoje? Eles não respondem, não agendam, ou agendam e não comparecem à loja?"</li>
+                                    <li class="bg-white border border-gray-100 shadow-sm p-4 rounded-xl relative overflow-hidden"><div class="absolute left-0 top-0 bottom-0 w-1 bg-green-500"></div><strong>Conversão (Vendas):</strong> "Quando o cliente senta na frente do vendedor (ou visita a loja), a taxa de fechamento está dentro do esperado? Vocês sentem que perdem vendas por falta de processo, preço ou negociação?"</li>
+                                </ul>
+                            </div>
+
+                            <div class="space-y-5">
+                                <h3 class="text-xl font-bold flex items-center gap-2 text-gray-900"><span class="bg-gray-900 text-white text-sm w-7 h-7 flex items-center justify-center rounded-md">3</span> O "Aha! Moment" e a Quantificação da Dor</h3>
+                                <p class="text-sm text-gray-500 italic">O cliente confessou o problema. Faça ele sentir o peso financeiro disso (usando os números reais dele).</p>
+                                <div class="space-y-3 pl-4 border-l-[3px] border-orange-200 text-sm sm:text-base bg-gray-50/50 p-4 rounded-r-xl">
+                                    <p><strong>Navegador:</strong> "Entendi, [Nome]. Então o que você está me dizendo é que o marketing até traz volume, mas a <strong>taxa de agendamento está muito baixa</strong> (ou outro problema relatado).</p>
+                                    <p><strong>Navegador (O Gancho Financeiro):</strong> "Se você mantivesse o mesmo investimento de hoje, mas nós conseguíssemos aumentar essa conversão de agendamento em apenas 15%... você tem ideia de quanto de receita extra isso traria para vocês no final do mês?" <span class="text-gray-400 italic text-sm">(Faça a conta com ele usando a Calculadora de Funil)</span>.</p>
+                                    <p><strong>Cliente:</strong> "Nossa, daria uma diferença de uns R$ 50.000..."</p>
+                                    <p><strong>Navegador:</strong> "Exato. Ou seja, hoje, por não ter esse processo otimizado, vocês estão deixando <span class="bg-brand-orange/10 text-brand-dark px-1 font-bold rounded">R$ 50.000</span> na mesa todos os meses."</p>
+                                </div>
+                            </div>
+
+                            <div class="space-y-5">
+                                <h3 class="text-xl font-bold flex items-center gap-2 text-gray-900"><span class="bg-brand-orange text-white text-sm w-7 h-7 flex items-center justify-center rounded-md">4</span> O Gancho e a Solução (Pitch de Vendas)</h3>
+                                <p class="text-sm text-gray-500 italic">Apresente o seu produto adicional não como um custo, mas como a ponte para recuperar o dinheiro perdido.</p>
+                                <div class="space-y-3 pl-4 border-l-[3px] border-brand-orange text-sm sm:text-base bg-orange-50/30 p-4 rounded-r-xl">
+                                    <p><strong>Navegador:</strong> "O que está impedindo vocês de resolverem esse gargalo hoje? É falta de braço, falta de tecnologia ou falta de processo?"</p>
+                                    <p><strong>Cliente:</strong> (Geralmente dirá que é falta de tempo/ferramenta).</p>
+                                    <p><strong>Navegador:</strong> "Foi exatamente por ver vários clientes com esse mesmo desafio na arquitetura de receita que nós desenvolvemos o <strong>[Nome do Produto/Serviço Adicional]</strong>.</p>
+                                    <p><strong>Navegador:</strong> "Ele se encaixa exatamente nessa etapa do funil. O objetivo do <strong>[Produto]</strong> é [explicar o benefício prático], para que você pare de perder esse dinheiro na etapa de [etapa do problema]. <strong class="text-brand-dark">Faz sentido para você entendermos como plugar isso na sua operação hoje para buscar esses R$ 50.000?</strong>"</p>
+                                </div>
+                            </div>
+
+                            <div class="mt-10 pt-8 border-t border-gray-200">
+                                <h4 class="text-lg font-bold mb-4 text-gray-900"><i class="fa-solid fa-car-side text-gray-400 mr-2"></i>Dicas Extras para o Nicho Automotivo (G30):</h4>
+                                <ul class="space-y-3 list-none text-sm text-gray-700 bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                                    <li class="flex items-start gap-3"><i class="fa-solid fa-check text-green-500 mt-1"></i><span><strong>Foque no Custo do Lead (CPL) vs. Custo por Aquisição (CPA):</strong> Em concessionárias e lojas de veículos, o lead costuma ser caro. O Navegador deve sempre bater na tecla: <em>"Não precisamos comprar mais leads, precisamos extrair mais vendas dos leads que você já pagou e estão parados no CRM."</em></span></li>
+                                    <li class="flex items-start gap-3"><i class="fa-solid fa-check text-green-500 mt-1"></i><span><strong>Se o produto extra for Treinamento:</strong> O gancho é a taxa de "Visita para Venda".</span></li>
+                                    <li class="flex items-start gap-3"><i class="fa-solid fa-check text-green-500 mt-1"></i><span><strong>Se o produto extra for Automação/CRM:</strong> O gancho é a taxa de "Lead para Agendamento".</span></li>
+                                    <li class="flex items-start gap-3"><i class="fa-solid fa-check text-green-500 mt-1"></i><span><strong>Se o produto extra for Tráfego:</strong> O gancho é o volume no "Topo do Funil".</span></li>
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- APP 3: ESTRATÉGIA G30 PRO                  -->
+            <!-- ========================================== -->
+            <div id="view-g30pro" class="view-section w-full min-h-full font-sans bg-[#13151c] text-gray-200 hidden pb-12">
+                
+                <!-- Header interno G30 PRO -->
+                <header class="bg-[#0a0b0f] shadow-2xl border-b border-[#FF6B00]/30 sticky top-0 z-30">
+                    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-bullseye text-[#FF6B00] text-[24px]"></i>
+                            <h1 class="text-xl font-bold text-white tracking-tight">Análise Estratégica G30 PRO</h1>
+                        </div>
+                    </div>
+                </header>
+
+                <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12 w-full">
+                    
+                    <!-- Intro Textual Estilizada -->
+                    <div class="text-center mb-8">
+                        <h2 class="text-3xl sm:text-4xl font-black text-white tracking-tight">Mapas Estratégicos Oficiais</h2>
+                        <p class="text-brand-orange text-sm mt-3 font-bold uppercase tracking-widest">Foco nos Pilares: Marketing e Comercial | Versão 4</p>
+                    </div>
+
+                    <div class="bg-[#11131a] border border-gray-800 border-l-[6px] border-l-brand-orange rounded-r-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+                        <div class="absolute -right-10 -top-10 text-gray-800/30 text-9xl">
+                            <i class="fa-solid fa-chess-knight"></i>
+                        </div>
+                        <p class="text-gray-300 text-base sm:text-lg leading-relaxed relative z-10">
+                            A estrutura oficial dos entregáveis do G30 Pro é focada na <strong class="text-white">tração de vendas</strong> e na <strong class="text-white">organização prática da loja</strong>. Abaixo, detalhamos o fluxo de integração, as ferramentas e os passos de operação do programa.
+                        </p>
+                    </div>
+
+                    <!-- Imagem do Mapa Operacional -->
+                    <div class="w-full rounded-3xl overflow-hidden shadow-2xl border border-gray-800 bg-[#11131a]">
+                        <img src="https://raw.githubusercontent.com/G30IA/analisedefunilcross-sell/050bea6a1bedf9ca8518f1d8910e46a2512718ae/entregaveis-g30-pro%20(1).png" alt="Estratégia Operacional G30" class="w-full h-auto object-contain">
+                    </div>
+
+                    <!-- Onboarding -->
+                    <div class="bg-gradient-to-r from-[#11131a] to-[#1a1c23] rounded-2xl border border-gray-800 p-6 sm:p-8 shadow-xl relative overflow-hidden">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-12 h-12 rounded-xl bg-gray-800 text-gray-300 flex items-center justify-center text-xl shadow-inner border border-gray-700">
+                                <i class="fa-solid fa-handshake"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-white">Boas-vindas e Acompanhamento</h3>
+                        </div>
+                        <p class="text-gray-400 text-sm sm:text-base leading-relaxed pl-0 sm:pl-16">
+                            O processo de boas-vindas na mentoria é <strong class="text-brand-light">100% automática e remota</strong>. O acompanhamento da loja ao longo do programa é feito unicamente por meio de <strong class="text-white">reuniões coletivas e em grupo</strong>, garantindo um direcionamento estratégico contínuo e escalável.
+                        </p>
+                    </div>
+
+                    <!-- Pilares Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        
+                        <!-- Pilar 1: Marketing -->
+                        <div class="bg-[#0a0b0f] rounded-3xl border border-[#FF6B00]/20 p-6 sm:p-8 shadow-[0_0_30px_rgba(255,107,0,0.05)] h-full flex flex-col relative group hover:border-[#FF6B00]/50 transition-colors duration-300">
+                            <div class="absolute inset-0 bg-gradient-to-br from-[#FF6B00]/5 to-transparent rounded-3xl pointer-events-none"></div>
+                            
+                            <div class="flex items-center gap-4 mb-8 relative z-10">
+                                <div class="w-14 h-14 rounded-2xl bg-brand-orange text-white flex items-center justify-center text-2xl shadow-[0_0_15px_rgba(255,107,0,0.4)] transform -rotate-3">
+                                    <i class="fa-solid fa-bullhorn"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-2xl font-black text-white">1. Marketing</h3>
+                                    <p class="text-xs text-brand-light font-bold uppercase tracking-widest mt-1">Geração de Demanda</p>
+                                </div>
+                            </div>
+                            
+                            <ul class="space-y-6 flex-1 relative z-10">
+                                <li class="flex items-start gap-4 group/item">
+                                    <div class="mt-1 w-6 h-6 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center shrink-0 group-hover/item:bg-brand-orange group-hover/item:border-brand-orange transition-colors">
+                                        <i class="fa-solid fa-check text-xs text-white"></i>
+                                    </div>
+                                    <div>
+                                        <strong class="text-white text-base block mb-1">Plantão de Tráfego Pago <span class="text-[10px] font-bold text-black bg-brand-orange px-2 py-0.5 rounded ml-2 align-middle">2x/mês</span></strong>
+                                        <p class="text-gray-400 text-sm leading-relaxed">Encontros quinzenais ao vivo (em grupo) para otimização de campanhas e estratégias de anúncios.</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start gap-4 group/item">
+                                    <div class="mt-1 w-6 h-6 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center shrink-0 group-hover/item:bg-brand-orange group-hover/item:border-brand-orange transition-colors">
+                                        <i class="fa-solid fa-check text-xs text-white"></i>
+                                    </div>
+                                    <div>
+                                        <strong class="text-white text-base block mb-1">Criação de Conteúdo + Análise <span class="text-[10px] font-bold text-gray-300 bg-gray-700 px-2 py-0.5 rounded ml-2 align-middle">Mensal</span></strong>
+                                        <p class="text-gray-400 text-sm leading-relaxed">Direcionamento estratégico para posicionamento orgânico da loja e auditoria do perfil no Instagram.</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start gap-4 group/item">
+                                    <div class="mt-1 w-6 h-6 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center shrink-0 group-hover/item:bg-brand-orange group-hover/item:border-brand-orange transition-colors">
+                                        <i class="fa-solid fa-check text-xs text-white"></i>
+                                    </div>
+                                    <div>
+                                        <strong class="text-white text-base block mb-1">Trilha Marketing (Universidade G30)</strong>
+                                        <p class="text-gray-400 text-sm leading-relaxed">Capacitação contínua em tráfego pago e criação de conteúdo.</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start gap-4 group/item">
+                                    <div class="mt-1 w-6 h-6 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center shrink-0 group-hover/item:bg-brand-orange group-hover/item:border-brand-orange transition-colors">
+                                        <i class="fa-solid fa-check text-xs text-white"></i>
+                                    </div>
+                                    <div>
+                                        <strong class="text-white text-base block mb-1">Ferramenta Leadway (G30.ai)</strong>
+                                        <p class="text-gray-400 text-sm leading-relaxed">Integração Meta Ads para campanhas em tempo real e criação/edição inteligente de imagens (fundo de estúdio).</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Pilar 2: Comercial -->
+                        <div class="bg-[#0a0b0f] rounded-3xl border border-blue-500/20 p-6 sm:p-8 shadow-[0_0_30px_rgba(59,130,246,0.05)] h-full flex flex-col relative group hover:border-blue-500/50 transition-colors duration-300">
+                            <div class="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent rounded-3xl pointer-events-none"></div>
+
+                            <div class="flex items-center gap-4 mb-8 relative z-10">
+                                <div class="w-14 h-14 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-2xl shadow-[0_0_15px_rgba(59,130,246,0.4)] transform rotate-3">
+                                    <i class="fa-solid fa-comments-dollar"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-2xl font-black text-white">2. Comercial</h3>
+                                    <p class="text-xs text-blue-400 font-bold uppercase tracking-widest mt-1">Conversão e Fechamento</p>
+                                </div>
+                            </div>
+                            
+                            <ul class="space-y-6 flex-1 relative z-10">
+                                <li class="flex items-start gap-4 group/item">
+                                    <div class="mt-1 w-6 h-6 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center shrink-0 group-hover/item:bg-blue-500 group-hover/item:border-blue-500 transition-colors">
+                                        <i class="fa-solid fa-check text-xs text-white"></i>
+                                    </div>
+                                    <div>
+                                        <strong class="text-white text-base block mb-1">Plano de Vendas (PDV) <span class="text-[10px] font-bold text-gray-300 bg-gray-700 px-2 py-0.5 rounded ml-2 align-middle">Mensal</span></strong>
+                                        <p class="text-gray-400 text-sm leading-relaxed">Planejamento entregue via WhatsApp com suporte ativo, definindo as metas e ações táticas.</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start gap-4 group/item">
+                                    <div class="mt-1 w-6 h-6 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center shrink-0 group-hover/item:bg-blue-500 group-hover/item:border-blue-500 transition-colors">
+                                        <i class="fa-solid fa-check text-xs text-white"></i>
+                                    </div>
+                                    <div>
+                                        <strong class="text-white text-base block mb-1">Gideão - Copiloto 24/7</strong>
+                                        <p class="text-gray-400 text-sm leading-relaxed">Inteligência Artificial acessível no WhatsApp do dono e na plataforma G30.ai para toda a equipe.</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start gap-4 group/item">
+                                    <div class="mt-1 w-6 h-6 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center shrink-0 group-hover/item:bg-blue-500 group-hover/item:border-blue-500 transition-colors">
+                                        <i class="fa-solid fa-check text-xs text-white"></i>
+                                    </div>
+                                    <div>
+                                        <strong class="text-white text-base block mb-1">Vendedor Turbo <span class="text-[10px] font-bold text-gray-300 bg-gray-700 px-2 py-0.5 rounded ml-2 align-middle">Mensal</span></strong>
+                                        <p class="text-gray-400 text-sm leading-relaxed">Treinamento coletivo ao vivo focado em alta performance de vendas.</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start gap-4 group/item">
+                                    <div class="mt-1 w-6 h-6 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center shrink-0 group-hover/item:bg-blue-500 group-hover/item:border-blue-500 transition-colors">
+                                        <i class="fa-solid fa-check text-xs text-white"></i>
+                                    </div>
+                                    <div>
+                                        <strong class="text-white text-base block mb-1">Fábrica de Pré-vendas <span class="text-[10px] font-bold text-black bg-brand-orange px-2 py-0.5 rounded ml-2 align-middle">2x/mês</span></strong>
+                                        <p class="text-gray-400 text-sm leading-relaxed">Encontros focados especificamente na qualificação de leads.</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start gap-4 group/item">
+                                    <div class="mt-1 w-6 h-6 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center shrink-0 group-hover/item:bg-blue-500 group-hover/item:border-blue-500 transition-colors">
+                                        <i class="fa-solid fa-check text-xs text-white"></i>
+                                    </div>
+                                    <div>
+                                        <strong class="text-white text-base block mb-1">Trilha Comercial (Universidade G30)</strong>
+                                        <p class="text-gray-400 text-sm leading-relaxed">Treinamentos gravados sobre pré-vendas, vendas, pré-compra e uso do Gideão.</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Jornada Passo a Passo (Recriada em HTML/CSS) -->
+                    <div class="bg-[#11131a] rounded-3xl border border-gray-800 p-8 sm:p-12 shadow-2xl relative overflow-hidden">
+                        
+                        <!-- Elementos gráficos de fundo -->
+                        <div class="absolute top-0 right-0 w-64 h-64 bg-brand-orange/5 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none"></div>
+
+                        <div class="flex items-center gap-5 mb-10 relative z-10">
+                            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-gray-700 to-gray-900 text-white flex items-center justify-center text-2xl shadow-lg border border-gray-600">
+                                <i class="fa-solid fa-route"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl sm:text-3xl font-black text-white">O Passo a Passo da Loja</h3>
+                                <p class="text-brand-orange text-sm mt-1 font-bold tracking-wider uppercase">Jornada em 5 Passos (Execução Fluida)</p>
+                            </div>
+                        </div>
+
+                        <p class="text-gray-400 text-base mb-10 max-w-3xl">Para garantir a execução fluida desde o primeiro dia, a loja percorre a seguinte jornada oficial e obrigatória para tração rápida:</p>
+                        
+                        <div class="relative border-l-2 border-gray-800 ml-6 sm:ml-10 space-y-12 pb-4">
+                            <!-- Passo 1 -->
+                            <div class="relative pl-10 sm:pl-12 group">
+                                <div class="absolute -left-[25px] top-0.5 w-12 h-12 bg-[#1a1c23] border-4 border-gray-700 text-gray-300 rounded-full flex items-center justify-center font-black text-lg transition-colors group-hover:border-brand-orange group-hover:text-brand-orange shadow-md">1</div>
+                                <div>
+                                    <h4 class="text-white font-bold text-xl mb-1.5">Plano de Prioridades da Loja (PPL)</h4>
+                                    <p class="text-gray-400 text-sm sm:text-base leading-relaxed">Call de alinhamento para entender e definir a <strong class="text-gray-200">ação de prioridade</strong> imediata da loja.</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Passo 2 -->
+                            <div class="relative pl-10 sm:pl-12 group">
+                                <div class="absolute -left-[25px] top-0.5 w-12 h-12 bg-[#1a1c23] border-4 border-gray-700 text-gray-300 rounded-full flex items-center justify-center font-black text-lg transition-colors group-hover:border-brand-orange group-hover:text-brand-orange shadow-md">2</div>
+                                <div>
+                                    <h4 class="text-white font-bold text-xl mb-1.5">Organização do Ambiente</h4>
+                                    <p class="text-gray-400 text-sm sm:text-base leading-relaxed">A loja organiza fisicamente a equipe, garantindo que a <strong class="text-gray-200">TV esteja conectada na Universidade G30</strong> para acesso livre.</p>
+                                </div>
+                            </div>
+
+                            <!-- Passo 3 -->
+                            <div class="relative pl-10 sm:pl-12 group">
+                                <div class="absolute -left-[25px] top-0.5 w-12 h-12 bg-[#1a1c23] border-4 border-gray-700 text-gray-300 rounded-full flex items-center justify-center font-black text-lg transition-colors group-hover:border-brand-orange group-hover:text-brand-orange shadow-md">3</div>
+                                <div>
+                                    <h4 class="text-white font-bold text-xl mb-1.5">Start no Treinamento Gravado</h4>
+                                    <p class="text-gray-400 text-sm sm:text-base leading-relaxed">Início imediato do consumo (sob demanda) dos módulos focados na <strong class="text-gray-200">capacitação de nivelamento</strong> da equipe.</p>
+                                </div>
+                            </div>
+
+                            <!-- Passo 4 -->
+                            <div class="relative pl-10 sm:pl-12 group">
+                                <div class="absolute -left-[25px] top-0.5 w-12 h-12 bg-[#1a1c23] border-4 border-gray-700 text-gray-300 rounded-full flex items-center justify-center font-black text-lg transition-colors group-hover:border-brand-orange group-hover:text-brand-orange shadow-md">4</div>
+                                <div>
+                                    <h4 class="text-white font-bold text-xl mb-1.5">Evento Pit Stop na Loja</h4>
+                                    <p class="text-gray-400 text-sm sm:text-base leading-relaxed">Pausa estratégica para <strong class="text-gray-200">avaliação de retenção</strong> e ajustes práticos da operação com base nos estudos.</p>
+                                </div>
+                            </div>
+
+                            <!-- Passo 5 (Destaque) -->
+                            <div class="relative pl-10 sm:pl-12">
+                                <div class="absolute -left-[25px] top-0.5 w-12 h-12 bg-brand-orange border-4 border-[#11131a] text-white rounded-full flex items-center justify-center font-black text-xl shadow-[0_0_20px_rgba(255,107,0,0.6)]">5</div>
+                                <div class="bg-gradient-to-r from-brand-orange/10 to-transparent p-6 rounded-2xl border border-brand-orange/20 mt-[-16px]">
+                                    <div>
+                                        <h4 class="text-brand-light font-bold text-xl mb-2 flex items-center gap-2">
+                                            Plano de Vendas (PDV) Direto no WhatsApp
+                                            <i class="fa-solid fa-fire text-brand-orange text-sm"></i>
+                                        </h4>
+                                        <p class="text-gray-300 text-sm sm:text-base leading-relaxed">Operação 100% integrada com o copiloto de compra <strong class="text-white">Gideão</strong>, rodando 24 horas por dia, 7 dias da semana, auxiliando a conversão final.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rodapé do PDF -->
+                    <div class="pt-8 mt-12 border-t border-gray-800 text-center">
+                        <p class="text-xs text-gray-600 font-mono tracking-widest uppercase">Gerado pelo Sistema G30 AI • Confidencial e Estratégico</p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- APP 4: MOTOR I.A. DE RECEITA               -->
+            <!-- ========================================== -->
+            <div id="view-motor" class="view-section w-full min-h-full flex flex-col font-sans text-slate-800 bg-slate-50 hidden">
+                <header class="bg-slate-900 text-white p-3 md:p-4 shadow-lg flex justify-between items-center shrink-0 z-10">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-brand-orange p-2 rounded-lg shadow-inner">
+                            <i class="fa-solid fa-microchip"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-lg md:text-xl font-bold tracking-wide leading-none">G30 I.A. <span class="text-brand-light font-light hidden md:inline">| Cérebro de Receita</span></h1>
+                            <p class="text-[10px] text-slate-400 uppercase tracking-widest mt-1">Full-Text Context Engine v4.0</p>
+                        </div>
+                    </div>
+                    <div class="text-xs text-slate-300 flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700">
+                        <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]"></div>
+                        Online
+                    </div>
+                </header>
+
+                <div class="flex-1 flex flex-col lg:flex-row relative">
+                    <section class="w-full lg:w-4/12 bg-white border-r border-slate-200 flex flex-col p-4 md:p-5 shadow-xl z-20">
+                        <div class="mb-4">
+                            <h2 class="text-sm font-bold text-slate-800 flex items-center gap-2 uppercase tracking-wide">
+                                <i class="fa-solid fa-database text-brand-orange"></i> Entrada de Dados Brutos
+                            </h2>
+                            <p class="text-xs text-slate-500 mt-2 leading-relaxed">O motor ignora colunas. Ele lê o texto inteiro como um humano, caça padrões, cruza os dias de inatividade e estrutura a Arquitetura de Receita.</p>
+                        </div>
+                        
+                        <div class="mb-4 bg-orange-50/60 p-3.5 rounded-xl border border-orange-200 shadow-sm">
+                            <h3 class="text-[10px] font-bold text-orange-800 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                                <i class="fa-solid fa-check-double"></i> Double Check (Forçar Ancoragem)
+                            </h3>
+                            <div class="flex gap-3">
+                                <div class="flex-1">
+                                    <label class="text-[9px] text-slate-500 font-bold uppercase">Vendas (Opcional)</label>
+                                    <input type="number" id="manualSales" class="w-full text-xs p-2.5 mt-1 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none shadow-inner" placeholder="Ex: 42">
+                                </div>
+                                <div class="flex-1">
+                                    <label class="text-[9px] text-slate-500 font-bold uppercase">Mês Ref.</label>
+                                    <input type="text" id="manualMonth" class="w-full text-xs p-2.5 mt-1 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none shadow-inner" placeholder="Ex: JAN">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <textarea id="rawInput" class="flex-1 min-h-[250px] w-full border border-slate-300 rounded-xl p-4 text-xs focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none resize-none bg-slate-50 font-mono text-slate-600 shadow-inner" placeholder="Dê Ctrl+A e Ctrl+C no Pipedrive inteiro e cole aqui..."></textarea>
+                        
+                        <button id="btnProcess" class="mt-4 bg-brand-orange hover:bg-brand-dark text-white font-bold py-3.5 px-4 rounded-xl shadow-md shadow-brand-orange/30 transition-all flex justify-center items-center gap-2 w-full uppercase text-sm tracking-wide">
+                            <i class="fa-solid fa-bolt-lightning text-yellow-300"></i> Processar Inteligência
+                        </button>
+                    </section>
+
+                    <section class="w-full lg:w-8/12 flex flex-col p-4 md:p-6 relative bg-slate-100/50">
+                        <div id="emptyState" class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 z-10">
+                            <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 flex flex-col items-center text-center max-w-md mx-4">
+                                <div class="bg-slate-50 p-5 rounded-full mb-4 border border-slate-100">
+                                    <i class="fa-solid fa-radar text-4xl text-brand-light"></i>
+                                </div>
+                                <p class="text-lg font-bold text-slate-700">Aguardando Varredura</p>
+                                <p class="text-sm mt-2 text-slate-500 leading-relaxed">Cole os dados para extrairmos: Sentimento, Propensão a Upsell, Dias na Etapa, Relacionamento Navegador e Estratégia.</p>
+                            </div>
+                        </div>
+
+                        <div id="loadingState" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-100/90 backdrop-blur-sm z-20 hidden">
+                            <div class="bg-white p-6 rounded-2xl shadow-xl border border-slate-200 flex flex-col items-center mx-4">
+                                <div class="spinner mb-4"></div>
+                                <p class="font-bold text-slate-700">Analisando contexto completo...</p>
+                                <p class="text-xs text-slate-400 mt-2 font-mono">Processando Arquitetura de Receita e Sentimentos...</p>
+                            </div>
+                        </div>
+
+                        <div id="dashboard" class="hidden flex-col gap-4 opacity-0 z-30 pb-10">
+                            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 lg:p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 bg-orange-100 text-brand-orange rounded-xl flex items-center justify-center text-xl shadow-inner border border-orange-200">
+                                        <i class="fa-solid fa-store"></i>
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <h2 id="outCompany" class="text-xl font-bold text-slate-800 leading-tight">Empresa</h2>
+                                            <span id="outCS" class="text-[10px] bg-slate-100 text-slate-600 px-2 py-1 rounded-md border border-slate-200 font-medium flex items-center gap-1">
+                                                <i class="fa-solid fa-headset"></i> Navegador
+                                            </span>
+                                        </div>
+                                        <p id="outName" class="text-sm text-slate-500 font-medium mt-0.5">Nome do Contato</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex gap-2 w-full md:w-auto">
+                                    <div id="badgeUpsell" class="flex-1 md:flex-none text-center px-3 py-2 rounded-lg border text-xs font-bold uppercase tracking-wider">
+                                        Upsell: Calculando
+                                    </div>
+                                    <div id="badgeCrosssell" class="flex-1 md:flex-none text-center px-3 py-2 rounded-lg border text-xs font-bold uppercase tracking-wider">
+                                        Cross-sell: Calculando
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="col-span-1 md:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200 p-4 lg:p-5">
+                                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                        <i class="fa-solid fa-layer-group"></i> Arquitetura de Receita & Estágio
+                                    </h3>
+                                    <div class="grid grid-cols-3 gap-3">
+                                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 flex flex-col justify-between">
+                                            <p class="text-[10px] font-bold text-slate-500 uppercase">Idade do Negócio</p>
+                                            <p id="outAge" class="text-lg font-bold text-slate-800 mt-1">-</p>
+                                        </div>
+                                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 flex flex-col justify-between">
+                                            <p class="text-[10px] font-bold text-slate-500 uppercase">Dias Inativo</p>
+                                            <p id="outInactive" class="text-lg font-bold text-slate-800 mt-1">-</p>
+                                        </div>
+                                        <div class="bg-orange-50 p-3 rounded-xl border border-orange-100 flex flex-col justify-between">
+                                            <p class="text-[10px] font-bold text-brand-orange uppercase">Status na Etapa</p>
+                                            <p id="outStageStatus" class="text-sm font-bold text-brand-dark mt-1 leading-tight">-</p>
+                                        </div>
+                                    </div>
+
+                                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mt-4 mb-3 flex items-center gap-2">
+                                        <i class="fa-solid fa-chart-pie"></i> Desempenho e Tração
+                                    </h3>
+                                    <div class="grid grid-cols-4 gap-2">
+                                        <div class="bg-slate-50 p-2 rounded-xl border border-slate-100 flex flex-col">
+                                            <p class="text-[9px] font-bold text-slate-500 uppercase">Vendas</p>
+                                            <p id="outSales" class="text-xs font-bold text-slate-800 mt-1">-</p>
+                                        </div>
+                                        <div class="bg-slate-50 p-2 rounded-xl border border-slate-100 flex flex-col">
+                                            <p class="text-[9px] font-bold text-slate-500 uppercase">Leads</p>
+                                            <p id="outLeads" class="text-xs font-bold text-slate-800 mt-1">-</p>
+                                        </div>
+                                        <div class="bg-slate-50 p-2 rounded-xl border border-slate-100 flex flex-col">
+                                            <p class="text-[9px] font-bold text-slate-500 uppercase">Estoque</p>
+                                            <p id="outStock" class="text-xs font-bold text-slate-800 mt-1">-</p>
+                                        </div>
+                                        <div class="bg-slate-50 p-2 rounded-xl border border-slate-100 flex flex-col">
+                                            <p class="text-[9px] font-bold text-slate-500 uppercase">Tráfego</p>
+                                            <p id="outTraffic" class="text-xs font-bold text-slate-800 mt-1">-</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-span-1 bg-white rounded-2xl shadow-sm border border-slate-200 p-4 lg:p-5 flex flex-col">
+                                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                                        <i class="fa-solid fa-circle-exclamation"></i> Auditoria de Dados
+                                    </h3>
+                                    <div id="outFuros" class="text-xs space-y-2 font-medium overflow-y-auto max-h-32">
+                                        <!-- Injetado via JS -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 lg:p-5 flex flex-col">
+                                    <div class="flex items-center justify-between mb-3 border-b border-slate-100 pb-3">
+                                        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
+                                            <i class="fa-solid fa-heart-pulse"></i> Sentimento do Cliente
+                                        </h3>
+                                        <span id="badgeHealth" class="text-[10px] px-2 py-1 rounded-full font-bold uppercase tracking-wide">Status</span>
+                                    </div>
+                                    <p id="outSentiment" class="text-sm text-slate-600 leading-relaxed font-medium">Analisando...</p>
+                                </div>
+
+                                <div class="bg-indigo-50 rounded-2xl shadow-sm border border-indigo-100 p-4 lg:p-5 flex flex-col">
+                                    <div class="flex items-center justify-between mb-3 border-b border-indigo-100 pb-3">
+                                        <h3 class="text-xs font-bold text-indigo-700 uppercase tracking-wider flex items-center gap-2">
+                                            <i class="fa-solid fa-user-tie"></i> Análise de Relacionamento
+                                        </h3>
+                                    </div>
+                                    <p id="outCSFeedback" class="text-sm text-indigo-900 leading-relaxed font-medium">Analisando...</p>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col flex-1 mt-2">
+                                <div class="bg-slate-900 text-white p-3 md:p-4 flex justify-between items-center rounded-t-2xl">
+                                    <h3 class="text-sm font-bold flex items-center gap-2 uppercase tracking-wide">
+                                        <i class="fa-solid fa-comment-dots text-yellow-400"></i> Script Estratégico (Ação)
+                                    </h3>
+                                    <button id="btnCopy" class="text-xs bg-slate-700 hover:bg-slate-600 text-white font-bold py-1.5 px-3 rounded-lg transition-all flex items-center gap-2">
+                                        <i class="fa-regular fa-copy"></i> Copiar
+                                    </button>
+                                </div>
+                                <textarea id="outScript" class="w-full p-5 text-sm md:text-base text-slate-700 resize-none outline-none border-none focus:ring-0 leading-relaxed font-serif bg-yellow-50/30 rounded-b-2xl" style="min-height: 240px;"></textarea>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+        </div>
     </main>
 
-    <footer class="bg-white border-t border-gray-100 py-12 mt-24">
-        <div class="max-w-6xl mx-auto px-6 text-center">
-            <p class="text-sm text-gray-400 font-medium">© 2024 G30 Inteligência Automotiva - Script de Expansão de Receita</p>
-        </div>
-    </footer>
-
     <script>
+        // ==========================================
+        // LÓGICA DO MENU LATERAL E NAVEGAÇÃO
+        // ==========================================
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            
+            // Toggle translate-x-full classes for mobile
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        function switchAppView(viewId) {
+            // Ocultar todas as views
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            
+            // Mostrar a view solicitada
+            const activeView = document.getElementById(`view-${viewId}`);
+            if(activeView) activeView.classList.remove('hidden');
+            
+            // Atualizar links do menu lateral
+            document.querySelectorAll('.sidebar-link').forEach(el => {
+                el.classList.remove('bg-brand-orange', 'text-white', 'shadow-lg', 'shadow-brand-orange/20');
+                el.classList.add('text-gray-400', 'hover:bg-gray-800', 'hover:text-white');
+            });
+            
+            const activeLink = document.getElementById(`link-${viewId}`);
+            if(activeLink) {
+                activeLink.classList.remove('text-gray-400', 'hover:bg-gray-800', 'hover:text-white');
+                activeLink.classList.add('bg-brand-orange', 'text-white', 'shadow-lg', 'shadow-brand-orange/20');
+            }
+
+            // Fechar menu no mobile após clicar
+            if(window.innerWidth < 1024) { // lg breakpoint in tailwind
+                toggleSidebar();
+            }
+
+            // Inicializações específicas da view
+            if (viewId === 'funil') {
+                calcularFunil();
+            } else if (viewId === 'guia') {
+                if(currentPhase === 3) initChart();
+                // Reset guia nav styling if needed
+            }
+        }
+
+        // ==========================================
+        // LÓGICA DO DASHBOARD FUNIL DE VENDAS
+        // ==========================================
+        const formatCurrency = (value) => {
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2
+            }).format(value);
+        };
+
+        const formatPercent = (value, fractionDigits = 2) => {
+            if (isNaN(value) || !isFinite(value)) return "0.00%";
+            return value.toFixed(fractionDigits) + "%";
+        };
+
+        function calcularFunil() {
+            const valorGasto = parseFloat(document.getElementById('valorGasto').value) || 0;
+            const leads = parseFloat(document.getElementById('qtdLeads').value) || 0;
+            const agendamentos = parseFloat(document.getElementById('qtdAgendamentos').value) || 0;
+            const visitas = parseFloat(document.getElementById('qtdVisitas').value) || 0;
+            const vendas = parseFloat(document.getElementById('qtdVendas').value) || 0;
+
+            // CPL
+            let cpl = leads > 0 ? valorGasto / leads : 0;
+            document.getElementById('displayCPL').innerText = formatCurrency(cpl);
+
+            // CPA
+            let cpa = vendas > 0 ? valorGasto / vendas : 0;
+            document.getElementById('displayCPA').innerText = formatCurrency(cpa);
+
+            // Taxas
+            let txLeadAgendamento = leads > 0 ? (agendamentos / leads) * 100 : 0;
+            document.getElementById('taxaLeadAgendamento').innerText = formatPercent(txLeadAgendamento);
+            document.getElementById('boxTaxaLeadAgendamento').innerText = formatPercent(txLeadAgendamento, 0);
+
+            let txAgendamentoVisita = agendamentos > 0 ? (visitas / agendamentos) * 100 : 0;
+            document.getElementById('taxaAgendamentoVisita').innerText = formatPercent(txAgendamentoVisita);
+            document.getElementById('boxTaxaAgendamentoVisita').innerText = formatPercent(txAgendamentoVisita, 0);
+
+            let txVisitaVenda = visitas > 0 ? (vendas / visitas) * 100 : 0;
+            document.getElementById('taxaVisitaVenda').innerText = formatPercent(txVisitaVenda);
+            document.getElementById('boxTaxaVisitaVenda').innerText = formatPercent(txVisitaVenda, 1);
+
+            atualizarCorCaixaTaxaFunil('boxTaxaLeadAgendamento', txLeadAgendamento, 30);
+            atualizarCorCaixaTaxaFunil('boxTaxaAgendamentoVisita', txAgendamentoVisita, 30);
+            atualizarCorCaixaTaxaFunil('boxTaxaVisitaVenda', txVisitaVenda, 20, true);
+        }
+
+        function atualizarCorCaixaTaxaFunil(elementId, valor, limiar, isFinal = false) {
+            const el = document.getElementById(elementId).parentElement;
+            const textEl = document.getElementById(elementId);
+            
+            // Clean classes
+            el.className = 'border shadow-sm p-1.5 text-center w-20 md:w-24 backdrop-blur-sm rounded-md';
+            textEl.className = 'font-bold text-sm';
+            
+            if (isFinal) {
+                if(valor >= limiar) { // Venda boa
+                    el.classList.add('bg-green-900/40', 'border-green-700/50');
+                    textEl.classList.add('text-green-400');
+                } else {
+                    el.classList.add('bg-red-900/40', 'border-red-700/50');
+                    textEl.classList.add('text-red-400');
+                }
+            } else {
+                if (valor >= limiar) {
+                    el.classList.add('bg-green-900/40', 'border-green-700/50');
+                    textEl.classList.add('text-green-400');
+                } else {
+                    el.classList.add('bg-yellow-900/40', 'border-yellow-700/50');
+                    textEl.classList.add('text-yellow-400');
+                }
+            }
+        }
+
+        function limparDados() {
+            document.getElementById('valorGasto').value = '';
+            document.getElementById('qtdLeads').value = '';
+            document.getElementById('qtdAgendamentos').value = '';
+            document.getElementById('qtdVisitas').value = '';
+            document.getElementById('qtdVendas').value = '';
+            calcularFunil();
+        }
+
+        // ==========================================
+        // LÓGICA DO GUIA DE VENDA CONSULTIVA
+        // ==========================================
         let currentPhase = 1;
         let selectedGargaloKey = 'conversao';
         let impactChart = null;
 
         const gargaloData = {
-            volume: {
-                label: 'Volume (Atração)',
-                pergunta: 'Como está o volume de leads entregues hoje? É quantidade ou qualidade o problema?',
-                color: '#3B82F6'
-            },
-            engajamento: {
-                label: 'Engajamento',
-                pergunta: 'Desses leads, qual a maior dificuldade? Não respondem ou não comparecem à loja?',
-                color: '#A855F7'
-            },
-            conversao: {
-                label: 'Conversão',
-                pergunta: 'Quando o cliente senta na frente do vendedor, vocês perdem por processo ou por preço?',
-                color: '#22C55E'
-            }
+            volume: { label: 'Volume (Atração)', pergunta: 'Como está o volume de leads entregues hoje? É quantidade ou qualidade o problema?', color: '#3B82F6' },
+            engajamento: { label: 'Engajamento', pergunta: 'Desses leads, qual a maior dificuldade? Não respondem ou não comparecem à loja?', color: '#A855F7' },
+            conversao: { label: 'Conversão', pergunta: 'Quando o cliente senta na frente do vendedor, vocês perdem por processo ou por preço?', color: '#22C55E' }
         };
 
         function switchPhase(phase) {
+            // Ocultar intro após fase 1
+            if(phase > 1) document.getElementById('guia-intro').classList.add('hidden');
+            else document.getElementById('guia-intro').classList.remove('hidden');
+
             document.querySelectorAll('.phase-content').forEach(p => p.classList.add('hidden'));
             document.getElementById(`phase-${phase}`).classList.remove('hidden');
             
-            // Update Nav
             document.querySelectorAll('nav button').forEach(b => {
                 b.classList.remove('step-active');
                 b.classList.add('text-gray-400');
             });
-            document.getElementById(`nav-${phase}`).classList.add('step-active');
-            document.getElementById(`nav-${phase}`).classList.remove('text-gray-400');
+            const activeNav = document.getElementById(`nav-${phase}`);
+            if(activeNav) {
+                activeNav.classList.add('step-active');
+                activeNav.classList.remove('text-gray-400');
+            }
             
             currentPhase = phase;
-            if (phase === 3) initChart();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (phase === 3) setTimeout(initChart, 50); // delay leve para garantir renderização
+            
+            // Scroll to top of the view container, not window
+            document.querySelector('.flex-1.overflow-y-auto').scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function selectGargalo(key) {
             selectedGargaloKey = key;
-            document.querySelectorAll('[id^="card-"]').forEach(c => c.classList.remove('border-orange-500', 'bg-orange-50'));
-            document.getElementById(`card-${key}`).classList.add('border-orange-500', 'bg-orange-50');
+            document.querySelectorAll('[id^="card-"]').forEach(c => c.classList.remove('border-orange-500', 'bg-orange-50/30'));
+            document.getElementById(`card-${key}`).classList.add('border-orange-500', 'bg-orange-50/30');
             
-            document.getElementById('pergunta-guiada').classList.remove('hidden');
             document.getElementById('texto-pergunta').innerText = gargaloData[key].pergunta;
             document.getElementById('gargalo-label').innerText = gargaloData[key].label;
+            document.getElementById('gargalo-label-calc').innerText = gargaloData[key].label;
             
             updateImpact();
         }
@@ -388,18 +1289,15 @@
             const vendasAtuais = leads * (convAtual / 100);
             const receitaAtual = vendasAtuais * ticket;
             
-            // Simulando uma melhoria de 20% na eficiência da etapa (ex: aumentar a conv de 10% para 12%)
             const convOtimizada = convAtual * 1.20;
             const vendasOtimizadas = leads * (convOtimizada / 100);
             const receitaOtimizada = vendasOtimizadas * ticket;
             
             const receitaExtra = receitaOtimizada - receitaAtual;
             
-            const format = (v) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
-            
-            document.getElementById('receita-extra').innerText = format(receitaExtra);
-            document.getElementById('receita-frase').innerText = format(receitaExtra);
-            document.querySelectorAll('.extra-val').forEach(el => el.innerText = format(receitaExtra));
+            document.getElementById('receita-extra').innerText = formatCurrency(receitaExtra);
+            document.getElementById('receita-frase').innerText = formatCurrency(receitaExtra);
+            document.querySelectorAll('.extra-val').forEach(el => el.innerText = formatCurrency(receitaExtra));
 
             if (impactChart) {
                 impactChart.data.datasets[0].data = [receitaAtual, receitaOtimizada];
@@ -408,26 +1306,39 @@
         }
 
         function initChart() {
-            const ctx = document.getElementById('impactChart').getContext('2d');
-            if (impactChart) return;
+            const canvas = document.getElementById('impactChart');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            if (impactChart) {
+                updateImpact();
+                return;
+            }
 
             impactChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['Atual', 'Otimizado'],
+                    labels: ['Receita Atual', 'Receita Otimizada (+20%)'],
                     datasets: [{
                         label: 'Receita Mensal',
                         data: [0, 0],
                         backgroundColor: ['#E5E7EB', '#FF6B00'],
-                        borderRadius: 12,
-                        barThickness: 60
+                        borderRadius: 8,
+                        barThickness: 40
                     }]
                 },
                 options: {
                     maintainAspectRatio: false,
                     responsive: true,
                     plugins: {
-                        legend: { display: false }
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return formatCurrency(context.raw);
+                                }
+                            }
+                        }
                     },
                     scales: {
                         y: { 
@@ -437,7 +1348,7 @@
                         },
                         x: {
                             grid: { display: false },
-                            ticks: { font: { weight: 'bold' } }
+                            ticks: { font: { family: 'Plus Jakarta Sans', weight: 'bold' } }
                         }
                     }
                 }
@@ -445,9 +1356,306 @@
             updateImpact();
         }
 
-        // Initialize first state
-        window.onload = () => {
+        // ==========================================
+        function processUniversalData(text) {
+            const textLower = text.toLowerCase();
+            const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+            
+            let data = {
+                raw: text,
+                name: "Não Identificado",
+                company: "Não Identificada",
+                cs: "Não Identificado",
+                age: 0,
+                inactiveDays: 0,
+                stageDays: [],
+                metrics: {},
+                missingData: [],
+                sentimentScore: 0,
+                keywordsPos: [],
+                keywordsNeg: []
+            };
+
+            let foundIdentity = false;
+
+            // 1. EXTRAÇÃO DE NOME, EMPRESA E NAVEGADOR
+            for (let i = 0; i < Math.min(30, lines.length); i++) {
+                let line = lines[i];
+                // Procura pelo Padrão Pipe |
+                if (line.includes('|') && !line.includes('http') && line.length < 100) {
+                    let parts = line.split('|');
+                    data.name = parts[0].replace(/_/g, ' ').trim();
+                    data.company = parts[1].replace(/_/g, ' ').trim();
+                    // O CS costuma ser a linha imediatamente abaixo ou duas abaixo
+                    if (lines[i+1] && lines[i+1].length < 30 && !lines[i+1].toLowerCase().includes('proprietário')) {
+                        data.cs = lines[i+1].trim();
+                    } else if (lines[i+2] && lines[i+2].length < 30) {
+                        data.cs = lines[i+2].trim();
+                    }
+                    foundIdentity = true;
+                    break;
+                }
+            }
+
+            // 2. EXTRAÇÃO DE MÉTRICAS REAIS E HISTÓRICO (Com suporte a Arrays Mensais do Pipedrive)
+            const extractMonthly = (fieldName) => {
+                const escapedField = fieldName.replace(/ /g, '\\s+');
+                const regex = new RegExp(`${escapedField}[\\s\\S]{0,30}?\\[\\d+-([A-Z]{3})-\\d{2}\\]\\s*(-|[\\d\\.,]+)`, 'gi');
+                
+                let lastVal = null;
+                let lastMonth = null;
+                let match;
+                let foundAny = false;
+                
+                while ((match = regex.exec(text)) !== null) {
+                    foundAny = true;
+                    let month = match[1];
+                    let rawVal = match[2].trim();
+                    
+                    if (rawVal !== '-') {
+                        let num = parseInt(rawVal.replace(/[^\d]/g, ''));
+                        if (!isNaN(num)) {
+                            lastVal = num;
+                            lastMonth = month;
+                        }
+                    }
+                }
+                return foundAny ? { val: lastVal, month: lastMonth } : null;
+            };
+
+            const salesData = extractMonthly('Total de carros vendidos no mês');
+            if (salesData && salesData.val !== null) {
+                data.metrics.sales = salesData.val;
+                data.metrics.salesMonth = salesData.month;
+            } else {
+                const salesMatch = text.match(/\[FORM\] Vendas de Carros\s*(\d+)/i) || text.match(/vendas fechadas:\s*(\d+)/i);
+                if (salesMatch) data.metrics.sales = salesMatch[1];
+            }
+
+            const trafficData = extractMonthly('Total de investimento em tráfego');
+            if (trafficData && trafficData.val !== null) {
+                data.metrics.traffic = trafficData.val;
+                data.metrics.trafficMonth = trafficData.month;
+            }
+
+            const leadsMatch = text.match(/\[FORM\] Qtd de leads mensais\s*(\d+)/i) || text.match(/leads mensais\s*(\d+)/i);
+            if (leadsMatch) data.metrics.leads = leadsMatch[1];
+
+            const stockMatch = text.match(/\[FORM\] Estoque de Carros\s*(\d+)/i) || text.match(/Estoque de Carros\s*(\d+)/i);
+            if (stockMatch) data.metrics.stock = stockMatch[1];
+
+            // 3. AUDITORIA DE DADOS E FUROS (Check-in Mensal)
+            if (salesData && salesData.val === null) {
+                data.missingData.push("Vendas mensais em branco");
+            } else if (salesData && salesData.val !== null && salesData.month !== 'JUL' && salesData.month !== 'JUN') {
+                data.missingData.push(`Check-in de Vendas atrasado (Último em ${salesData.month})`);
+            } else if (!data.metrics.sales) {
+                data.missingData.push("Vendas de Carros Mensais");
+            }
+
+            if (!data.metrics.leads) data.missingData.push("Volume de Leads Mensais");
+            
+            if (trafficData && trafficData.val === null) {
+                data.missingData.push("Histórico de Investimento (Tráfego) em branco");
+            }
+
+            // 4. ANÁLISE DE ARQUITETURA DE RECEITA (Tempos) E SENTIMENTO
+            const ageMatch = text.match(/Idade do negócio[\s\n]*(\d+)/i) || text.match(/(\d+) dias/i);
+            if (ageMatch) data.age = parseInt(ageMatch[1]);
+            
+            const inactiveMatch = text.match(/Inativo \(dias\)[\s\n]*(\d+)/i);
+            if (inactiveMatch) data.inactiveDays = parseInt(inactiveMatch[1]);
+
+            // 5. SENTIMENTO E PALAVRAS-CHAVE
+            const negWords = ['insatisfeito', 'não atendeu', 'falhou', 'alto', 'não está cumprindo', 'reclamou', 'frustração', 'problemas', 'desligou', 'sem retorno', 'bloqueado'];
+            const posWords = ['venda', 'interessado', 'feirão', 'resultado', 'ótimo', 'parabéns', 'agendado', 'vitrine'];
+
+            negWords.forEach(w => { if(textLower.includes(w)) { data.sentimentScore -= 1; data.keywordsNeg.push(w); } });
+            posWords.forEach(w => { if(textLower.includes(w)) { data.sentimentScore += 1; data.keywordsPos.push(w); } });
+
+            data.csActions = {
+                callsMissed: (textLower.match(/não atendeu/g) || []).length + (textLower.match(/caixa postal/g) || []).length + (textLower.match(/sem retorno/g) || []).length,
+                meetings: (textLower.match(/reunião/g) || []).length + (textLower.match(/agendado/g) || []).length,
+                plans: (textLower.match(/plano/g) || []).length
+            };
+
+            return data;
+        }
+
+        function generateStrategy(data) {
+            let strategy = {
+                health: {},
+                upsell: {},
+                crosssell: {},
+                stageStatus: "",
+                csFeedback: "",
+                script: ""
+            };
+
+            const isStalled = data.inactiveDays > 7;
+            const isOldDeal = data.age > 90;
+
+            if (data.sentimentScore < 0 || isStalled || data.csActions.callsMissed > 2) {
+                strategy.upsell = { status: 'BLOQUEADO', color: 'red' };
+                strategy.crosssell = { status: 'BLOQUEADO', color: 'red' };
+                strategy.stageStatus = "Gargalo / Risco de Churn";
+                
+                strategy.health = {
+                    badge: "RISCO (VERMELHO)", color: "red",
+                    text: `O cliente apresenta sinais de atrito ou distanciamento. Palavras detectadas: ${data.keywordsNeg.length > 0 ? data.keywordsNeg.join(', ') : 'Falta de engajamento'}. Foco total deve ser em alinhar expectativas e resolver gargalos técnicos.`
+                };
+            } else if (data.sentimentScore > 0 && !isStalled) {
+                strategy.upsell = { status: 'Apto para trabalhar (ALTA CHANCE)', color: 'emerald' };
+                strategy.crosssell = { status: 'Apto para Trabalhar', color: 'emerald' };
+                strategy.stageStatus = "Fluxo Saudável / Tração";
+                
+                strategy.health = {
+                    badge: "SAUDÁVEL (VERDE)", color: "emerald",
+                    text: `Cliente engajado com iniciativas recentes (${data.keywordsPos.length > 0 ? data.keywordsPos.join(', ') : 'Ações da G30'}). A arquitetura de receita permite avançar para ofertas de expansão aproveitando o momentum.`
+                };
+            } else {
+                strategy.upsell = { status: 'AQUECER PRIMEIRO', color: 'amber' };
+                strategy.crosssell = { status: 'AVALIAR NECESSIDADE', color: 'amber' };
+                strategy.stageStatus = isOldDeal ? "Manutenção Longa" : "Desenvolvimento";
+                
+                strategy.health = {
+                    badge: "MORNO (AMARELO)", color: "amber",
+                    text: `Relacionamento neutro. O cliente está há ${data.age} dias na base e inativo há ${data.inactiveDays} dias. Necessário gerar um micro-resultado imediato antes de tentar transição de receita.`
+                };
+            }
+
+            if (data.csActions.callsMissed > 2) {
+                strategy.csFeedback = `<strong>Alerta Operacional:</strong> Há muitas tentativas de contato falhas ("não atendeu", "sem retorno"). O canal atual está esgotado. Tente uma abordagem via WhatsApp de áudio curto com uma vitória do mercado ou mude a ponte de contato.`;
+            } else if (data.csActions.meetings > 0 || data.csActions.plans > 0) {
+                strategy.csFeedback = `<strong>Boa Condução:</strong> O histórico demonstra esforço em realizar reuniões e alinhamentos estratégicos. Mantenha a documentação robusta.`;
+            } else {
+                strategy.csFeedback = `<strong>Atenção:</strong> Pouca profundidade de registro nas anotações recentes. É fundamental documentar os combinados e o plano de ação nas interações para garantir histórico sólido.`;
+            }
+
+            let contextHook = "";
+            let firstName = data.name.split(' ')[0] || "Cliente";
+
+            if (data.metrics.sales) {
+                let when = data.metrics.salesMonth ? `lá em ${data.metrics.salesMonth}` : 'no nosso último check-in';
+                contextHook = `estava revisando os históricos da loja e vi que ${when} vocês registraram ${data.metrics.sales} vendas. `;
+            } else if (data.metrics.leads) {
+                contextHook = `estava analisando os números de tração e vi que o fluxo bateu na casa de ${data.metrics.leads} leads. `;
+            } else if (data.metrics.stock) {
+                contextHook = `olhando a estrutura de vocês, vi que estão operando com um estoque em torno de ${data.metrics.stock} carros. `;
+            } else {
+                contextHook = `estava revisando o histórico da {Nome da Loja} e a nossa parceria ao longo desses ${data.age > 0 ? data.age : 'últimos'} dias. `;
+            }
+
+            if (strategy.health.color === 'red') {
+                strategy.script = `Olá, ${firstName}! Tudo bem? Aqui é do time da G30.\n\n${firstName}, ${contextHook}Com base nesse cenário, fui ler os apontamentos recentes da operação e notei que tivemos algumas dificuldades de contato ou questões não resolvidas.\n\nMeu contato hoje não é para falar de estratégias novas, mas exclusivamente para alinhar a base e resolver qualquer gargalo. Você tem 5 minutos no WhatsApp mesmo, só para eu entender onde falhamos e aplicar a correção?`;
+            } else if (strategy.health.color === 'emerald') {
+                strategy.script = `Oi, ${firstName}! Tudo excelente? Aqui é do time da G30.\n\n${firstName}, ${contextHook}Primeiramente, parabéns pelo engajamento nas nossas últimas ações!\n\nAnalisando esse seu volume, percebi que estamos em um momento ideal para plugar uma automação que vai blindar o seu time de vendas e acelerar ainda mais essa tração.\n\nConsegue um espaço na agenda quinta ou sexta para eu te mostrar como outras lojas com esse perfil estão usando I.A. no atendimento?`;
+            } else {
+                strategy.script = `Olá, ${firstName}! Tudo bem? Aqui é da G30.\n\n${firstName}, ${contextHook}Sei que a rotina por aí é acelerada, então serei breve.\n\nEstou fazendo a auditoria mensal e percebi que precisamos atualizar alguns dados (como check-ins recentes) para eu entender como essas métricas evoluíram. Meu foco é garantir que as campanhas estejam gerando lucro real para vocês em cima desses números atualizados.\n\nTeria uma janela rápida de 10 minutinhos essa semana para batermos esse check-in?`;
+            }
+
+            return strategy;
+        }
+
+        // ==========================================
+        // INICIALIZAÇÃO E EVENTOS
+        // ==========================================
+        window.onload = function() {
+            // Inicializar dados do Funil
+            calcularFunil();
+            // Inicializar seleção do Guia
             selectGargalo('conversao');
+            // Garantir que a view correta está mostrando (default: home)
+            switchAppView('home');
+
+            const btnProcess = document.getElementById('btnProcess');
+            if (btnProcess) {
+                btnProcess.addEventListener('click', () => {
+                    const text = document.getElementById('rawInput').value;
+                    if(text.trim() === '') return;
+
+                    document.getElementById('emptyState').style.display = 'none';
+                    document.getElementById('dashboard').style.display = 'none';
+                    document.getElementById('dashboard').classList.remove('fade-in');
+                    const loading = document.getElementById('loadingState');
+                    loading.classList.remove('hidden');
+
+                    setTimeout(() => {
+                        const data = processUniversalData(text);
+                        
+                        const manualSales = document.getElementById('manualSales').value;
+                        const manualMonth = document.getElementById('manualMonth').value;
+                        
+                        if (manualSales) {
+                            data.metrics.sales = manualSales;
+                            data.metrics.salesMonth = manualMonth ? manualMonth : 'último mês';
+                        }
+
+                        const strategy = generateStrategy(data);
+
+                        // Preenche a Interface
+                        document.getElementById('outName').innerText = data.name;
+                        document.getElementById('outCompany').innerText = data.company;
+                        document.getElementById('outCS').innerHTML = `<i class="fa-solid fa-headset"></i> ${data.cs}`;
+
+                        document.getElementById('outAge').innerText = data.age > 0 ? `${data.age} dias` : 'Não detectado';
+                        document.getElementById('outInactive').innerText = data.inactiveDays > 0 ? `${data.inactiveDays} dias` : '0 dias';
+                        document.getElementById('outStageStatus').innerText = strategy.stageStatus;
+
+                        document.getElementById('outSales').innerText = data.metrics.sales ? (data.metrics.salesMonth ? `${data.metrics.sales} (${data.metrics.salesMonth})` : data.metrics.sales) : '-';
+                        document.getElementById('outLeads').innerText = data.metrics.leads || '-';
+                        document.getElementById('outStock').innerText = data.metrics.stock || '-';
+                        document.getElementById('outTraffic').innerText = data.metrics.traffic ? `R$ ${data.metrics.traffic}` : '-';
+
+                        const furosDiv = document.getElementById('outFuros');
+                        furosDiv.innerHTML = '';
+                        if (data.missingData && data.missingData.length > 0) {
+                            data.missingData.forEach(f => {
+                                furosDiv.innerHTML += `<p class="text-amber-700 bg-amber-50 p-2 rounded border border-amber-200 mt-2"><i class="fa-solid fa-triangle-exclamation"></i> ${f}</p>`;
+                            });
+                        } else {
+                            furosDiv.innerHTML = `<p class="text-emerald-700 bg-emerald-50 p-2 rounded border border-emerald-200 mt-2"><i class="fa-solid fa-check"></i> Dados em dia</p>`;
+                        }
+
+                        const upBadge = document.getElementById('badgeUpsell');
+                        upBadge.innerText = `Upsell: ${strategy.upsell.status}`;
+                        upBadge.className = `flex-1 md:flex-none text-center px-3 py-2 rounded-lg border text-xs font-bold uppercase tracking-wider bg-${strategy.upsell.color}-50 text-${strategy.upsell.color}-700 border-${strategy.upsell.color}-200`;
+
+                        const crossBadge = document.getElementById('badgeCrosssell');
+                        crossBadge.innerText = `Cross-sell: ${strategy.crosssell.status}`;
+                        crossBadge.className = `flex-1 md:flex-none text-center px-3 py-2 rounded-lg border text-xs font-bold uppercase tracking-wider bg-${strategy.crosssell.color}-50 text-${strategy.crosssell.color}-700 border-${strategy.crosssell.color}-200`;
+
+                        const healthBadge = document.getElementById('badgeHealth');
+                        healthBadge.innerText = strategy.health.badge;
+                        healthBadge.className = `text-[10px] px-2 py-1 rounded-full font-bold uppercase tracking-wide bg-${strategy.health.color}-100 text-${strategy.health.color}-700`;
+                        document.getElementById('outSentiment').innerHTML = strategy.health.text;
+
+                        document.getElementById('outCSFeedback').innerHTML = strategy.csFeedback;
+                        document.getElementById('outScript').value = strategy.script;
+
+                        loading.classList.add('hidden');
+                        const dash = document.getElementById('dashboard');
+                        dash.style.display = 'flex';
+                        dash.classList.add('fade-in');
+                        dash.classList.add('opacity-100');
+                    }, 1000);
+                });
+            }
+
+            const btnCopy = document.getElementById('btnCopy');
+            if (btnCopy) {
+                btnCopy.addEventListener('click', function() {
+                    const scriptArea = document.getElementById('outScript');
+                    scriptArea.select();
+                    document.execCommand('copy');
+                    this.innerHTML = '<i class="fa-solid fa-check"></i> Copiado!';
+                    this.classList.replace('bg-slate-700', 'bg-emerald-600');
+                    setTimeout(() => {
+                        this.innerHTML = '<i class="fa-regular fa-copy"></i> Copiar';
+                        this.classList.replace('bg-emerald-600', 'bg-slate-700');
+                    }, 2000);
+                });
+            }
         };
     </script>
 </body>
