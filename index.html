@@ -79,6 +79,16 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         .spinner { border: 3px solid rgba(255, 107, 0, 0.1); border-left-color: #FF6B00; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .gradient-text-desc {
+            background: linear-gradient(90deg, #3b82f6 0%, #ef4444 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-bg-desc { background: linear-gradient(135deg, #eff6ff 0%, #fef2f2 100%); }
+        .mission-check:checked + div { background-color: #dcfce7; border-color: #22c55e; }
+        .mission-check:checked + div .status-icon { color: #22c55e; transform: scale(1.1); }
+        .mission-check:checked + div .status-icon::before { content: "\f06d"; }
     </style>
 </head>
 <body class="bg-[#11131a] flex h-screen overflow-hidden antialiased selection:bg-brand-orange selection:text-white">
@@ -121,6 +131,11 @@
             <button onclick="switchAppView('motor')" id="link-motor" class="sidebar-link w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all text-gray-400 hover:bg-gray-800 hover:text-white group">
                 <i class="fa-solid fa-microchip text-lg group-hover:scale-110 transition-transform"></i>
                 Motor I.A. Receita
+            </button>
+            
+            <button onclick="switchAppView('descongelamento')" id="link-descongelamento" class="sidebar-link w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all text-gray-400 hover:bg-gray-800 hover:text-white group">
+                <i class="fa-solid fa-snowflake text-lg group-hover:scale-110 transition-transform text-blue-400"></i>
+                Op. Descongelamento
             </button>
             
             <p class="px-3 text-xs font-bold text-gray-500 uppercase tracking-wider mt-6 mb-2">Documentação</p>
@@ -909,187 +924,187 @@
             <!-- APP 4: MOTOR I.A. DE RECEITA               -->
             <!-- ========================================== -->
             <div id="view-motor" class="view-section w-full min-h-full flex flex-col font-sans text-slate-800 bg-slate-50 hidden">
-                <header class="bg-slate-900 text-white p-3 md:p-4 shadow-lg flex justify-between items-center shrink-0 z-10">
-                    <div class="flex items-center gap-3">
-                        <div class="bg-brand-orange p-2 rounded-lg shadow-inner">
-                            <i class="fa-solid fa-microchip"></i>
+                        <div class="flex items-center justify-between mb-3 border-b border-orange-100 pb-3">
+                            <h3 class="text-xs font-bold text-brand-dark uppercase tracking-wider flex items-center gap-2">
+                                <i class="fa-solid fa-user-tie"></i> Análise de Relacionamento (Navegador)
+                            </h3>
                         </div>
-                        <div>
-                            <h1 class="text-lg md:text-xl font-bold tracking-wide leading-none">G30 I.A. <span class="text-brand-light font-light hidden md:inline">| Cérebro de Receita</span></h1>
-                            <p class="text-[10px] text-slate-400 uppercase tracking-widest mt-1">Full-Text Context Engine v4.0</p>
-                        </div>
+                        <p id="outCSFeedback" class="text-sm text-orange-900 leading-relaxed font-medium">Analisando...</p>
                     </div>
-                    <div class="text-xs text-slate-300 flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700">
-                        <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]"></div>
-                        Online
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col flex-1 mt-2">
+                    <div class="bg-slate-900 text-white p-3 md:p-4 flex justify-between items-center rounded-t-2xl">
+                        <h3 class="text-sm font-bold flex items-center gap-2 uppercase tracking-wide">
+                            <i class="fa-solid fa-comment-dots text-brand-orange"></i> Script Estratégico (Ação)
+                        </h3>
+                        <button id="btnCopy" class="text-xs bg-slate-700 hover:bg-slate-600 text-white font-bold py-1.5 px-3 rounded-lg transition-all flex items-center gap-2">
+                            <i class="fa-regular fa-copy"></i> Copiar
+                        </button>
+                    </div>
+                    <textarea id="outScript" class="w-full p-5 text-sm md:text-base text-slate-700 resize-none outline-none border-none focus:ring-0 leading-relaxed font-serif bg-orange-50/30 rounded-b-2xl" style="min-height: 240px;"></textarea>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+            <div id="view-descongelamento" class="view-section w-full min-h-full font-sans text-slate-800 bg-slate-50 hidden overflow-x-hidden">
+                <!-- HERO SECTION -->
+                <header class="hero-bg-desc py-12 md:py-16 px-6 border-b border-slate-200">
+                    <div class="max-w-5xl mx-auto text-center">
+                        <div class="inline-flex items-center justify-center space-x-3 mb-6 bg-white px-4 py-2 rounded-full shadow-sm text-sm font-semibold text-slate-600">
+                            <i class="fa-solid fa-snowflake text-blue-500"></i>
+                            <span>Missão da Semana</span>
+                            <i class="fa-solid fa-fire text-red-500"></i>
+                        </div>
+                        <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight mb-4 text-slate-900">
+                            Operação <span class="gradient-text-desc">Descongelamento</span>
+                        </h1>
+                        <p class="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto">
+                            Nossa meta é aquecer 100% da carteira estagnada em apenas 5 dias. 
+                            Retomar relacionamentos, destravar gargalos e acelerar resultados.
+                        </p>
                     </div>
                 </header>
 
-                <div class="flex-1 flex flex-col lg:flex-row relative">
-                    <section class="w-full lg:w-4/12 bg-white border-r border-slate-200 flex flex-col p-4 md:p-5 shadow-xl z-20">
-                        <div class="mb-4">
-                            <h2 class="text-sm font-bold text-slate-800 flex items-center gap-2 uppercase tracking-wide">
-                                <i class="fa-solid fa-database text-brand-orange"></i> Entrada de Dados Brutos
-                            </h2>
-                            <p class="text-xs text-slate-500 mt-2 leading-relaxed">O motor ignora colunas. Ele lê o texto inteiro como um humano, caça padrões, cruza os dias de inatividade e estrutura a Arquitetura de Receita.</p>
+                <!-- MAIN CONTENT -->
+                <div class="max-w-5xl mx-auto px-4 md:px-6 py-8 md:py-12 space-y-12 md:space-y-16">
+
+                    <!-- CANVAS / REGRAS -->
+                    <section id="regras">
+                        <div class="flex items-center space-x-3 mb-6">
+                            <i class="fa-solid fa-chess-knight text-2xl text-indigo-600"></i>
+                            <h2 class="text-2xl md:text-3xl font-bold">As Regras do Jogo</h2>
                         </div>
-                        
-                        <div class="mb-4 bg-orange-50/60 p-3.5 rounded-xl border border-orange-200 shadow-sm">
-                            <h3 class="text-[10px] font-bold text-orange-800 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                                <i class="fa-solid fa-check-double"></i> Double Check (Forçar Ancoragem)
-                            </h3>
-                            <div class="flex gap-3">
-                                <div class="flex-1">
-                                    <label class="text-[9px] text-slate-500 font-bold uppercase">Vendas (Opcional)</label>
-                                    <input type="number" id="manualSales" class="w-full text-xs p-2.5 mt-1 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none shadow-inner" placeholder="Ex: 42">
+                        <div class="grid md:grid-cols-3 gap-6">
+                            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                                <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-xl mb-4">
+                                    <i class="fa-solid fa-bullseye"></i>
                                 </div>
-                                <div class="flex-1">
-                                    <label class="text-[9px] text-slate-500 font-bold uppercase">Mês Ref.</label>
-                                    <input type="text" id="manualMonth" class="w-full text-xs p-2.5 mt-1 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none shadow-inner" placeholder="Ex: JAN">
-                                </div>
+                                <h3 class="text-lg font-bold mb-2">O Objetivo</h3>
+                                <p class="text-slate-600 text-sm">Contatar todos os clientes da base até sexta-feira às 17h. O foco principal é destravar contas que não mudam de etapa no funil há muito tempo.</p>
                             </div>
-                        </div>
-                        
-                        <textarea id="rawInput" class="flex-1 min-h-[250px] w-full border border-slate-300 rounded-xl p-4 text-xs focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none resize-none bg-slate-50 font-mono text-slate-600 shadow-inner" placeholder="Dê Ctrl+A e Ctrl+C no Pipedrive inteiro e cole aqui..."></textarea>
-                        
-                        <button id="btnProcess" class="mt-4 bg-brand-orange hover:bg-brand-dark text-white font-bold py-3.5 px-4 rounded-xl shadow-md shadow-brand-orange/30 transition-all flex justify-center items-center gap-2 w-full uppercase text-sm tracking-wide">
-                            <i class="fa-solid fa-bolt-lightning text-yellow-300"></i> Processar Inteligência
-                        </button>
-                    </section>
-
-                    <section class="w-full lg:w-8/12 flex flex-col p-4 md:p-6 relative bg-slate-100/50">
-                        <div id="emptyState" class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 z-10">
-                            <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 flex flex-col items-center text-center max-w-md mx-4">
-                                <div class="bg-slate-50 p-5 rounded-full mb-4 border border-slate-100">
-                                    <i class="fa-solid fa-radar text-4xl text-brand-light"></i>
+                            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                                <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center text-xl mb-4">
+                                    <i class="fa-solid fa-sort-amount-down"></i>
                                 </div>
-                                <p class="text-lg font-bold text-slate-700">Aguardando Varredura</p>
-                                <p class="text-sm mt-2 text-slate-500 leading-relaxed">Cole os dados para extrairmos: Sentimento, Propensão a Upsell, Dias na Etapa, Relacionamento Navegador e Estratégia.</p>
+                                <h3 class="text-lg font-bold mb-2">A Prioridade</h3>
+                                <p class="text-slate-600 text-sm">Não precisa escolher para quem ligar. O tabuleiro já ordenou os casos mais críticos (mais dias estagnados) para o início da semana (Segunda/Terça).</p>
                             </div>
-                        </div>
-
-                        <div id="loadingState" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-100/90 backdrop-blur-sm z-20 hidden">
-                            <div class="bg-white p-6 rounded-2xl shadow-xl border border-slate-200 flex flex-col items-center mx-4">
-                                <div class="spinner mb-4"></div>
-                                <p class="font-bold text-slate-700">Analisando contexto completo...</p>
-                                <p class="text-xs text-slate-400 mt-2 font-mono">Processando Arquitetura de Receita e Sentimentos...</p>
-                            </div>
-                        </div>
-
-                        <div id="dashboard" class="hidden flex-col gap-4 opacity-0 z-30 pb-10">
-                            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 lg:p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-12 h-12 bg-orange-100 text-brand-orange rounded-xl flex items-center justify-center text-xl shadow-inner border border-orange-200">
-                                        <i class="fa-solid fa-store"></i>
-                                    </div>
-                                    <div>
-                                        <div class="flex items-center gap-2">
-                                            <h2 id="outCompany" class="text-xl font-bold text-slate-800 leading-tight">Empresa</h2>
-                                            <span id="outCS" class="text-[10px] bg-slate-100 text-slate-600 px-2 py-1 rounded-md border border-slate-200 font-medium flex items-center gap-1">
-                                                <i class="fa-solid fa-headset"></i> Navegador
-                                            </span>
-                                        </div>
-                                        <p id="outName" class="text-sm text-slate-500 font-medium mt-0.5">Nome do Contato</p>
-                                    </div>
+                            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                                <div class="w-12 h-12 bg-green-100 text-green-600 rounded-xl flex items-center justify-center text-xl mb-4">
+                                    <i class="fa-solid fa-trophy"></i>
                                 </div>
-
-                                <div class="flex gap-2 w-full md:w-auto">
-                                    <div id="badgeUpsell" class="flex-1 md:flex-none text-center px-3 py-2 rounded-lg border text-xs font-bold uppercase tracking-wider">
-                                        Upsell: Calculando
-                                    </div>
-                                    <div id="badgeCrosssell" class="flex-1 md:flex-none text-center px-3 py-2 rounded-lg border text-xs font-bold uppercase tracking-wider">
-                                        Cross-sell: Calculando
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div class="col-span-1 md:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200 p-4 lg:p-5">
-                                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-                                        <i class="fa-solid fa-layer-group"></i> Arquitetura de Receita & Estágio
-                                    </h3>
-                                    <div class="grid grid-cols-3 gap-3">
-                                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 flex flex-col justify-between">
-                                            <p class="text-[10px] font-bold text-slate-500 uppercase">Idade do Negócio</p>
-                                            <p id="outAge" class="text-lg font-bold text-slate-800 mt-1">-</p>
-                                        </div>
-                                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 flex flex-col justify-between">
-                                            <p class="text-[10px] font-bold text-slate-500 uppercase">Dias Inativo</p>
-                                            <p id="outInactive" class="text-lg font-bold text-slate-800 mt-1">-</p>
-                                        </div>
-                                        <div class="bg-orange-50 p-3 rounded-xl border border-orange-100 flex flex-col justify-between">
-                                            <p class="text-[10px] font-bold text-brand-orange uppercase">Status na Etapa</p>
-                                            <p id="outStageStatus" class="text-sm font-bold text-brand-dark mt-1 leading-tight">-</p>
-                                        </div>
-                                    </div>
-
-                                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mt-4 mb-3 flex items-center gap-2">
-                                        <i class="fa-solid fa-chart-pie"></i> Desempenho e Tração
-                                    </h3>
-                                    <div class="grid grid-cols-4 gap-2">
-                                        <div class="bg-slate-50 p-2 rounded-xl border border-slate-100 flex flex-col">
-                                            <p class="text-[9px] font-bold text-slate-500 uppercase">Vendas</p>
-                                            <p id="outSales" class="text-xs font-bold text-slate-800 mt-1">-</p>
-                                        </div>
-                                        <div class="bg-slate-50 p-2 rounded-xl border border-slate-100 flex flex-col">
-                                            <p class="text-[9px] font-bold text-slate-500 uppercase">Leads</p>
-                                            <p id="outLeads" class="text-xs font-bold text-slate-800 mt-1">-</p>
-                                        </div>
-                                        <div class="bg-slate-50 p-2 rounded-xl border border-slate-100 flex flex-col">
-                                            <p class="text-[9px] font-bold text-slate-500 uppercase">Estoque</p>
-                                            <p id="outStock" class="text-xs font-bold text-slate-800 mt-1">-</p>
-                                        </div>
-                                        <div class="bg-slate-50 p-2 rounded-xl border border-slate-100 flex flex-col">
-                                            <p class="text-[9px] font-bold text-slate-500 uppercase">Tráfego</p>
-                                            <p id="outTraffic" class="text-xs font-bold text-slate-800 mt-1">-</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-span-1 bg-white rounded-2xl shadow-sm border border-slate-200 p-4 lg:p-5 flex flex-col">
-                                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-                                        <i class="fa-solid fa-circle-exclamation"></i> Auditoria de Dados
-                                    </h3>
-                                    <div id="outFuros" class="text-xs space-y-2 font-medium overflow-y-auto max-h-32">
-                                        <!-- Injetado via JS -->
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 lg:p-5 flex flex-col">
-                                    <div class="flex items-center justify-between mb-3 border-b border-slate-100 pb-3">
-                                        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
-                                            <i class="fa-solid fa-heart-pulse"></i> Sentimento do Cliente
-                                        </h3>
-                                        <span id="badgeHealth" class="text-[10px] px-2 py-1 rounded-full font-bold uppercase tracking-wide">Status</span>
-                                    </div>
-                                    <p id="outSentiment" class="text-sm text-slate-600 leading-relaxed font-medium">Analisando...</p>
-                                </div>
-
-                                <div class="bg-indigo-50 rounded-2xl shadow-sm border border-indigo-100 p-4 lg:p-5 flex flex-col">
-                                    <div class="flex items-center justify-between mb-3 border-b border-indigo-100 pb-3">
-                                        <h3 class="text-xs font-bold text-indigo-700 uppercase tracking-wider flex items-center gap-2">
-                                            <i class="fa-solid fa-user-tie"></i> Análise de Relacionamento
-                                        </h3>
-                                    </div>
-                                    <p id="outCSFeedback" class="text-sm text-indigo-900 leading-relaxed font-medium">Analisando...</p>
-                                </div>
-                            </div>
-
-                            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col flex-1 mt-2">
-                                <div class="bg-slate-900 text-white p-3 md:p-4 flex justify-between items-center rounded-t-2xl">
-                                    <h3 class="text-sm font-bold flex items-center gap-2 uppercase tracking-wide">
-                                        <i class="fa-solid fa-comment-dots text-yellow-400"></i> Script Estratégico (Ação)
-                                    </h3>
-                                    <button id="btnCopy" class="text-xs bg-slate-700 hover:bg-slate-600 text-white font-bold py-1.5 px-3 rounded-lg transition-all flex items-center gap-2">
-                                        <i class="fa-regular fa-copy"></i> Copiar
-                                    </button>
-                                </div>
-                                <textarea id="outScript" class="w-full p-5 text-sm md:text-base text-slate-700 resize-none outline-none border-none focus:ring-0 leading-relaxed font-serif bg-yellow-50/30 rounded-b-2xl" style="min-height: 240px;"></textarea>
+                                <h3 class="text-lg font-bold mb-2">A Dinâmica</h3>
+                                <p class="text-slate-600 text-sm">Cada Navegador tem sua meta diária no Tabuleiro abaixo. Ao falar com o cliente, marque o checkbox. Transforme as linhas de Azul (Gelo) para Verde (Fogo)!</p>
                             </div>
                         </div>
                     </section>
+
+                    <!-- SCRIPTS DE ABORDAGEM -->
+                    <section id="scripts" class="bg-slate-900 rounded-3xl p-6 md:p-8 text-white shadow-lg overflow-hidden">
+                        <div class="flex items-center space-x-3 mb-6">
+                            <i class="fa-solid fa-comments text-2xl text-blue-400"></i>
+                            <h2 class="text-2xl md:text-3xl font-bold">Arsenal de Abordagem</h2>
+                        </div>
+                        <p class="text-slate-400 mb-8 text-sm md:text-base">O objetivo não é cobrar, é demonstrar parceria. Use a métrica de "Dias na Etapa" como argumento transparente. Adapte para o seu tom de voz.</p>
+                        
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <!-- Script 1 -->
+                            <div class="bg-slate-800 p-5 md:p-6 rounded-2xl border border-slate-700">
+                                <div class="flex justify-between items-start mb-4">
+                                    <h3 class="font-bold text-lg text-blue-400"><i class="fa-solid fa-phone mr-2"></i> 1. Ligação Direta</h3>
+                                    <span class="text-xs font-semibold bg-slate-700 px-2 py-1 rounded text-slate-300">Segunda & Terça</span>
+                                </div>
+                                <p class="text-sm text-slate-300 italic mb-4">"Olá, <strong>[Nome]</strong>, tudo bem? Aqui é o(a) <strong>[Seu Nome]</strong> da G30..."</p>
+                                <p class="text-sm text-slate-300 mb-4">"Estou te ligando rapidinho hoje por um motivo bem transparente: estava revisando a evolução da nossa parceria e notei que o nosso projeto acabou ficando parado na etapa de <strong>[Etapa Atual]</strong> já faz uns <strong>[X] dias</strong>."</p>
+                                <p class="text-sm text-slate-300">"Como o meu papel aqui é garantir que a gente avance, quis dar essa ligadinha para entender: o que está travando nosso próximo passo aí do seu lado? É falta de braço, tempo, ou alguma dúvida pendente? Como assumo essa bucha daqui pra te ajudar?"</p>
+                            </div>
+
+                            <!-- Script 2 & 3 -->
+                            <div class="space-y-6">
+                                <div class="bg-slate-800 p-5 md:p-6 rounded-2xl border border-slate-700">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="font-bold text-lg text-green-400"><i class="fa-brands fa-whatsapp mr-2"></i> 2. Texto WhatsApp</h3>
+                                        <span class="text-xs font-semibold bg-slate-700 px-2 py-1 rounded text-slate-300">Quarta a Sexta</span>
+                                    </div>
+                                    <p class="text-sm text-slate-300">"Fala <strong>[Nome]</strong>, tudo bem? Sei que a correria na loja deve estar grande nas últimas semanas! 🏃‍♂️💨 Vi aqui que estamos na etapa de <strong>[Etapa]</strong> há <strong>[X] dias</strong>. Tem algo que eu consiga fazer aqui do meu lado pra gente destravar esse próximo passo ainda essa semana? Me avisa como posso ajudar!"</p>
+                                </div>
+
+                                <div class="bg-slate-800 p-5 md:p-6 rounded-2xl border border-slate-700">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="font-bold text-lg text-purple-400"><i class="fa-solid fa-microphone mr-2"></i> 3. Áudio (Quebra-Gelo)</h3>
+                                        <span class="text-xs font-semibold bg-slate-700 px-2 py-1 rounded text-slate-300">Se não responder</span>
+                                    </div>
+                                    <p class="text-sm text-slate-300">"Oi <strong>[Nome]</strong>, passando rapidinho por áudio pra não tomar seu tempo. Imagino que o pátio aí esteja corrido, mas não quero deixar a nossa frente esfriar. Quando tiver um respiro de 5 minutinhos hoje, me dá um toque aqui só pra gente alinhar como eu te ajudo a avançar essa etapa. Abraço!"</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- TABULEIRO GAMIFICADO -->
+                    <section id="tabuleiro" class="pt-4 md:pt-8">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between mb-8">
+                            <div>
+                                <h2 class="text-2xl md:text-3xl font-bold flex items-center">
+                                    <i class="fa-solid fa-table-list text-2xl text-blue-600 mr-3"></i> 
+                                    O Tabuleiro
+                                </h2>
+                                <p class="text-slate-500 mt-1">Filtre seu nome, cumpra as missões diárias e esquente a carteira.</p>
+                            </div>
+                            
+                            <!-- Filtro CS -->
+                            <div class="mt-4 md:mt-0 bg-white p-2 rounded-xl shadow-sm border border-slate-200">
+                                <label for="csFilter" class="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Filtre seu Perfil:</label>
+                                <select id="csFilter" class="w-full md:w-64 mt-1 bg-transparent border-none text-slate-800 font-semibold focus:ring-0 cursor-pointer outline-none">
+                                    <option value="todos">Todos os Navegadores</option>
+                                    <!-- Options serão preenchidas por JS -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Progresso -->
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div>
+                                <span class="text-sm font-semibold text-slate-600">Progresso da Semana:</span>
+                                <span id="progressText" class="text-lg font-bold text-slate-900 ml-2">0/0 contatos</span>
+                            </div>
+                            <div class="w-full md:w-1/2 bg-slate-100 rounded-full h-4 overflow-hidden">
+                                <div id="progressBar" class="bg-gradient-to-r from-blue-400 to-red-500 h-4 rounded-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Botão Importar CSV (Fallback/Atualização) -->
+                        <div class="mb-6 bg-indigo-50 border border-indigo-100 p-4 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div class="flex items-center">
+                                <i class="fa-solid fa-file-csv text-indigo-500 text-2xl mr-4"></i>
+                                <div>
+                                    <h4 class="font-bold text-indigo-900 text-sm">Atualizar Dados (Opcional)</h4>
+                                    <p class="text-xs text-indigo-700">Se tiver um arquivo atualizado, faça o upload aqui para atualizar o tabuleiro.</p>
+                                </div>
+                            </div>
+                            <input type="file" id="csvFileInput" accept=".csv" class="text-sm text-slate-500 w-full md:w-auto file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-100 file:text-indigo-700 hover:file:bg-indigo-200 transition-all cursor-pointer">
+                        </div>
+
+                        <!-- Lista de Clientes -->
+                        <div id="clientesContainer" class="space-y-4">
+                            <!-- Cards serão injetados aqui -->
+                            <div class="text-center py-12 text-slate-400">
+                                <i class="fa-solid fa-spinner fa-spin text-3xl mb-3"></i>
+                                <p>Carregando carteira de clientes...</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- FOOTER / NEXT STEPS -->
+                    <footer class="border-t border-slate-200 pt-8 pb-12 mt-16 text-center">
+                        <div class="inline-block bg-slate-100 text-slate-500 px-4 py-2 rounded-full text-sm font-semibold mb-4">
+                            <i class="fa-solid fa-rocket mr-2"></i> Próximos Passos
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-800">Checklists de Passagem de Etapa</h3>
+                        <p class="text-slate-500 text-sm max-w-lg mx-auto mt-2">Em breve, teremos regras claras e automatizadas para mudança de etapas (Ex: Marketing -> Comercial). O foco de hoje é limpar a casa. Bom trabalho!</p>
+                    </footer>
                 </div>
             </div>
 
@@ -1567,7 +1582,11 @@
             selectGargalo('conversao');
             // Garantir que a view correta está mostrando (default: home)
             switchAppView('home');
+            
+            // Inicializar Tabuleiro Descongelamento
+            initDescongelamento();
 
+            // Lógica do Motor IA
             const btnProcess = document.getElementById('btnProcess');
             if (btnProcess) {
                 btnProcess.addEventListener('click', () => {
@@ -1657,6 +1676,208 @@
                 });
             }
         };
+
+        let rawDataDesc = [
+            { "CS": "Ana Carolina Medeiros", "Dia": "Segunda-feira", "Cliente": "SOFIX CAR COMERCIO DE VEICULOS LTDA", "Dias na Etapa": "180", "Ultima Atividade": "2026-05-05", "Etapa": "Marketing", "Link CRM": "https://gwebcarconsultoriaemarketingautomotivo.pipedrive.com/deal/46244", "id": "46244" },
+            { "CS": "Ana Carolina Medeiros", "Dia": "Segunda-feira", "Cliente": "Gomes veículos", "Dias na Etapa": "252", "Ultima Atividade": "2026-05-21", "Etapa": "Expansão", "Link CRM": "https://gwebcarconsultoriaemarketingautomotivo.pipedrive.com/deal/11790", "id": "11790" },
+            { "CS": "Beatriz Santos", "Dia": "Segunda-feira", "Cliente": "RAFAEL GONCALVES LOPES", "Dias na Etapa": "Sem Registro", "Ultima Atividade": "Sem Contato", "Etapa": "Comercial", "Link CRM": "https://gwebcarconsultoriaemarketingautomotivo.pipedrive.com/deal/47363", "id": "47363" },
+            { "CS": "Beatriz Santos", "Dia": "Segunda-feira", "Cliente": "J J F FERREIRA COMERCIO", "Dias na Etapa": "140", "Ultima Atividade": "2026-05-22", "Etapa": "Marketing", "Link CRM": "https://gwebcarconsultoriaemarketingautomotivo.pipedrive.com/deal/32688", "id": "32688" },
+            { "CS": "Giovana Matos", "Dia": "Segunda-feira", "Cliente": "Effect Motors", "Dias na Etapa": "60", "Ultima Atividade": "2026-05-26", "Etapa": "Marketing", "Link CRM": "https://gwebcarconsultoriaemarketingautomotivo.pipedrive.com/deal/34682", "id": "34682" },
+            { "CS": "Thiago Mendes", "Dia": "Segunda-feira", "Cliente": "FLCP COMERCIO", "Dias na Etapa": "200", "Ultima Atividade": "2026-05-14", "Etapa": "Marketing", "Link CRM": "https://gwebcarconsultoriaemarketingautomotivo.pipedrive.com/deal/47101", "id": "47101" },
+            { "CS": "Luigi", "Dia": "Segunda-feira", "Cliente": "RIOPRECAR COMERCIO", "Dias na Etapa": "90", "Ultima Atividade": "2026-06-22", "Etapa": "Marketing", "Link CRM": "https://gwebcarconsultoriaemarketingautomotivo.pipedrive.com/deal/48439", "id": "48439" }
+        ];
+
+        let allDealsDesc = [...rawDataDesc];
+
+        function initDescongelamento() {
+            populateCSFilterDesc();
+            renderListDesc();
+            updateProgressDesc();
+
+            document.getElementById('csFilter').addEventListener('change', () => {
+                renderListDesc();
+                updateProgressDesc();
+            });
+
+            document.getElementById('csvFileInput').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const text = e.target.result;
+                    const parsedData = parseCSVDesc(text);
+                    if(parsedData.length > 0) {
+                        allDealsDesc = parsedData;
+                        populateCSFilterDesc();
+                        renderListDesc();
+                        updateProgressDesc();
+                        alert("Dados importados com sucesso! O tabuleiro foi atualizado.");
+                    } else {
+                        alert("Erro ao ler o arquivo CSV. Verifique se é o arquivo correto.");
+                    }
+                };
+                reader.readAsText(file);
+            });
+        }
+
+        function populateCSFilterDesc() {
+            const csFilter = document.getElementById('csFilter');
+            const css = [...new Set(allDealsDesc.map(d => d.CS))].sort();
+            csFilter.innerHTML = '<option value="todos">Todos os Navegadores</option>';
+            css.forEach(cs => {
+                csFilter.innerHTML += `<option value="${cs}">${cs}</option>`;
+            });
+        }
+
+        function renderListDesc() {
+            const csFilter = document.getElementById('csFilter');
+            const clientesContainer = document.getElementById('clientesContainer');
+            const selectedCS = csFilter.value;
+            
+            let filtered = allDealsDesc;
+            if (selectedCS !== 'todos') {
+                filtered = allDealsDesc.filter(d => d.CS === selectedCS);
+            }
+
+            if (filtered.length === 0) {
+                clientesContainer.innerHTML = `<div class="text-center py-8 text-slate-400">Nenhum cliente encontrado.</div>`;
+                return;
+            }
+
+            clientesContainer.innerHTML = '';
+            
+            const dias = ['Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira'];
+            
+            dias.forEach(dia => {
+                const dealsDoDia = filtered.filter(d => d.Dia === dia);
+                if(dealsDoDia.length > 0){
+                    
+                    const dayHeader = document.createElement('div');
+                    dayHeader.className = 'mt-8 mb-4 flex items-center';
+                    
+                    let dayColor = "text-blue-500";
+                    let iceIcon = '<i class="fa-solid fa-icicles mr-2"></i>';
+                    if(dia === 'Sexta-feira') { dayColor = "text-green-500"; iceIcon = '<i class="fa-solid fa-leaf mr-2"></i>'; }
+                    if(dia === 'Quinta-feira') { dayColor = "text-teal-500"; iceIcon = '<i class="fa-solid fa-droplet mr-2"></i>'; }
+                    
+                    dayHeader.innerHTML = `<h3 class="text-xl font-bold ${dayColor} border-b-2 border-slate-200 pb-2 w-full uppercase tracking-wide text-sm">${iceIcon} ${dia} <span class="text-slate-400 text-xs ml-2 normal-case font-normal">(${dealsDoDia.length} contatos)</span></h3>`;
+                    clientesContainer.appendChild(dayHeader);
+
+                    dealsDoDia.forEach(deal => {
+                        const isChecked = localStorage.getItem(`deal_${deal.id}`) === 'true';
+                        
+                        const card = document.createElement('label');
+                        card.className = "cursor-pointer block relative";
+                        
+                        const dealId = deal.id || Math.random().toString(36).substr(2, 9);
+                        
+                        card.innerHTML = `
+                            <input type="checkbox" class="mission-check sr-only" data-id="${dealId}" ${isChecked ? 'checked' : ''} onchange="window.toggleDealDesc('${dealId}', this.checked)">
+                            <div class="bg-white p-5 rounded-2xl shadow-sm border ${isChecked ? 'border-green-500 bg-green-50' : 'border-blue-100 bg-blue-50/30'} flex flex-col md:flex-row md:items-center justify-between transition-colors hover:shadow-md">
+                                
+                                <div class="flex items-start md:items-center space-x-4">
+                                    <div class="w-10 h-10 rounded-full ${isChecked ? 'bg-green-200 text-green-600' : 'bg-blue-100 text-blue-400'} flex items-center justify-center flex-shrink-0 transition-colors">
+                                        <i class="fa-solid fa-snowflake status-icon text-lg transition-transform"></i>
+                                    </div>
+                                    
+                                    <div>
+                                        <h4 class="font-bold text-slate-800 text-base md:text-lg leading-tight break-words pr-2">${deal.Cliente}</h4>
+                                        <div class="flex flex-wrap items-center text-xs text-slate-500 mt-1.5 gap-2 md:gap-3">
+                                            <span class="flex items-center text-red-500 font-semibold bg-red-50 px-2 py-0.5 rounded border border-red-100">
+                                                <i class="fa-regular fa-clock mr-1"></i> ${String(deal['Dias na Etapa'] || deal['Dias_na_Etapa'] || 'Sem Registro').replace(' dias', '')} dias
+                                            </span>
+                                            <span class="flex items-center text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                                                <i class="fa-solid fa-layer-group mr-1 text-slate-400"></i> ${deal.Etapa}
+                                            </span>
+                                            ${selectedCS === 'todos' ? `<span class="flex items-center font-medium"><i class="fa-regular fa-user mr-1 text-slate-400"></i> ${deal.CS}</span>` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4 md:mt-0 flex items-center justify-end space-x-3 w-full md:w-auto pl-14 md:pl-0 shrink-0">
+                                    <a href="${deal['Link CRM']}" target="_blank" onclick="event.stopPropagation();" class="text-sm font-semibold bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-50 transition-colors flex items-center justify-center w-full md:w-auto">
+                                        Abrir CRM <i class="fa-solid fa-arrow-up-right-from-square ml-2 text-xs"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        `;
+                        clientesContainer.appendChild(card);
+                    });
+                }
+            });
+        }
+
+        window.toggleDealDesc = function(id, isChecked) {
+            localStorage.setItem(`deal_${id}`, isChecked);
+            updateProgressDesc();
+        };
+
+        function updateProgressDesc() {
+            const checkboxes = document.querySelectorAll('.mission-check');
+            const progressText = document.getElementById('progressText');
+            const progressBar = document.getElementById('progressBar');
+            
+            if(checkboxes.length === 0) return;
+            
+            const total = checkboxes.length;
+            const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
+            
+            progressText.innerText = `${checked}/${total} contatos`;
+            const percentage = (checked / total) * 100;
+            progressBar.style.width = `${percentage}%`;
+            
+            if(percentage === 100) {
+                progressBar.classList.remove('from-blue-400', 'to-red-500');
+                progressBar.classList.add('bg-green-500');
+            } else {
+                progressBar.classList.add('from-blue-400', 'to-red-500');
+                progressBar.classList.remove('bg-green-500');
+            }
+        }
+
+        function parseCSVDesc(text) {
+            if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+            const lines = text.split(/\r?\n/).filter(l => l.trim() !== '');
+            const headers = lines[0].split(',').map(h => h.trim());
+            const result = [];
+            
+            for(let i = 1; i < lines.length; i++) {
+                const rowText = lines[i];
+                const row = [];
+                let inQuotes = false;
+                let currentVal = '';
+                
+                for (let j = 0; j < rowText.length; j++) {
+                    const char = rowText[j];
+                    if (char === '"') {
+                        inQuotes = !inQuotes;
+                    } else if (char === ',' && !inQuotes) {
+                        row.push(currentVal);
+                        currentVal = '';
+                    } else {
+                        currentVal += char;
+                    }
+                }
+                row.push(currentVal);
+                
+                const obj = {};
+                headers.forEach((header, index) => {
+                    let val = row[index] !== undefined ? row[index].replace(/(^"|"$)/g, '').trim() : '';
+                    obj[header] = val;
+                });
+                
+                if(obj['Link CRM']) {
+                    const parts = obj['Link CRM'].split('/');
+                    obj.id = parts[parts.length - 1];
+                }
+                
+                if(obj.CS && obj.Cliente) { 
+                    result.push(obj);
+                }
+            }
+            return result;
+        }
     </script>
 </body>
 </html>
