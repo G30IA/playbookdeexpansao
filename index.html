@@ -1024,11 +1024,19 @@
 
                                 <div class="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
                                     <!-- Health Score Widget -->
-                                    <div id="healthScoreContainer" class="flex flex-col items-center justify-center px-5 py-2 bg-slate-50 border border-slate-200 rounded-xl shadow-sm w-full sm:w-auto">
-                                        <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Health Score</span>
-                                        <div class="flex items-baseline gap-1">
-                                            <span id="outHealthScore" class="text-3xl font-black leading-none text-slate-800">-</span>
-                                            <span class="text-xs text-slate-400 font-bold">/100</span>
+                                    <div id="healthScoreContainer" class="flex flex-col justify-center px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl shadow-sm w-full sm:w-64 transition-colors">
+                                        <div class="flex justify-between items-center mb-1">
+                                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1"><i class="fa-solid fa-heart-pulse"></i> Health Score</span>
+                                            <div class="flex items-baseline gap-0.5">
+                                                <span id="outHealthScore" class="text-2xl font-black leading-none text-slate-800">-</span>
+                                                <span class="text-[10px] text-slate-400 font-bold">/100</span>
+                                            </div>
+                                        </div>
+                                        <div class="w-full bg-slate-200/60 rounded-full h-1.5 mb-2 overflow-hidden">
+                                            <div id="healthScoreBar" class="bg-slate-400 h-1.5 rounded-full transition-all duration-1000" style="width: 0%"></div>
+                                        </div>
+                                        <div id="outHealthDetails" class="text-[9px] text-slate-500 space-y-0.5 hidden md:block border-t border-slate-200/60 pt-1.5 mt-0.5">
+                                            <!-- Breakdown injetado via JS -->
                                         </div>
                                     </div>
 
@@ -1858,21 +1866,49 @@
 
             // --- CÁLCULO DO HEALTH SCORE (0 a 100) ---
             let score = 100;
-            // Penalidade por Inatividade (Máximo de 30 pontos)
-            if (data.inactiveDays > 7) {
-                score -= Math.min(30, (data.inactiveDays - 7) * 2);
-            }
-            // Penalidade por Furos de Dados (10 pontos por cada métrica faltando)
-            score -= (data.missingData.length * 10);
-            // Bônus/Penalidade por Sentimento
-            score += (data.sentimentScore * 10);
-            // Penalidade por Falhas de Contato
+            let scoreDetails = [];
+            
+            // 1. Penalidade por Falhas de Contato (Impacto Alto)
             if (data.csActions.callsMissed > 0) {
-                score -= (data.csActions.callsMissed * 15);
+                let penalty = data.csActions.callsMissed * 15;
+                score -= penalty;
+                scoreDetails.push(`-${penalty} pts (Tentativas de contato falhas)`);
             }
+            
+            // 2. Penalidade por Inatividade (Máximo de 30 pontos)
+            if (data.inactiveDays > 7) {
+                let penalty = Math.min(30, (data.inactiveDays - 7) * 2);
+                score -= penalty;
+                scoreDetails.push(`-${penalty} pts (Inatividade de ${data.inactiveDays} dias)`);
+            }
+            
+            // 3. Penalidade por Furos de Dados (10 pontos por cada métrica faltando)
+            if (data.missingData.length > 0) {
+                let penalty = data.missingData.length * 10;
+                score -= penalty;
+                scoreDetails.push(`-${penalty} pts (Dados CRM incompletos)`);
+            }
+            
+            // 4. Penalidade por Atrito/Sentimento Negativo
+            if (data.sentimentScore < 0) {
+                let penalty = Math.abs(data.sentimentScore) * 10;
+                score -= penalty;
+                scoreDetails.push(`-${penalty} pts (Atrito/Sentimento negativo)`);
+            }
+            
+            // 5. Bônus de Recuperação (Máximo de 10 pts, nunca ultrapassa 100)
+            if (data.sentimentScore > 0 && score < 100) {
+                let bonus = Math.min(data.sentimentScore * 5, 10); // Recupera no máximo 10 pontos
+                if (score + bonus > 100) bonus = 100 - score; // Trava limite em 100
+                score += bonus;
+                if (bonus > 0) {
+                    scoreDetails.push(`+${bonus} pts (Bônus por engajamento/sentimento)`);
+                }
+            }
+            
             // Normalizar limite entre 0 e 100
             strategy.healthScore = Math.max(0, Math.min(100, score));
-
+            strategy.scoreDetails = scoreDetails;
 
             const isStalled = data.inactiveDays > 7;
             const isOldDeal = data.age > 90;
@@ -1948,7 +1984,7 @@
             // Inicializar seleção do Guia
             selectGargalo('conversao');
             // Garantir que a view correta está mostrando (default: home)
-            switchAppView('home');
+            switchAppView('funil');
             
             // Inicializar Tabuleiro Descongelamento
             initDescongelamento();
@@ -2015,23 +2051,36 @@
                         const scoreEl = document.getElementById('outHealthScore');
                         const scoreContainer = document.getElementById('healthScoreContainer');
                         const scoreLabel = scoreContainer.querySelector('span');
+                        const scoreBar = document.getElementById('healthScoreBar');
+                        const scoreDetailsDiv = document.getElementById('outHealthDetails');
                         
                         scoreEl.innerText = strategy.healthScore;
-                        scoreContainer.className = 'flex flex-col items-center justify-center px-5 py-2 border rounded-xl shadow-sm w-full sm:w-auto transition-colors ';
-                        scoreLabel.className = 'text-[9px] font-bold uppercase tracking-widest mb-1 ';
+                        scoreBar.style.width = strategy.healthScore + '%';
+                        
+                        scoreContainer.className = 'flex flex-col justify-center px-4 py-3 border rounded-xl shadow-sm w-full sm:w-64 transition-colors ';
+                        scoreLabel.className = 'text-[10px] font-bold uppercase tracking-widest flex items-center gap-1 mb-1 ';
 
                         if (strategy.healthScore >= 80) {
                             scoreContainer.classList.add('bg-emerald-50', 'border-emerald-200');
-                            scoreEl.className = 'text-3xl font-black leading-none text-emerald-600';
+                            scoreEl.className = 'text-2xl font-black leading-none text-emerald-600';
                             scoreLabel.classList.add('text-emerald-700');
+                            scoreBar.className = 'h-1.5 rounded-full transition-all duration-1000 bg-emerald-500';
                         } else if (strategy.healthScore >= 50) {
                             scoreContainer.classList.add('bg-amber-50', 'border-amber-200');
-                            scoreEl.className = 'text-3xl font-black leading-none text-amber-600';
+                            scoreEl.className = 'text-2xl font-black leading-none text-amber-600';
                             scoreLabel.classList.add('text-amber-700');
+                            scoreBar.className = 'h-1.5 rounded-full transition-all duration-1000 bg-amber-500';
                         } else {
                             scoreContainer.classList.add('bg-red-50', 'border-red-200');
-                            scoreEl.className = 'text-3xl font-black leading-none text-red-600';
+                            scoreEl.className = 'text-2xl font-black leading-none text-red-600';
                             scoreLabel.classList.add('text-red-700');
+                            scoreBar.className = 'h-1.5 rounded-full transition-all duration-1000 bg-red-500';
+                        }
+
+                        if (strategy.scoreDetails && strategy.scoreDetails.length > 0) {
+                            scoreDetailsDiv.innerHTML = strategy.scoreDetails.map(d => `<p class="${d.startsWith('+') ? 'text-emerald-600' : 'text-red-500'} font-medium">${d}</p>`).join('');
+                        } else {
+                            scoreDetailsDiv.innerHTML = '<p class="text-emerald-600 font-medium"><i class="fa-solid fa-check"></i> 100% Saudável (Sem penalidades)</p>';
                         }
 
                         const healthBadge = document.getElementById('badgeHealth');
