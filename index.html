@@ -144,17 +144,22 @@
                 <i class="fa-solid fa-bullseye text-lg group-hover:scale-110 transition-transform"></i>
                 Análise G30 PRO
             </button>
+            
+            <button onclick="switchAppView('relatorios')" id="link-relatorios" class="sidebar-link w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all text-gray-400 hover:bg-gray-800 hover:text-white group">
+                <i class="fa-solid fa-chart-line text-lg group-hover:scale-110 transition-transform text-indigo-400"></i>
+                Relatórios CS
+            </button>
         </nav>
 
         <!-- User/Footer Area -->
-        <div class="p-4 border-t border-gray-800">
+        <div class="p-4 border-t border-gray-800 hover:bg-gray-800/50 transition-colors cursor-pointer">
             <div class="flex items-center gap-3 px-2">
-                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-brand-orange font-bold text-sm">
+                <div class="w-8 h-8 rounded-full bg-gray-900 border border-gray-700 flex items-center justify-center text-brand-orange font-bold text-sm shadow-inner">
                     NAV
                 </div>
                 <div>
                     <p class="text-sm font-medium text-white">Equipe de Sucesso</p>
-                    <p class="text-xs text-gray-500">G30 Inteligência</p>
+                    <p class="text-xs text-gray-500 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> G30 Inteligência</p>
                 </div>
             </div>
         </div>
@@ -1016,9 +1021,22 @@
                                         <p id="outName" class="text-sm text-slate-500 font-medium mt-0.5">Nome do Contato</p>
                                     </div>
                                 </div>
-                                <div class="flex gap-2 w-full md:w-auto">
-                                    <div id="badgeUpsell" class="flex-1 md:flex-none text-center px-3 py-2 rounded-lg border text-xs font-bold uppercase tracking-wider">Upsell: -</div>
-                                    <div id="badgeCrosssell" class="flex-1 md:flex-none text-center px-3 py-2 rounded-lg border text-xs font-bold uppercase tracking-wider">Cross: -</div>
+
+                                <div class="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
+                                    <!-- Health Score Widget -->
+                                    <div id="healthScoreContainer" class="flex flex-col items-center justify-center px-5 py-2 bg-slate-50 border border-slate-200 rounded-xl shadow-sm w-full sm:w-auto">
+                                        <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Health Score</span>
+                                        <div class="flex items-baseline gap-1">
+                                            <span id="outHealthScore" class="text-3xl font-black leading-none text-slate-800">-</span>
+                                            <span class="text-xs text-slate-400 font-bold">/100</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Badges de Upsell/Cross -->
+                                    <div class="flex flex-col gap-2 w-full sm:w-auto">
+                                        <div id="badgeUpsell" class="flex-1 sm:flex-none text-center px-3 py-1.5 rounded-lg border text-[11px] font-bold uppercase tracking-wider">Upsell: -</div>
+                                        <div id="badgeCrosssell" class="flex-1 sm:flex-none text-center px-3 py-1.5 rounded-lg border text-[11px] font-bold uppercase tracking-wider">Cross: -</div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -1252,6 +1270,189 @@
                         <h3 class="text-lg font-bold text-slate-800">Checklists de Passagem de Etapa</h3>
                         <p class="text-slate-500 text-sm max-w-lg mx-auto mt-2">Em breve, teremos regras claras e automatizadas para mudança de etapas (Ex: Marketing -> Comercial). O foco de hoje é limpar a casa. Bom trabalho!</p>
                     </footer>
+
+                </div>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- APP 6: RELATÓRIOS CS                       -->
+            <!-- ========================================== -->
+            <div id="view-relatorios" class="view-section w-full min-h-full font-sans bg-slate-50 hidden">
+                <header class="bg-indigo-900 text-white p-6 shadow-lg flex justify-between items-center shrink-0 border-b border-indigo-950">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-indigo-700 p-3 rounded-xl shadow-inner border border-indigo-600">
+                            <i class="fa-solid fa-chart-line text-2xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-bold tracking-wide leading-none">Relatórios de Atividades</h1>
+                            <p class="text-xs text-indigo-300 uppercase tracking-widest mt-1.5 font-semibold">Análise de Produtividade dos Navegadores</p>
+                        </div>
+                    </div>
+                </header>
+
+                <div class="max-w-7xl mx-auto px-4 md:px-6 py-8">
+                    
+                    <!-- Topo: Importação e Filtros -->
+                    <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+                        <!-- Botão Upload Relatórios -->
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex-1 w-full md:w-auto flex items-center justify-between gap-4">
+                            <div class="flex items-center gap-3">
+                                <i class="fa-solid fa-file-csv text-indigo-500 text-2xl"></i>
+                                <div>
+                                    <h3 class="font-bold text-slate-800 text-sm">Importar Base de Atividades</h3>
+                                    <p class="text-xs text-slate-500">Suba o CSV/TXT com o histórico da equipe</p>
+                                </div>
+                            </div>
+                            <input type="file" id="upload-relatorios" accept=".csv,.txt" class="text-sm text-slate-500 w-full md:w-auto file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition-all cursor-pointer">
+                        </div>
+
+                        <!-- Filtro de Ciclo -->
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-3 shrink-0">
+                            <label for="relatorio-periodo" class="text-xs font-bold text-slate-400 uppercase tracking-wider hidden sm:block">Período:</label>
+                            <select id="relatorio-periodo" class="bg-slate-50 border border-slate-200 text-slate-800 font-bold text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2 cursor-pointer outline-none shadow-inner" onchange="window.updateRelatoriosFilter()">
+                                <option value="all">Histórico Completo</option>
+                                <option value="jul-15">Ciclo: Até 15 de Jul.</option>
+                                <option value="jul-29">Ciclo: 16 a 29 de Jul.</option>
+                                <option value="ago-13">Ciclo: 30 Jul. a 13 de Ago.</option>
+                                <option value="ago-27">Ciclo: 14 a 27 de Ago.</option>
+                                <option value="set-10">Ciclo: 28 Ago. a 10 de Set.</option>
+                                <option value="set-24">Ciclo: 11 a 24 de Set.</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Impacto da Inteligência Artificial -->
+                    <h2 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2"><i class="fa-solid fa-robot text-brand-orange"></i> Impacto da Inteligência Artificial</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-slate-900 p-6 rounded-2xl shadow-lg border border-slate-800 text-white relative overflow-hidden group">
+                            <i class="fa-solid fa-shield-heart absolute -right-6 -top-6 text-8xl text-white/5 group-hover:scale-110 transition-transform duration-500"></i>
+                            <h3 class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Retenção de Base (Ação I.A.)</h3>
+                            <p class="text-sm font-medium mb-6 text-slate-300">Retenção mensal de clientes em risco crítico de Churn identificados por IA</p>
+                            <div class="flex items-end gap-3 relative z-10">
+                                <span class="text-5xl font-black text-emerald-400" id="rel-churn-salvos">0</span>
+                                <span class="text-sm text-slate-400 mb-1.5 font-bold uppercase">Contas Salvas</span>
+                            </div>
+                        </div>
+                        <div class="bg-gradient-to-br from-brand-orange to-brand-dark p-6 rounded-2xl shadow-lg border border-orange-600 text-white relative overflow-hidden group">
+                            <i class="fa-solid fa-sack-dollar absolute -right-6 -top-6 text-8xl text-black/10 group-hover:scale-110 transition-transform duration-500"></i>
+                            <h3 class="text-orange-200 text-xs font-bold uppercase tracking-wider mb-2">Receita de Expansão (NMRR)</h3>
+                            <p class="text-sm font-medium mb-6 text-orange-100">Upsell/Cross-sell gerado via alertas de IA e fechado</p>
+                            <div class="flex items-end gap-3 relative z-10">
+                                <span class="text-5xl font-black text-white" id="rel-receita-ia">R$ 0,00</span>
+                                <span class="text-sm text-orange-200 mb-1.5 font-bold uppercase">Nova Receita</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dashboard Cards de Produtividade -->
+                    <h2 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2 mt-8"><i class="fa-solid fa-clipboard-user text-indigo-500"></i> Produtividade Operacional</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
+                                    <i class="fa-solid fa-list-check"></i>
+                                </div>
+                                <h3 class="text-slate-500 text-sm font-bold uppercase tracking-wider">Total Atividades</h3>
+                            </div>
+                            <p class="text-3xl font-black text-slate-800" id="rel-total">0</p>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center">
+                                    <i class="fa-solid fa-check-double"></i>
+                                </div>
+                                <h3 class="text-slate-500 text-sm font-bold uppercase tracking-wider">Concluídas</h3>
+                            </div>
+                            <p class="text-3xl font-black text-slate-800" id="rel-concluidas">0</p>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center">
+                                    <i class="fa-solid fa-comment-dots"></i>
+                                </div>
+                                <h3 class="text-slate-500 text-sm font-bold uppercase tracking-wider">Notas/Feedbacks</h3>
+                            </div>
+                            <p class="text-3xl font-black text-slate-800" id="rel-notas">0</p>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center">
+                                    <i class="fa-solid fa-user-xmark"></i>
+                                </div>
+                                <h3 class="text-slate-500 text-sm font-bold uppercase tracking-wider">No Shows</h3>
+                            </div>
+                            <p class="text-3xl font-black text-slate-800" id="rel-noshow">0</p>
+                        </div>
+                    </div>
+
+                    <!-- NOVA SEÇÃO: PERFIL DOS NAVEGADORES -->
+                    <div class="mb-8">
+                        <div class="flex justify-between items-end mb-4 border-b border-slate-200 pb-3">
+                            <h2 class="text-sm font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                                <i class="fa-solid fa-users-gear text-indigo-500"></i> Análise de Perfil de Atuação (Navegadores)
+                            </h2>
+                            <p class="text-xs text-slate-500 font-medium">Consolidação automática de atividades baseada em IA</p>
+                        </div>
+                        
+                        <div id="cs-profiles-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <!-- Cards de perfil injetados via JS -->
+                            <div class="text-center py-8 text-slate-400 col-span-full">
+                                <i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i>
+                                <p class="text-sm">Aguardando importação de dados para traçar os perfis...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- Gráfico e Timeline (2 colunas) -->
+                        <div class="col-span-1 lg:col-span-2 space-y-8">
+                            
+                            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+                                <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2"><i class="fa-solid fa-chart-bar text-indigo-500"></i> Produtividade por Navegador</h3>
+                                <div class="h-64">
+                                    <canvas id="relatorioChart"></canvas>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+                                <div class="flex justify-between items-center mb-6">
+                                    <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left text-indigo-500"></i> Timeline de Atividades</h3>
+                                    <span id="timeline-label-period" class="text-xs font-bold bg-slate-100 text-slate-500 px-3 py-1 rounded-full border border-slate-200">Todo o Período</span>
+                                </div>
+                                
+                                <div class="space-y-4 max-h-[500px] overflow-y-auto pr-2" id="timeline-container">
+                                    <!-- A timeline será injetada aqui -->
+                                    <div class="text-center py-10 text-slate-400">
+                                        <i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i>
+                                        <p class="text-sm">Processando histórico...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Coluna Direita (Filtros e Insights) -->
+                        <div class="space-y-6">
+                            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+                                <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">Top Lojas Atualizadas</h3>
+                                <ul class="space-y-3" id="top-lojas-list">
+                                    <!-- Injetado via JS -->
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-indigo-50 p-6 rounded-3xl shadow-sm border border-indigo-100 relative overflow-hidden">
+                                <div class="absolute -right-4 -top-4 text-indigo-200/50 text-6xl">
+                                    <i class="fa-solid fa-lightbulb"></i>
+                                </div>
+                                <h3 class="text-sm font-bold text-indigo-900 uppercase tracking-wider mb-3 relative z-10">Insights G30 I.A.</h3>
+                                <div class="text-sm text-indigo-800 space-y-3 relative z-10" id="rel-insights">
+                                    <!-- Injetado via JS -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1651,8 +1852,27 @@
                 crosssell: {},
                 stageStatus: "",
                 csFeedback: "",
-                script: ""
+                script: "",
+                healthScore: 100 // Nova propriedade
             };
+
+            // --- CÁLCULO DO HEALTH SCORE (0 a 100) ---
+            let score = 100;
+            // Penalidade por Inatividade (Máximo de 30 pontos)
+            if (data.inactiveDays > 7) {
+                score -= Math.min(30, (data.inactiveDays - 7) * 2);
+            }
+            // Penalidade por Furos de Dados (10 pontos por cada métrica faltando)
+            score -= (data.missingData.length * 10);
+            // Bônus/Penalidade por Sentimento
+            score += (data.sentimentScore * 10);
+            // Penalidade por Falhas de Contato
+            if (data.csActions.callsMissed > 0) {
+                score -= (data.csActions.callsMissed * 15);
+            }
+            // Normalizar limite entre 0 e 100
+            strategy.healthScore = Math.max(0, Math.min(100, score));
+
 
             const isStalled = data.inactiveDays > 7;
             const isOldDeal = data.age > 90;
@@ -1785,11 +2005,34 @@
 
                         const upBadge = document.getElementById('badgeUpsell');
                         upBadge.innerText = `Upsell: ${strategy.upsell.status}`;
-                        upBadge.className = `flex-1 md:flex-none text-center px-3 py-2 rounded-lg border text-xs font-bold uppercase tracking-wider bg-${strategy.upsell.color}-50 text-${strategy.upsell.color}-700 border-${strategy.upsell.color}-200`;
+                        upBadge.className = `flex-1 sm:flex-none text-center px-3 py-1.5 rounded-lg border text-[11px] font-bold uppercase tracking-wider bg-${strategy.upsell.color}-50 text-${strategy.upsell.color}-700 border-${strategy.upsell.color}-200`;
 
                         const crossBadge = document.getElementById('badgeCrosssell');
                         crossBadge.innerText = `Cross-sell: ${strategy.crosssell.status}`;
-                        crossBadge.className = `flex-1 md:flex-none text-center px-3 py-2 rounded-lg border text-xs font-bold uppercase tracking-wider bg-${strategy.crosssell.color}-50 text-${strategy.crosssell.color}-700 border-${strategy.crosssell.color}-200`;
+                        crossBadge.className = `flex-1 sm:flex-none text-center px-3 py-1.5 rounded-lg border text-[11px] font-bold uppercase tracking-wider bg-${strategy.crosssell.color}-50 text-${strategy.crosssell.color}-700 border-${strategy.crosssell.color}-200`;
+
+                        // --- ATUALIZAÇÃO DO HEALTH SCORE ---
+                        const scoreEl = document.getElementById('outHealthScore');
+                        const scoreContainer = document.getElementById('healthScoreContainer');
+                        const scoreLabel = scoreContainer.querySelector('span');
+                        
+                        scoreEl.innerText = strategy.healthScore;
+                        scoreContainer.className = 'flex flex-col items-center justify-center px-5 py-2 border rounded-xl shadow-sm w-full sm:w-auto transition-colors ';
+                        scoreLabel.className = 'text-[9px] font-bold uppercase tracking-widest mb-1 ';
+
+                        if (strategy.healthScore >= 80) {
+                            scoreContainer.classList.add('bg-emerald-50', 'border-emerald-200');
+                            scoreEl.className = 'text-3xl font-black leading-none text-emerald-600';
+                            scoreLabel.classList.add('text-emerald-700');
+                        } else if (strategy.healthScore >= 50) {
+                            scoreContainer.classList.add('bg-amber-50', 'border-amber-200');
+                            scoreEl.className = 'text-3xl font-black leading-none text-amber-600';
+                            scoreLabel.classList.add('text-amber-700');
+                        } else {
+                            scoreContainer.classList.add('bg-red-50', 'border-red-200');
+                            scoreEl.className = 'text-3xl font-black leading-none text-red-600';
+                            scoreLabel.classList.add('text-red-700');
+                        }
 
                         const healthBadge = document.getElementById('badgeHealth');
                         healthBadge.innerText = strategy.health.badge;
@@ -1835,6 +2078,57 @@
         ];
 
         let allDealsDesc = [...rawDataDesc];
+        
+        let relatoriosData = [];
+        let allParsedActivities = [];
+        let relatoriosChart = null;
+
+        // ==========================================
+        // Utilitários de Data para Filtros
+        // ==========================================
+        const monthMap = { 'janeiro':0, 'fevereiro':1, 'março':2, 'abril':3, 'maio':4, 'junho':5, 'julho':6, 'agosto':7, 'setembro':8, 'outubro':9, 'novembro':10, 'dezembro':11 };
+
+        function parsePtDate(dateStr) {
+            if (!dateStr) return new Date(0);
+            const parts = dateStr.toLowerCase().split(' de ');
+            if (parts.length === 3) {
+                const day = parseInt(parts[0], 10);
+                const month = monthMap[parts[1]];
+                const year = parseInt(parts[2], 10);
+                return new Date(year, month, day);
+            }
+            return new Date(0);
+        }
+
+        window.updateRelatoriosFilter = function() {
+            const period = document.getElementById('relatorio-periodo').value;
+            let filtered = allParsedActivities;
+
+            if (period !== 'all') {
+                filtered = allParsedActivities.filter(act => {
+                    const actDate = parsePtDate(act.date);
+                    const time = actDate.getTime();
+                    
+                    // Definição dos ciclos (janelas de tempo)
+                    if (period === 'jul-15') return time <= new Date(2026, 6, 15).getTime();
+                    if (period === 'jul-29') return time > new Date(2026, 6, 15).getTime() && time <= new Date(2026, 6, 29).getTime();
+                    if (period === 'ago-13') return time > new Date(2026, 6, 29).getTime() && time <= new Date(2026, 7, 13).getTime();
+                    if (period === 'ago-27') return time > new Date(2026, 7, 13).getTime() && time <= new Date(2026, 7, 27).getTime();
+                    if (period === 'set-10') return time > new Date(2026, 7, 27).getTime() && time <= new Date(2026, 8, 10).getTime();
+                    if (period === 'set-24') return time > new Date(2026, 8, 10).getTime() && time <= new Date(2026, 8, 24).getTime();
+                    return true;
+                });
+            }
+            
+            // Atualizar a label superior da Timeline
+            const tlLabel = document.getElementById('timeline-label-period');
+            const selectEl = document.getElementById('relatorio-periodo');
+            if(tlLabel) {
+                tlLabel.innerText = selectEl.options[selectEl.selectedIndex].text.replace('Ciclo: ', '');
+            }
+
+            renderRelatorios(filtered);
+        }
 
         function initDescongelamento() {
             populateCSFilterDesc();
@@ -2025,6 +2319,3527 @@
             }
             return result;
         }
+
+        // ==========================================
+        // LÓGICA DE RELATÓRIOS (Parser do log fornecido / Upload)
+        // ==========================================
+        function processReportsData(rawLog) {
+            const lines = rawLog.split('\n').filter(l => l.trim() !== '');
+            const activities = [];
+            let currentActivity = null;
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                
+                // Match author/action line ex: "Ana Carolina atualizou a atividade: ..."
+                // Regex mais flexível para cobrir diferentes padrões vindos de CSV ou texto colado
+                const matchAction = line.match(/^([A-Za-zÀ-ÿ\s]+)\s+(adicionou uma nova atividade|atualizou a atividade|negócio atualizado|atualizou o negócio|excluiu a atividade):\s*(.*)/i);
+                
+                if (matchAction) {
+                    if (currentActivity && currentActivity.name !== "") {
+                        activities.push(currentActivity);
+                    }
+                    
+                    let author = matchAction[1].trim();
+                    // Correção automática de duplicação de nomes do pipedrive (ex: BeatrizBeatriz)
+                    if(author.length % 2 === 0 && author.substring(0, author.length/2) === author.substring(author.length/2)) {
+                        author = author.substring(0, author.length/2);
+                    } else if (author.match(/^([A-Za-zÀ-ÿ]+)\1$/)) {
+                        // Correção para nomes simples repetidos sem espaço
+                        author = author.replace(/^([A-Za-zÀ-ÿ]+)\1$/, '$1');
+                    }
+                    
+                    const actionType = matchAction[2];
+                    const target = matchAction[3];
+                    
+                    currentActivity = {
+                        author: author,
+                        action: actionType,
+                        target: target,
+                        details: [],
+                        date: null,
+                        time: null
+                    };
+                } else {
+                    // Tenta identificar a linha de data (sempre fica no final do bloco)
+                    const matchDate = line.match(/^(\d{1,2} de [a-z]+ de \d{4}) às (\d{2}:\d{2})/i);
+                    if (matchDate && currentActivity) {
+                        currentActivity.date = matchDate[1];
+                        currentActivity.time = matchDate[2];
+                    } else if (currentActivity) {
+                        // Linhas do meio (mudanças de status, notas, etc)
+                        if(!line.match(/Prazo:/i) && !line.match(/Status:Pendente/i)) {
+                            currentActivity.details.push(line);
+                        }
+                    }
+                }
+            }
+            
+            if (currentActivity && currentActivity.name !== "") {
+                 activities.push(currentActivity);
+            }
+            
+            return activities;
+        }
+
+        function renderRelatorios(activities) {
+            // 1. Métricas Principais
+            let totalAtividades = activities.length;
+            let concluidas = 0;
+            let notasAdicionadas = 0;
+            let noShows = 0;
+            let lojasMencionadas = {};
+            
+            // Variáveis para Perfis de CS
+            let csStats = {};
+            
+            // Métricas de IA
+            let churnSalvos = 0;
+            let receitaGeradaIA = 0;
+
+            const palavrasEstrategicas = ['reunião', 'reuniao', 'planejamento', 'kick-off', 'onboarding', 'alinhamento', 'business review', 'mapa', 'apresentação', 'consultoria', 'estratégia'];
+
+            activities.forEach(act => {
+                const detailsStr = act.details.join(' ').toLowerCase();
+                const targetLower = (act.target || '').toLowerCase();
+                const fullContext = (act.action + " " + targetLower + " " + detailsStr).toLowerCase();
+                const autor = act.author || 'Desconhecido';
+                
+                // --- CONTAGEM GERAL ---
+                if (detailsStr.includes('concluída') || act.action.includes('atualizou a atividade')) concluidas++;
+                if (detailsStr.includes('adicionou uma nova nota') || detailsStr.includes('editou uma nota')) notasAdicionadas++;
+                if (targetLower.includes('- no show') || detailsStr.includes('- no show')) noShows++;
+                
+                // Mapeamento Inteligente: Churn Retido
+                if ((fullContext.includes('churn') || fullContext.includes('risco crítico') || fullContext.includes('alerta de ia') || fullContext.includes('cancelamento')) && 
+                    (fullContext.includes('retido') || fullContext.includes('salvo') || fullContext.includes('contornado') || fullContext.includes('revertido'))) {
+                    churnSalvos++;
+                }
+
+                // Mapeamento Inteligente: Receita Expansão
+                if (fullContext.includes('upsell') || fullContext.includes('cross-sell') || fullContext.includes('expansão') || fullContext.includes('nmrr') || fullContext.includes('ia')) {
+                    const valMatch = fullContext.match(/r\$\s*([\d\.,]+)/);
+                    if (valMatch) {
+                        let numStr = valMatch[1].replace(/\./g, '').replace(',', '.');
+                        let val = parseFloat(numStr);
+                        if (!isNaN(val)) receitaGeradaIA += val;
+                    }
+                }
+                
+                // Extrai nome da loja
+                let storeName = null;
+                if (act.target && act.target.includes('|')) storeName = act.target.split('|')[1].trim();
+                else if (act.target && act.target.includes(' I ')) storeName = act.target.split(' I ')[1].trim();
+                else if (act.target && act.target.includes(' - ')) storeName = act.target.split(' - ')[1].trim();
+                
+                if (storeName && storeName.length > 3 && !storeName.includes('no show')) {
+                    lojasMencionadas[storeName] = (lojasMencionadas[storeName] || 0) + 1;
+                }
+
+                // --- CONSOLIDAÇÃO POR CS ---
+                if (!csStats[autor]) {
+                    csStats[autor] = { total: 0, estrategico: 0, operacional: 0, assuntos: {} };
+                }
+                
+                csStats[autor].total++;
+                
+                // Tenta extrair o Assunto real para saber o que a pessoa mais faz
+                let assuntoLimpo = "Sem Assunto";
+                if(targetLower && targetLower.length > 0 && targetLower !== "(título não disponível)") {
+                    // Tira o nome da loja se houver
+                    assuntoLimpo = targetLower.split('|')[0].split(' - ')[0].trim();
+                } else if(act.action.includes('negócio')) {
+                    assuntoLimpo = "Atualização de CRM";
+                }
+
+                if(assuntoLimpo.length > 3) {
+                    csStats[autor].assuntos[assuntoLimpo] = (csStats[autor].assuntos[assuntoLimpo] || 0) + 1;
+                }
+
+                // Classificação Estratégica vs Operacional
+                let isEstrategico = palavrasEstrategicas.some(p => fullContext.includes(p));
+                if (isEstrategico) {
+                    csStats[autor].estrategico++;
+                } else {
+                    csStats[autor].operacional++;
+                }
+            });
+
+            // --- RENDERIZAÇÃO DOS PERFIS (NOVA FUNCIONALIDADE) ---
+            const profilesContainer = document.getElementById('cs-profiles-container');
+            profilesContainer.innerHTML = '';
+            
+            // Ordena CSs pelos que têm mais atividades
+            const sortedCS = Object.entries(csStats).sort((a, b) => b[1].total - a[1].total);
+            
+            if (sortedCS.length === 0) {
+                 profilesContainer.innerHTML = `<div class="text-center py-8 text-slate-400 col-span-full"><p>Nenhuma atividade processada neste período.</p></div>`;
+            }
+
+            // Arrays para alimentar o gráfico
+            const chartLabels = [];
+            const chartData = [];
+
+            sortedCS.forEach(cs => {
+                const nome = cs[0];
+                const stats = cs[1];
+                
+                // Alimentar arrays do gráfico
+                chartLabels.push(nome);
+                chartData.push(stats.total);
+
+                const pctEstrategico = Math.round((stats.estrategico / stats.total) * 100) || 0;
+                const pctOperacional = 100 - pctEstrategico;
+                
+                // Encontrar a atividade mais comum
+                let topAssunto = "Nenhum detectado";
+                let maxAssuntoCount = 0;
+                for (const [assunto, count] of Object.entries(stats.assuntos)) {
+                    if (count > maxAssuntoCount) {
+                        maxAssuntoCount = count;
+                        topAssunto = assunto;
+                    }
+                }
+                
+                // Definir Perfil Visual
+                let perfilBadge = '';
+                let bgCor = '';
+                
+                if (pctEstrategico >= 40) {
+                    perfilBadge = `<span class="bg-indigo-100 text-indigo-700 border border-indigo-200 px-2 py-1 rounded text-[10px] font-bold uppercase"><i class="fa-solid fa-chess-knight mr-1"></i> Perfil Estratégico</span>`;
+                    bgCor = 'border-indigo-200 shadow-indigo-100';
+                } else if (pctOperacional >= 80) {
+                    perfilBadge = `<span class="bg-orange-100 text-orange-700 border border-orange-200 px-2 py-1 rounded text-[10px] font-bold uppercase"><i class="fa-solid fa-gears mr-1"></i> Forte Operacional</span>`;
+                    bgCor = 'border-orange-200 shadow-orange-100';
+                } else {
+                    perfilBadge = `<span class="bg-emerald-100 text-emerald-700 border border-emerald-200 px-2 py-1 rounded text-[10px] font-bold uppercase"><i class="fa-solid fa-scale-balanced mr-1"></i> Equilibrado</span>`;
+                    bgCor = 'border-emerald-200 shadow-emerald-100';
+                }
+
+                profilesContainer.innerHTML += `
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border ${bgCor} flex flex-col justify-between hover:shadow-md transition-shadow">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 class="font-bold text-slate-800 text-lg capitalize">${nome}</h3>
+                                <p class="text-xs text-slate-500 font-medium mt-0.5">${stats.total} interações analisadas</p>
+                            </div>
+                            ${perfilBadge}
+                        </div>
+                        
+                        <div class="space-y-3 mb-4 flex-grow">
+                            <div>
+                                <div class="flex justify-between text-[10px] font-bold text-slate-500 uppercase mb-1">
+                                    <span>Operacional (${pctOperacional}%)</span>
+                                    <span>Estratégico (${pctEstrategico}%)</span>
+                                </div>
+                                <div class="w-full bg-indigo-100 rounded-full h-2 flex overflow-hidden">
+                                    <div class="bg-orange-400 h-2" style="width: ${pctOperacional}%"></div>
+                                    <div class="bg-indigo-500 h-2" style="width: ${pctEstrategico}%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                            <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Atividade mais Frequente:</p>
+                            <p class="text-xs font-semibold text-slate-700 truncate capitalize" title="${topAssunto}">${topAssunto}</p>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Atualiza DOM Base
+            document.getElementById('rel-total').innerText = totalAtividades;
+            document.getElementById('rel-concluidas').innerText = concluidas;
+            document.getElementById('rel-notas').innerText = notasAdicionadas;
+            document.getElementById('rel-noshow').innerText = noShows;
+            
+            // Atualiza DOM I.A.
+            document.getElementById('rel-churn-salvos').innerText = churnSalvos;
+            document.getElementById('rel-receita-ia').innerText = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 }).format(receitaGeradaIA);
+
+            // 2. Timeline Rendering (limitado aos 50 primeiros para perf)
+            const timelineContainer = document.getElementById('timeline-container');
+            timelineContainer.innerHTML = '';
+            
+            activities.slice(0, 50).forEach(act => {
+                let icon = 'fa-pen';
+                let colorClass = 'bg-blue-100 text-blue-600';
+                
+                if (act.action.includes('excluiu')) { icon = 'fa-trash'; colorClass = 'bg-red-100 text-red-600'; }
+                else if (act.details.join(' ').includes('Concluída')) { icon = 'fa-check'; colorClass = 'bg-green-100 text-green-600'; }
+                else if (act.action.includes('negócio atualizado') || act.action.includes('atualizou o negócio')) { icon = 'fa-briefcase'; colorClass = 'bg-purple-100 text-purple-600'; }
+                else if (act.details.join(' ').includes('nota')) { icon = 'fa-comment-dots'; colorClass = 'bg-amber-100 text-amber-600'; }
+
+                const targetTitle = act.target && act.target !== '(título não disponível)' ? act.target : 'Atividade não especificada';
+
+                timelineContainer.innerHTML += `
+                    <div class="relative pl-6 pb-4 border-l-2 border-slate-100 last:border-0 last:pb-0">
+                        <div class="absolute -left-2 top-0 w-4 h-4 rounded-full border-[3px] border-white bg-slate-300"></div>
+                        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-100 flex gap-4">
+                            <div class="w-10 h-10 rounded-full ${colorClass} flex items-center justify-center shrink-0 mt-1">
+                                <i class="fa-solid ${icon}"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex justify-between items-start">
+                                    <p class="text-sm font-bold text-slate-800">${act.author} <span class="font-normal text-slate-500">${act.action.replace(act.author, '')}</span></p>
+                                    <span class="text-xs text-slate-400 whitespace-nowrap ml-2">${act.date ? act.date.split(' de ')[0] + ' ' + act.date.split(' de ')[1].substring(0,3) : ''} ${act.time || ''}</span>
+                                </div>
+                                <p class="text-sm text-slate-700 mt-1 font-medium bg-white px-2 py-1 inline-block rounded shadow-sm border border-slate-100">${targetTitle}</p>
+                                ${act.details.length > 0 && !act.details.join('').includes('Pendente') && !act.details.join('').includes(targetTitle) ? `<p class="text-xs text-slate-500 mt-2 italic border-l-2 border-slate-300 pl-2">${act.details.filter(d => d !== 'Nota:' && d !== 'Status:' && d !== 'Assunto:' && d !== 'Proprietário:' && d !== 'Título:' && d !== 'Etapa:' && d !== 'Prazo:' && d !== 'Telefone:' && d !== 'Etiqueta:').join(' | ')}</p>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // 3. Top Lojas
+            const topLojas = Object.entries(lojasMencionadas)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5);
+                
+            const listLojas = document.getElementById('top-lojas-list');
+            listLojas.innerHTML = '';
+            topLojas.forEach(loja => {
+                listLojas.innerHTML += `
+                    <li class="flex justify-between items-center bg-slate-50 p-2 rounded-lg border border-slate-100">
+                        <span class="text-xs font-bold text-slate-700 truncate mr-2" title="${loja[0]}"><i class="fa-solid fa-store text-indigo-400 mr-2"></i>${loja[0]}</span>
+                        <span class="text-[10px] font-bold bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full shrink-0">${loja[1]} interações</span>
+                    </li>
+                `;
+            });
+
+            // 4. Insights G30
+            const insightsContainer = document.getElementById('rel-insights');
+            insightsContainer.innerHTML = `
+                <p class="flex items-start gap-2"><i class="fa-solid fa-circle-info mt-0.5 text-indigo-500"></i> A I.A. rastreou <strong>${churnSalvos}</strong> contas salvas e um incremento de NMRR de <strong>${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(receitaGeradaIA)}</strong> neste ciclo.</p>
+                <p class="flex items-start gap-2"><i class="fa-solid fa-circle-info mt-0.5 text-indigo-500"></i> O volume de "No Shows" (${noShows}) indica a necessidade de melhorar os lembretes via WhatsApp (Gideão) antes das reuniões de Kick-off e Check-in mensais.</p>
+                <p class="flex items-start gap-2"><i class="fa-solid fa-circle-info mt-0.5 text-indigo-500"></i> ${notasAdicionadas} notas foram geradas, mostrando o nível de documentação da equipe.</p>
+            `;
+
+            // 5. Gráfico de Produtividade Dinâmico
+            if (relatoriosChart) relatoriosChart.destroy();
+            
+            const canvasElement = document.getElementById('relatorioChart');
+            if (canvasElement) {
+                const ctxRelatorios = canvasElement.getContext('2d');
+                relatoriosChart = new Chart(ctxRelatorios, {
+                    type: 'bar',
+                    data: {
+                        labels: chartLabels, // Nomes automáticos
+                        datasets: [{
+                            label: 'Interações no CRM',
+                            data: chartData, // Dados automáticos
+                            backgroundColor: '#6366f1',
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+        }
+
+        // ==========================================
+        // Event Listener para Upload de Relatórios (CSV/TXT)
+        // ==========================================
+        document.getElementById('upload-relatorios').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const text = evt.target.result;
+                // O processo reutiliza a lógica universal que criamos e reconstrói o dashboard
+                allParsedActivities = processReportsData(text);
+                window.updateRelatoriosFilter(); // Atualiza respeitando os filtros de datas
+                alert("Histórico importado e processado com sucesso!");
+            };
+            reader.readAsText(file);
+        });
+
+        // Mock de demonstração do log (inclui algumas simulações para ver a I.A. rodando)
+        const sampleLog = `Ana Carolina atualizou a atividade: Cliente com Alerta de I.A. Risco Crítico de Cancelamento
+Nota: Reunião de emergência feita. Churn Contornado e cliente retido na base.
+29 de julho de 2026 às 14:00Ana Carolina
+Beatriz adicionou uma nova atividade: Fechamento de Upsell via gancho da IA
+Nota: Cliente precisava de tráfego, cross-sell fechado em R$ 3500,00 NMRR.
+29 de julho de 2026 às 13:58Beatriz
+Ana Carolina adicionou uma nova atividade: Reunião mensal - No Show
+29 de julho de 2026 às 13:54Ana Carolina
+Ana Carolina adicionou uma nova atividade: Atingir primeiro impacto com cliente
+29 de julho de 2026 às 13:51Ana Carolina
+Ana Carolina atualizou o negócio: Artêmio Jesus I ArteCar
+Etapa:
+Kick-off agendado
+Comercial
+29 de julho de 2026 às 13:51Ana Carolina
+Ana Carolina negócio atualizado Artêmio Jesus I ArteCar
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 13:47Ana Carolina
+Ana Carolina negócio atualizado Artêmio Jesus I ArteCar
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 13:30Ana Carolina
+Ana Carolina negócio atualizado Fábio de Oliveira Nunes | Camarada Veículos
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 13:18Ana Carolina
+Ana Carolina negócio atualizado Ecio Costa e Isabella | RIOPRECAR
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 13:13Ana Carolina
+Ana Carolina negócio atualizado Jhonny Escolastica | Garage 4 Motors
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 13:02Ana Carolina
+Ana Carolina atualizou o negócio: Ednaldo
+Proprietário:
+Daniel Fernandes
+Giovanna Conde
+29 de julho de 2026 às 12:16Ana Carolina
+Ana Carolina atualizou o negócio: Mendonça comércio de veículos
+Etiqueta:
+Média
+Média ,Em processo de cancelamento
+29 de julho de 2026 às 12:11Ana Carolina
+Ana Carolina negócio atualizado Welbert
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 12:10Ana Carolina
+Ana Carolina negócio atualizado Mendonça comércio de veículos
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 12:09Ana Carolina
+Ana Carolina negócio atualizado Mendonça comércio de veículos
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 12:06Ana Carolina
+Ana Carolina negócio atualizado Mendonça comércio de veículos
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 12:06Ana Carolina
+Ana Carolina negócio atualizado Jeferson da Silva Soares
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 12:02Ana Carolina
+Ana Carolina negócio atualizado Aline Barroso Fernandez
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 11:52Ana Carolina
+Ana Carolina negócio atualizado Aline Barroso Fernandez
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 11:51Ana Carolina
+Ana Carolina negócio atualizado Mendonça comércio de veículos
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 11:44Ana Carolina
+Ana Carolina atualizou o negócio: Marneu Eustáquio Borges de Ávila
+Etapa:
+Contrato assinado
+Ativo
+29 de julho de 2026 às 11:42Ana Carolina
+Ana Carolina negócio atualizado Marneu Eustáquio Borges de Ávila
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 11:41Ana Carolina
+Ana Carolina atualizou o negócio: Mendonça comércio de veículos
+Etapa:
+Contrato assinado
+Ativo
+29 de julho de 2026 às 11:38Ana Carolina
+Ana Carolina negócio atualizado Mendonça comércio de veículos
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 11:38Ana Carolina
+Ana Carolina atualizou o negócio: Mendonça comércio de veículos
+Proprietário:
+Daniel Fernandes
+Ana Carolina
+29 de julho de 2026 às 11:31Ana Carolina
+Ana Carolina atualizou o negócio: Luís Guilherme
+Etapa:
+Contrato assinado
+Ativo
+29 de julho de 2026 às 11:29Ana Carolina
+Ana Carolina negócio atualizado Luís Guilherme
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 11:29Ana Carolina
+Ana Carolina negócio atualizado Ricardo Santolia
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 11:26Ana Carolina
+Ana Carolina negócio atualizado Ricardo Santolia
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 11:24Ana Carolina
+Ana Carolina atualizou o negócio: Guilherme Ferreira
+Etapa:
+Contrato assinado
+Ativo
+29 de julho de 2026 às 11:22Ana Carolina
+Ana Carolina negócio atualizado Guilherme Ferreira
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 11:22Ana Carolina
+Ana Carolina atualizou o negócio: Fabio
+Etapa:
+Contrato assinado
+Ativo
+29 de julho de 2026 às 11:19Ana Carolina
+Ana Carolina negócio atualizado Fabio
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 11:19Ana Carolina
+Ana Carolina atualizou o negócio: Eduardo Riccieri Scarpari Danelon
+Etapa:
+Contrato assinado
+Ativo
+29 de julho de 2026 às 11:17Ana Carolina
+Ana Carolina negócio atualizado Eduardo Riccieri Scarpari Danelon
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 11:17Ana Carolina
+Ana Carolina negócio atualizado Eduardo Riccieri Scarpari Danelon
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 11:15Ana Carolina
+Ana Carolina negócio atualizado Edson Castanha I EloMixMultimarcas
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 11:11Ana Carolina
+Ana Carolina negócio atualizado Fabio
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 11:03Ana Carolina
+Ana Carolina negócio atualizado Valdemar
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 10:58Ana Carolina
+Ana Carolina negócio atualizado Maykon
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 10:57Ana Carolina
+Ana Carolina atualizou o negócio: Ivan I Player 2
+Etapa:
+Contrato assinado
+Ativo
+29 de julho de 2026 às 10:54Ana Carolina
+Ana Carolina negócio atualizado Wagner Godoi
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 10:53Ana Carolina
+Ana Carolina negócio atualizado Décio I JD
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 10:50Ana Carolina
+Ana Carolina negócio atualizado Décio I JD
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 10:49Ana Carolina
+Ana Carolina negócio atualizado Décio I JD
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 10:46Ana Carolina
+Ana Carolina negócio atualizado Welbert
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 10:40Ana Carolina
+Ana Carolina adicionou uma nova atividade: 1º Contato - Follow up - Closer
+29 de julho de 2026 às 10:18Ana Carolina
+Ana Carolina atualizou o negócio: JOSÉ PAULO DE ALMEIDA| GARAGEM MODERNA VEÍCULOS
+Etapa:
+Contrato assinado
+Follow-up
+29 de julho de 2026 às 10:18Ana Carolina
+Ana Carolina negócio atualizado Vanessa
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 10:09Ana Carolina
+Ana Carolina atualizou o negócio: Vanessa
+Etapa:
+Contrato assinado
+Ativo
+29 de julho de 2026 às 10:08Ana Carolina
+Ana Carolina atualizou a pessoa: Vanessa
+Telefone:
+5555179815741
+5555179815741 (work)
+29 de julho de 2026 às 10:05Ana Carolina
+Ana Carolina atualizou a pessoa: Vanessa
+Telefone:
+5555179815741
+5555179815741 (work)
+29 de julho de 2026 às 10:01Ana Carolina
+Ana Carolina atualizou o negócio: Vanessa
+Proprietário:
+Daniel Fernandes
+Ana Carolina
+29 de julho de 2026 às 10:01Ana Carolina
+Ana Carolina atualizou o negócio: Welbert
+Etapa:
+Contrato assinado
+Ativo
+29 de julho de 2026 às 10:00Ana Carolina
+Ana Carolina negócio atualizado Welbert
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 10:00Ana Carolina
+Ana Carolina negócio atualizado Welbert
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 09:48Ana Carolina
+Ana Carolina negócio atualizado Welbert
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 09:39Ana Carolina
+Ana Carolina atualizou o negócio: Welbert
+Proprietário:
+Daniel Fernandes
+Ana Carolina
+29 de julho de 2026 às 09:30Ana Carolina
+Ana Carolina atualizou o negócio: Marcos Marino Porto
+Etapa:
+Contrato assinado
+Ativo
+29 de julho de 2026 às 09:28Ana Carolina
+Ana Carolina negócio atualizado Marcos Marino Porto
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 09:28Ana Carolina
+Ana Carolina atualizou o negócio: Marcos Marino Porto
+Proprietário:
+Daniel Fernandes
+Ana Carolina
+29 de julho de 2026 às 09:28Ana Carolina
+Ana Carolina atualizou o negócio: Daniel S Vergilio
+Etapa:
+Contrato assinado
+Ativo
+29 de julho de 2026 às 09:08Ana Carolina
+Ana Carolina atualizou o negócio: Daniel S Vergilio
+Proprietário:
+Daniel Fernandes
+Ana Carolina
+29 de julho de 2026 às 09:08Ana Carolina
+Ana Carolina negócio atualizado Daniel S Vergilio
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 09:08Ana Carolina
+Ana Carolina atualizou o negócio: Marneu Eustáquio Borges de Ávila
+Proprietário:
+Daniel Fernandes
+Ana Carolina
+29 de julho de 2026 às 08:58Ana Carolina
+Ana Carolina negócio atualizado Marneu Eustáquio Borges de Ávila
+Nota:
+Adicionou uma nova nota
+29 de julho de 2026 às 08:57Ana Carolina
+Ana Carolina atualizou o negócio: Marneu Eustáquio Borges de Ávila
+Proprietário:
+Daniel Fernandes
+Ana Carolina
+29 de julho de 2026 às 08:57Ana Carolina
+Ana Carolina atualizou o negócio: Aline Barroso Fernandez
+Proprietário:
+Daniel Fernandes
+Ana Carolina
+29 de julho de 2026 às 08:47Ana Carolina
+Ana Carolina atualizou o negócio: MARCIO GONÇAVES SOBRADO l HC Motors
+Proprietário:
+Daniel Fernandes
+Karine Azevedo
+29 de julho de 2026 às 08:41Ana Carolina
+Ana Carolina negócio atualizado Marcos Reis | MR Multimarcas
+Nota:
+Adicionou uma nova nota
+28 de julho de 2026 às 17:22Ana Carolina
+Ana Carolina negócio atualizado Marcos Reis | MR Multimarcas
+Nota:
+Adicionou uma nova nota
+28 de julho de 2026 às 17:21Ana Carolina
+Ana Carolina negócio atualizado Priscilla e Caio | Mapri Veículos
+Nota:
+Adicionou uma nova nota
+28 de julho de 2026 às 17:19Ana Carolina
+Ana Carolina negócio atualizado Flavio Henrique Paes Rocha | Coliseu Motors
+Nota:
+Adicionou uma nova nota
+28 de julho de 2026 às 16:07Ana Carolina
+Ana Carolina negócio atualizado Elizabete | Elo Consórcio
+Nota:
+Adicionou uma nova nota
+28 de julho de 2026 às 15:55Ana Carolina
+Ana Carolina negócio atualizado Danilo pizzirani (indicação Fred evidence) @pizziraniveiculos
+Nota:
+Adicionou uma nova nota
+28 de julho de 2026 às 13:54Ana Carolina
+Ana Carolina negócio atualizado garagem.moderna.es.adn@gmail.com - Jose (cópia)
+Nota:
+Adicionou uma nova nota
+28 de julho de 2026 às 12:27Ana Carolina
+Ana Carolina atualizou o negócio: garagem.moderna.es.adn@gmail.com - Jose (cópia)
+Etapa:
+Proposta Apresentada (2ª Call)
+Fechamento
+28 de julho de 2026 às 12:26Ana Carolina
+Ana Carolina atualizou o negócio: garagem.moderna.es.adn@gmail.com - Jose (cópia)
+Etapa:
+Fechamento
+Proposta Apresentada (2ª Call)
+28 de julho de 2026 às 12:26Ana Carolina
+Ana Carolina atualizou o negócio: garagem.moderna.es.adn@gmail.com - Jose (cópia)
+Etapa:
+SE Realizada
+Fechamento
+28 de julho de 2026 às 12:07Ana Carolina
+Ana Carolina adicionou uma nova atividade: Registrar data do retorno do cliente
+28 de julho de 2026 às 12:07Ana Carolina
+Ana Carolina atualizou o negócio: garagem.moderna.es.adn@gmail.com - Jose (cópia)
+Etapa:
+Fechamento
+SE Realizada
+28 de julho de 2026 às 12:07Ana Carolina
+Ana Carolina atualizou o negócio: garagem.moderna.es.adn@gmail.com - Jose (cópia)
+Etapa:
+Proposta Apresentada (2ª Call)
+Fechamento
+28 de julho de 2026 às 12:03Ana Carolina
+Ana Carolina atualizou o negócio: garagem.moderna.es.adn@gmail.com - Jose (cópia)
+Etapa:
+Fechamento
+Proposta Apresentada (2ª Call)
+28 de julho de 2026 às 12:03Ana Carolina
+Ana Carolina atualizou o negócio: garagem.moderna.es.adn@gmail.com - Jose (cópia)
+Etapa:
+Proposta Apresentada (2ª Call)
+Fechamento
+28 de julho de 2026 às 12:02Ana Carolina
+Ana Carolina atualizou o negócio: garagem.moderna.es.adn@gmail.com - Jose (cópia)
+Etapa:
+Fechamento
+Proposta Apresentada (2ª Call)
+28 de julho de 2026 às 12:02Ana Carolina
+Ana Carolina atualizou o negócio: Luana Gomes | GS Automóveis
+Etiqueta:
+Satisfeito, Carchat, FENAUTO
+Satisfeito ,Carchat ,FENAUTO ,G30 IA
+28 de julho de 2026 às 11:54Ana Carolina
+Ana Carolina negócio atualizado Marcos I Grupo Marcos
+Nota:
+Adicionou uma nova nota
+28 de julho de 2026 às 10:07Ana Carolina
+Ana Carolina atualizou a atividade: Check-in mensal - sem retorno
+Assunto:
+Check-in mensal
+Check-in mensal - sem retorno
+28 de julho de 2026 às 10:05Ana Carolina
+Ana Carolina atualizou a atividade: Check-in mensal - sem retorno
+Status:
+Pendente
+Concluída
+28 de julho de 2026 às 10:05Ana Carolina
+Ana Carolina atualizou a atividade: Check-in mensal - sem retorno
+Assunto:
+Check-in mensal
+Check-in mensal - sem retorno
+28 de julho de 2026 às 10:04Ana Carolina
+Ana Carolina atualizou a atividade: Check-in mensal - sem retorno
+Status:
+Pendente
+Concluída
+28 de julho de 2026 às 10:04Ana Carolina
+Ana Carolina adicionou uma nova atividade: Acompanhamento semanal (CS)
+28 de julho de 2026 às 10:03Ana Carolina
+Ana Carolina negócio atualizado Juliana Carrion | Perfil Veículos
+Nota:
+Adicionou uma nova nota
+28 de julho de 2026 às 09:47Ana Carolina
+Ana Carolina atualizou o negócio: Josevaldo | Vado Veículos
+Proprietário:
+Ana Carolina
+Giovanna Conde
+28 de julho de 2026 às 09:31Ana Carolina
+Ana Carolina adicionou uma nova atividade: Reunião mensal (CS)
+28 de julho de 2026 às 09:31Ana Carolina
+Ana Carolina negócio atualizado Josevaldo | Vado Veículos
+Nota:
+Adicionou uma nova nota
+28 de julho de 2026 às 09:30Ana Carolina
+Ana Carolina negócio atualizado Altair Massalai
+Nota:
+Adicionou uma nova nota
+28 de julho de 2026 às 09:16Ana Carolina
+Ana Carolina atualizou a atividade: Frequência Instagram
+Nota:
+Adicionou uma nova nota
+28 de julho de 2026 às 09:16Ana Carolina
+Ana Carolina atualizou a atividade: Frequência Instagram
+Status:
+Pendente
+Concluída
+28 de julho de 2026 às 09:16Ana Carolina
+Ana Carolina atualizou a atividade: Check-in mensal
+Status:
+Pendente
+Concluída
+28 de julho de 2026 às 09:16Ana Carolina
+Ana Carolina atualizou a atividade: Check-in mensal
+Status:
+Pendente
+Concluída
+28 de julho de 2026 às 09:16Ana Carolina
+Ana Carolina negócio atualizado Émerson | GRACIANO MULTIMARCAS
+Nota:
+Editou uma nota
+28 de julho de 2026 às 09:08Ana Carolina
+Ana Carolina atualizou a atividade: Alinhamento Técnico e Tráfego
+Status:
+Pendente
+Concluída
+28 de julho de 2026 às 09:08Ana Carolina
+Ana Carolina excluiu a atividade: (título não disponível)
+28 de julho de 2026 às 09:08Ana Carolina
+Ana Carolina atualizou a atividade: Blocos de Ligação
+Nota:
+Editou uma nota
+28 de julho de 2026 às 09:08Ana Carolina
+Ana Carolina atualizou a atividade: Blocos de Ligação
+Status:
+Pendente
+Concluída
+28 de julho de 2026 às 09:08Ana Carolina
+Ana Carolina negócio atualizado Émerson | GRACIANO MULTIMARCAS
+Nota:
+Adicionou uma nova nota
+28 de julho de 2026 às 09:05Ana Carolina
+Ana Carolina negócio atualizado Wiliam | Autocar Veículos
+Nota:
+Editou uma nota
+28 de julho de 2026 às 09:04Ana Carolina
+Ana Carolina negócio atualizado Wiliam | Autocar Veículos
+Nota:
+Adicionou uma nova nota
+28 de julho de 2026 às 08:57Ana Carolina
+Ana Carolina excluiu a atividade: (título não disponível)
+28 de julho de 2026 às 08:44Ana Carolina
+Ana Carolina atualizou a atividade: Émerson | GRACIANO MULTIMARCAS COLETAR VENDAS DE ABRIL
+Status:
+Pendente
+Concluída
+28 de julho de 2026 às 08:43Ana Carolina
+Ana Carolina atualizou o negócio: Douglas I Machado's
+Proprietário:
+Ana Carolina
+Wirley Junior
+28 de julho de 2026 às 08:37Ana Carolina
+Ana Carolina adicionou uma nova atividade: Leadway - no show
+28 de julho de 2026 às 08:31Ana Carolina
+Ana Carolina adicionou uma nova atividade: Leadway - no show pela G30
+28 de julho de 2026 às 08:30Ana Carolina
+Ana Carolina negócio atualizado Elizara Rabelo | Martins Import LTDA
+Nota:
+Adicionou uma nova nota
+28 de julho de 2026 às 08:19Ana Carolina
+Ana Carolina atualizou o negócio: Marcelo Pereira costa | CHAMA VEICULOS
+Proprietário:
+Ana Carolina
+Giovanna Conde
+28 de julho de 2026 às 07:56Ana Carolina
+Ana Carolina negócio atualizado Cynthia I Prime Multimarcas
+Nota:
+Adicionou uma nova nota
+28 de julho de 2026 às 07:54Ana Carolina
+Ana Carolina negócio atualizado Cynthia I Prime Multimarcas
+Nota:
+Adicionou uma nova nota
+28 de julho de 2026 às 07:54Ana Carolina
+Ana Carolina negócio atualizado Elizabete | Elo Consórcio
+Nota:
+Adicionou uma nova nota
+27 de julho de 2026 às 17:14Ana Carolina
+Ana Carolina negócio atualizado garagem.moderna.es.adn@gmail.com - Jose (cópia)
+Nota:
+Adicionou uma nova nota
+27 de julho de 2026 às 16:48Ana Carolina
+Ana Carolina atualizou o negócio: garagem.moderna.es.adn@gmail.com - Jose (cópia)
+Etapa:
+Follow-up
+Fechamento
+27 de julho de 2026 às 16:48Ana Carolina
+Ana Carolina adicionou uma nova atividade: 1º Contato - Follow up - Closer
+27 de julho de 2026 às 16:47Ana Carolina
+Ana Carolina atualizou o negócio: garagem.moderna.es.adn@gmail.com - Jose (cópia)
+Etapa:
+Fechamento
+Follow-up
+27 de julho de 2026 às 16:47Ana Carolina
+Ana Carolina atualizou o negócio: JOSÉ PAULO DE ALMEIDA| GARAGEM MODERNA VEÍCULOS
+Proprietário:
+Mariana Pisciottano
+Ana Carolina
+27 de julho de 2026 às 16:46Ana Carolina
+Ana Carolina negócio atualizado garagem.moderna.es.adn@gmail.com - Jose (cópia)
+Nota:
+Adicionou uma nova nota
+27 de julho de 2026 às 16:42Ana Carolina
+Ana Carolina atualizou o negócio: garagem.moderna.es.adn@gmail.com - Jose (cópia)
+Etapa:
+Follow-up
+Fechamento
+27 de julho de 2026 às 16:42Ana Carolina
+Ana Carolina adicionou uma nova atividade: 1º Contato - Follow up - Closer
+27 de julho de 2026 às 16:38Ana Carolina
+Ana Carolina atualizou o negócio: garagem.moderna.es.adn@gmail.com - Jose (cópia)
+Etapa:
+Fechamento
+Follow-up
+27 de julho de 2026 às 16:37Ana Carolina
+Ana Carolina adicionou uma nova atividade: Fábrica de pré vendas lembrete
+27 de julho de 2026 às 16:21Ana Carolina
+Ana Carolina negócio atualizado HUGO | HG VEÍCULOS
+Nota:
+Adicionou uma nova nota
+27 de julho de 2026 às 16:12Ana Carolina
+Ana Carolina atualizou o negócio: HUGO | HG VEÍCULOS
+Etiqueta:
+Neutro, não ira part. mega feirão, Terça-Feira
+Insatisfeito ,não ira part. mega feirão ,Terça-Feira
+27 de julho de 2026 às 16:04Ana Carolina
+Ana Carolina atualizou o negócio: garagem.moderna.es.adn@gmail.com - Jose (cópia)
+Etapa:
+Follow-up
+Fechamento
+27 de julho de 2026 às 15:35Ana Carolina
+Ana Carolina atualizou o negócio: Divino Cláudio e Tainara - Elisangela | Goiânia Veículos
+Proprietário:
+Ana Carolina
+Giovana Matos
+27 de julho de 2026 às 15:32Ana Carolina
+Ana Carolina adicionou uma nova atividade: 1º Contato - Follow up - Closer
+27 de julho de 2026 às 15:23Ana Carolina
+Ana Carolina atualizou o negócio: garagem.moderna.es.adn@gmail.com - Jose (cópia)
+Etapa:
+Fechamento
+Follow-up
+27 de julho de 2026 às 15:23Ana Carolina
+Ana Carolina atualizou o negócio: Rodrigo Molon | MM Autocar
+Proprietário:
+Giovanna Conde
+Karine Azevedo
+27 de julho de 2026 às 15:13Ana Carolina
+Ana Carolina adicionou uma nova atividade: Planejamento de Tráfego Pago (CS)
+27 de julho de 2026 às 15:10Ana Carolina
+Ana Carolina atualizou o negócio: JOSÉ PAULO DE ALMEIDA| GARAGEM MODERNA VEÍCULOS
+Título:
+garagem.moderna.es.adn@gmail.com - Jose
+Jose Paulo de Almeida
+27 de julho de 2026 às 15:02Ana Carolina
+Ana Carolina atualizou o negócio: JOSÉ PAULO DE ALMEIDA| GARAGEM MODERNA VEÍCULOS
+Etapa:
+Fechamento
+Contrato assinado
+27 de julho de 2026 às 15:02Ana Carolina
+Ana Carolina atualizou o negócio: JOSÉ PAULO DE ALMEIDA| GARAGEM MODERNA VEÍCULOS
+Proprietário:
+Ana Carolina
+Mariana Pisciottano
+27 de julho de 2026 às 15:02Ana Carolina
+Ana Carolina adicionou um novo negócio: garagem.moderna.es.adn@gmail.com - Jose (cópia)
+27 de julho de 2026 às 15:02Ana Carolina
+Ana Carolina atualizou o negócio: JOSÉ PAULO DE ALMEIDA| GARAGEM MODERNA VEÍCULOS
+Etapa:
+Follow-up
+Fechamento
+27 de julho de 2026 às 14:59Ana Carolina
+Ana Carolina adicionou uma nova atividade: 1º Contato - Follow up - Closer
+27 de julho de 2026 às 14:59Ana Carolina
+Ana Carolina atualizou o negócio: JOSÉ PAULO DE ALMEIDA| GARAGEM MODERNA VEÍCULOS
+Etapa:
+Fechamento
+Follow-up
+27 de julho de 2026 às 14:58Ana Carolina
+Ana Carolina atualizou o negócio: Alecsandro da Silva | Auto Grid veiculos
+Proprietário:
+Beatriz
+Giovana Matos
+27 de julho de 2026 às 14:36Ana Carolina
+Ana Carolina atualizou o negócio: Jose | Autoshopping da Cidade
+Proprietário:
+Beatriz
+Giovana Matos
+27 de julho de 2026 às 14:36Ana Carolina
+Ana Carolina atualizou o negócio: Paulo Camargo de Quadros| Auto Center Veículos
+Proprietário:
+Beatriz
+Giovana Matos
+27 de julho de 2026 às 14:35Ana Carolina
+Ana Carolina atualizou o negócio: GIONILTON SANTOS DE JESUS ( CATÉ ) | Caté Veiculos
+Proprietário:
+Beatriz
+Giovana Matos
+27 de julho de 2026 às 14:35Ana Carolina
+Ana Carolina atualizou o negócio: Marcos oliveira | Recife Center
+Proprietário:
+Giovana Matos
+Beatriz
+27 de julho de 2026 às 14:35Ana Carolina
+Ana Carolina atualizou o negócio: Adriane | Luis Motors
+Proprietário:
+Giovana Matos
+Beatriz
+27 de julho de 2026 às 14:35Ana Carolina
+Ana Carolina atualizou o negócio: Adriano | RL Multimarcas
+Proprietário:
+Giovana Matos
+Beatriz
+27 de julho de 2026 às 14:34Ana Carolina
+Ana Carolina atualizou o negócio: Vanessa | Auto Esporte Multimarcas
+Proprietário:
+Giovana Matos
+Beatriz
+27 de julho de 2026 às 14:34Ana Carolina
+Ana Carolina atualizou o negócio: Eduardo Quinelli | Dunelli Automóveis
+Proprietário:
+Raissa Mayra
+Karine Azevedo
+27 de julho de 2026 às 14:33Ana Carolina
+Ana Carolina atualizou o negócio: Luiz Henrique | Forlim Multimarcas
+Proprietário:
+Raissa Mayra
+Giovanna Conde
+27 de julho de 2026 às 14:33Ana Carolina
+Ana Carolina atualizou o negócio: Nicolas | Binauto Veículos
+Proprietário:
+Raissa Mayra
+Giovanna Conde
+27 de julho de 2026 às 14:27Ana Carolina
+Ana Carolina atualizou o negócio: Guilherme | Madricar Automóveis
+Proprietário:
+Raissa Mayra
+Giovanna Conde
+27 de julho de 2026 às 14:27Ana Carolina
+Ana Carolina atualizou o negócio: Juan Silva Figueiredo | Auto Play
+Proprietário:
+Raissa Mayra
+Giovanna Conde
+27 de julho de 2026 às 14:27Ana Carolina
+Ana Carolina atualizou o negócio: Pedro Henrique | RR VEÍCULOS ARAXÁ
+Proprietário:
+Raissa Mayra
+Karine Azevedo
+27 de julho de 2026 às 14:26Ana Carolina
+Ana Carolina atualizou o negócio: Iran Teixeira Ramos | NATO CAR
+Proprietário:
+Raissa Mayra
+Giovanna Conde
+27 de julho de 2026 às 14:26Ana Carolina
+Ana Carolina atualizou o negócio: Luana Gomes | GS Automóveis
+Proprietário:
+Raissa Mayra
+Karine Azevedo
+27 de julho de 2026 às 14:26Ana Carolina
+Ana Carolina atualizou o negócio: Pedro | PEPE VEÍCULOS
+Proprietário:
+Raissa Mayra
+Giovanna Conde
+27 de julho de 2026 às 14:26Ana Carolina
+Ana Carolina atualizou o negócio: Vinícius Mota | VIVA MOTORS
+Proprietário:
+Raissa Mayra
+Karine Azevedo
+27 de julho de 2026 às 14:25Ana Carolina
+Ana Carolina atualizou o negócio: Joelson Penido | Rondocar Veículos
+Proprietário:
+Raissa Mayra
+Giovanna Conde
+27 de julho de 2026 às 14:25Ana Carolina
+Ana Carolina atualizou o negócio: Iasmim | Vassoura Veículos
+Proprietário:
+Raissa Mayra
+Karine Azevedo
+27 de julho de 2026 às 14:25Ana Carolina
+Ana Carolina atualizou o negócio: Paulo Sergio | Portal da Revenda
+Proprietário:
+Raissa Mayra
+Karine Azevedo
+27 de julho de 2026 às 14:25Ana Carolina
+Ana Carolina atualizou o negócio: Reginaldo Vasconcelos | Selection Automóveis
+Proprietário:
+Raissa Mayra
+Karine Azevedo
+27 de julho de 2026 às 14:23Ana Carolina
+Ana Carolina atualizou o negócio: Lucas Santos | Gran Car Multimarcas
+Proprietário:
+Raissa Mayra
+Giovanna Conde
+27 de julho de 2026 às 14:23Ana Carolina
+Ana Carolina atualizou o negócio: Magno e Kaio Takahasi | SM SEMINOVOS
+Proprietário:
+Raissa Mayra
+Karine Azevedo
+27 de julho de 2026 às 14:22Ana Carolina
+Ana Carolina atualizou o negócio: Kayo | Kayo Veículos
+Proprietário:
+Raissa Mayra
+Giovanna Conde
+27 de julho de 2026 às 14:22Ana Carolina
+Ana Carolina atualizou o negócio: Janaina ferreira | GJ Veículos
+Proprietário:
+Raissa Mayra
+Giovanna Conde
+27 de julho de 2026 às 14:22Ana Carolina
+Ana Carolina atualizou o negócio: José Rodrigues | Speed Car Veículos
+Proprietário:
+Raissa Mayra
+Karine Azevedo
+27 de julho de 2026 às 14:22Ana Carolina
+Ana Carolina atualizou o negócio: Thomas | STV- SANTA THEREZINHA VEÍCULOS
+Proprietário:
+Raissa Mayra
+Karine Azevedo
+27 de julho de 2026 às 14:22Ana Carolina
+Ana Carolina atualizou o negócio: Thiago dourado | Tork Automóveis
+Proprietário:
+Raissa Mayra
+Giovanna Conde
+27 de julho de 2026 às 14:21Ana Carolina
+Ana Carolina atualizou o negócio: Deyvison cruz | CRUZ VEICULOS
+Proprietário:
+Raissa Mayra
+Karine Azevedo
+27 de julho de 2026 às 14:21Ana Carolina
+Ana Carolina atualizou o negócio: Reginaldo Felicio | Lilian | Renova Multimarcas
+Proprietário:
+Raissa Mayra
+Giovanna Conde
+27 de julho de 2026 às 14:21Ana Carolina
+Ana Carolina atualizou o negócio: Jackelson Romão | NOVA ROMA VEÍCULOS
+Proprietário:
+Raissa Mayra
+Karine Azevedo
+27 de julho de 2026 às 14:21Ana Carolina
+Ana Carolina atualizou o negócio: Vinicius | LK Veículos
+Proprietário:
+Raissa Mayra
+Giovanna Conde
+27 de julho de 2026 às 14:21Ana Carolina
+Ana Carolina atualizou o negócio: Léo | Alexandre Automóveis
+Proprietário:
+Raissa Mayra
+Karine Azevedo
+27 de julho de 2026 às 14:19Ana Carolina
+Ana Carolina atualizou o negócio: Ricardo Frota Magalhães | MixCar Multimarcas
+Proprietário:
+Raissa Mayra
+Giovanna Conde
+27 de julho de 2026 às 14:19Ana Carolina
+Ana Carolina atualizou o negócio: Alex | Cardez Veiculos
+Proprietário:
+Raissa Mayra
+Karine Azevedo
+27 de julho de 2026 às 14:19Ana Carolina
+Ana Carolina atualizou o negócio: Rodrigo Molon | MM Autocar
+Proprietário:
+Raissa Mayra
+Giovanna Conde
+27 de julho de 2026 às 14:18Ana Carolina
+Ana Carolina atualizou o negócio: Hermando | Seminovos Rionorte
+Proprietário:
+Raissa Mayra
+Karine Azevedo
+27 de julho de 2026 às 14:17Ana Carolina
+Ana Carolina atualizou o negócio: Fabio | Autobahn Veículos
+Proprietário:
+Raissa Mayra
+Giovanna Conde
+27 de julho de 2026 às 14:17Ana Carolina
+Ana Carolina atualizou o negócio: Mateus | Bem Veículos
+Proprietário:
+Raissa Mayra
+Karine Azevedo
+27 de julho de 2026 às 14:17Ana Carolina
+Ana Carolina atualizou o negócio: Thales Alexandre | Abreu Motors
+Proprietário:
+Raissa Mayra
+Giovanna Conde
+27 de julho de 2026 às 14:17Ana Carolina
+Ana Carolina atualizou o negócio: Emerson Allan | Allan Corretora Multimarcas
+Proprietário:
+Raissa Mayra
+Giovanna Conde
+27 de julho de 2026 às 14:15Ana Carolina
+Ana Carolina atualizou o negócio: Emerson Alves Teixeira | Catatau Veículos
+Proprietário:
+Raissa Mayra
+Karine Azevedo
+27 de julho de 2026 às 14:15Ana Carolina
+Ana Carolina atualizou o negócio: Marcus Scauri | Massa Motors
+Proprietário:
+Raissa Mayra
+Giovanna Conde
+27 de julho de 2026 às 14:15Ana Carolina
+Ana Carolina atualizou o negócio: Ronaldo | Rocha Veículos
+Proprietário:
+Raissa Mayra
+Karine Azevedo
+27 de julho de 2026 às 14:15Ana Carolina
+Ana Carolina atualizou o negócio: Felipe Dutra | Federal Motors
+Proprietário:
+Raissa Mayra
+Giovanna Conde
+27 de julho de 2026 às 14:15Ana Carolina
+Ana Carolina atualizou o negócio: SERGIO E VINICIUS | GAVI AUTOMOVEIS
+Proprietário:
+Raissa Mayra
+Giovanna Conde
+27 de julho de 2026 às 14:14Ana Carolina
+Ana Carolina atualizou o negócio: Tiago | GARAGEM VEICULOS
+Proprietário:
+Raissa Mayra
+Karine Azevedo
+27 de julho de 2026 às 14:14Ana Carolina
+Ana Carolina atualizou o negócio: Leonardo | Roma Veículos
+Proprietário:
+Raissa Mayra
+Giovanna Conde
+27 de julho de 2026 às 14:14Ana Carolina
+Ana Carolina atualizou o negócio: Leonardo | Auto Norte Veículos
+Proprietário:
+Raissa Mayra
+Karine Azevedo
+27 de julho de 2026 às 14:14Ana Carolina
+Ana Carolina atualizou o negócio: Fernando Sanches | Auto Giro Veículos
+Proprietário:
+Raissa Mayra
+Giovanna Conde
+27 de julho de 2026 às 14:14Ana Carolina
+Ana Carolina negócio atualizado Guilherme Ferreira
+Nota:
+Adicionou uma nova nota
+27 de julho de 2026 às 13:47Ana Carolina
+Ana Carolina negócio atualizado Rodrigo Veloso
+Nota:
+Adicionou uma nova nota
+27 de julho de 2026 às 13:36Ana Carolina
+Ana Carolina atualizou o negócio: Rodrigo Veloso
+Etapa:
+Contrato assinado
+Ativo
+27 de julho de 2026 às 13:35Ana Carolina
+Ana Carolina atualizou o negócio: Ricardo Santolia
+Etiqueta:
+vazio
+Em processo de cancelamento
+27 de julho de 2026 às 13:06Ana Carolina
+Ana Carolina negócio atualizado Ricardo Santolia
+Nota:
+Adicionou uma nova nota
+27 de julho de 2026 às 13:05Ana Carolina
+Ana Carolina negócio atualizado Ricardo Santolia
+Nota:
+Adicionou uma nova nota
+27 de julho de 2026 às 12:59Ana Carolina
+Ana Carolina negócio atualizado Luís Guilherme
+Nota:
+Adicionou uma nova nota
+27 de julho de 2026 às 12:58Ana Carolina
+Ana Carolina negócio atualizado Wendel Gonçalves
+Nota:
+Adicionou uma nova nota
+27 de julho de 2026 às 12:54Ana Carolina
+Ana Carolina negócio atualizado Wendel Gonçalves
+Nota:
+Editou uma nota
+27 de julho de 2026 às 12:54Ana Carolina
+Ana Carolina excluiu a atividade: (título não disponível)
+27 de julho de 2026 às 12:53Ana Carolina
+Ana Carolina negócio atualizado Wendel Gonçalves
+Nota:
+Adicionou uma nova nota
+27 de julho de 2026 às 12:52Ana Carolina
+Ana Carolina atualizou o negócio: Wendel Gonçalves
+Proprietário:
+Daniel Fernandes
+Ana Carolina
+27 de julho de 2026 às 12:50Ana Carolina
+Ana Carolina atualizou o negócio: Lindomar José da Silva (cópia)
+Etapa:
+Contrato assinado
+Ativo
+27 de julho de 2026 às 12:46Ana Carolina
+Ana Carolina negócio atualizado Lindomar José da Silva (cópia)
+Nota:
+Adicionou uma nova nota
+27 de julho de 2026 às 12:46Ana Carolina
+Ana Carolina negócio atualizado Danilo pizzirani (indicação Fred evidence) @pizziraniveiculos
+Nota:
+Adicionou uma nova nota
+27 de julho de 2026 às 12:44Ana Carolina
+Ana Carolina negócio atualizado Lindomar José da Silva (cópia)
+Nota:
+Adicionou uma nova nota
+27 de julho de 2026 às 12:43Ana Carolina
+Ana Carolina atualizou o negócio: Danilo pizzirani (indicação Fred evidence) @pizziraniveiculos
+Etapa:
+Contrato assinado
+Ativo
+27 de julho de 2026 às 12:43Ana Carolina
+Ana Carolina negócio atualizado Danilo pizzirani (indicação Fred evidence) @pizziraniveiculos
+Nota:
+Adicionou uma nova nota
+27 de julho de 2026 às 12:43Ana Carolina
+Ana Carolina atualizou o negócio: LUCIANO MARQUES MOREIRA
+Etapa:
+Contrato assinado
+Ativo
+27 de julho de 2026 às 12:06Ana Carolina
+Ana Carolina negócio atualizado LUCIANO MARQUES MOREIRA
+Nota:
+Adicionou uma nova nota
+27 de julho de 2026 às 12:06Ana Carolina
+Ana Carolina negócio atualizado LUCIANO MARQUES MOREIRA
+Nota:
+Adicionou uma nova nota
+27 de julho de 2026 às 12:05Ana Carolina
+Ana Carolina negócio atualizado LUCIANO MARQUES MOREIRA
+Nota:
+Editou uma nota
+27 de julho de 2026 às 11:46Ana Carolina
+Ana Carolina atualizou o negócio: Herbert Luís Ornaghi
+Etapa:
+Contrato assinado
+Ativo
+27 de julho de 2026 às 11:39Ana Carolina
+Ana Carolina negócio atualizado Herbert Luís Ornaghi
+Nota:
+Adicionou uma nova nota
+27 de julho de 2026 às 11:39Ana Carolina
+Ana Carolina atualizou o negócio: nelson
+Etapa:
+Contrato assinado
+Ativo
+27 de julho de 2026 às 11:31Ana Carolina
+Ana Carolina atualizou o negócio: Anderson ferreira
+Etapa:
+Contrato assinado
+Ativo
+27 de julho de 2026 às 11:25Ana Carolina
+Ana Carolina negócio atualizado Anderson ferreira
+Nota:
+Adicionou uma nova nota
+27 de julho de 2026 às 11:09Ana Carolina
+Ana Carolina negócio atualizado Gustavo Merlin
+Nota:
+Adicionou uma nova nota
+27 de julho de 2026 às 10:50Ana Carolina
+Ana Carolina atualizou o negócio: Gustavo Merlin
+Etapa:
+Contrato assinado
+Ativo
+27 de julho de 2026 às 10:49Ana Carolina
+Ana Carolina negócio atualizado Rogério Fontoura Costa
+Nota:
+Adicionou uma nova nota
+27 de julho de 2026 às 10:43Ana Carolina
+Ana Carolina atualizou o negócio: Rogério Fontoura Costa
+Etapa:
+Contrato assinado
+Ativo
+27 de julho de 2026 às 10:36Ana Carolina
+Ana Carolina negócio atualizado Bruno Alves
+Nota:
+Adicionou uma nova nota
+27 de julho de 2026 às 10:29Ana Carolina
+Ana Carolina atualizou o negócio: Vinicius
+Etapa:
+Contrato assinado
+Ativo
+27 de julho de 2026 às 10:21Ana Carolina
+Ana Carolina negócio atualizado Vinicius
+Nota:
+Adicionou uma nova nota
+27 de julho de 2026 às 10:21Ana Carolina
+Ana Carolina negócio atualizado Valdemar
+Nota:
+Adicionou uma nova nota
+27 de julho de 2026 às 10:10Ana Carolina
+Ana Carolina negócio atualizado ELTON
+Nota:
+Adicionou uma nova nota
+27 de julho de 2026 às 09:26Ana Carolina
+Ana Carolina negócio atualizado Maykon
+Nota:
+Adicionou uma nova nota
+27 de julho de 2026 às 09:21Ana Carolina
+Ana Carolina negócio atualizado Ivan I Player 2
+Nota:
+Adicionou uma nova nota
+27 de julho de 2026 às 09:11Ana Carolina
+Ana Carolina atualizou o negócio: Robson | Circuito Veículos
+Proprietário:
+Raissa Mayra
+Karine Azevedo
+27 de julho de 2026 às 09:10Ana Carolina
+Ana Carolina atualizou o negócio: Rodrigo Henriques dos Santos | Rodrigão Seminovos
+Proprietário:
+Raissa Mayra
+Giovanna Conde
+27 de julho de 2026 às 09:10Ana Carolina
+Ana Carolina atualizou o negócio: LEANDRO | LGC MULTIMARCAS
+Proprietário:
+Raissa Mayra
+Beatriz
+27 de julho de 2026 às 09:10Ana Carolina
+Ana Carolina atualizou o negócio: Wallys | Premier Multimarcas
+Proprietário:
+Raissa Mayra
+Karine Azevedo
+27 de julho de 2026 às 09:09Ana Carolina
+Ana Carolina excluiu a atividade: (título não disponível)
+27 de julho de 2026 às 08:40Ana Carolina
+Ana Carolina excluiu a atividade: (título não disponível)
+27 de julho de 2026 às 08:40Ana Carolina
+Ana Carolina negócio atualizado Bruno
+Nota:
+Adicionou uma nova nota
+27 de julho de 2026 às 08:16Ana Carolina
+Ana Carolina excluiu a atividade: (título não disponível)
+27 de julho de 2026 às 08:16Ana Carolina
+Ana Carolina atualizou o negócio: Bruno
+Etapa:
+Contrato assinado
+Ativo
+27 de julho de 2026 às 08:15Ana Carolina
+Ana Carolina atualizou o negócio: Rodrigo | CRV AUTOS
+Proprietário:
+Raissa Mayra
+Karine Azevedo
+27 de julho de 2026 às 07:57Ana Carolina
+Ana Carolina atualizou o negócio: Eduardo I Marcon Veículos
+Proprietário:
+Raissa Mayra
+Giovanna Conde
+27 de julho de 2026 às 07:56Ana Carolina
+Ana Carolina atualizou o negócio: Amanda | Aloísio | RB Veículos
+Proprietário:
+Raissa Mayra
+Karine Azevedo
+27 de julho de 2026 às 07:56Ana Carolina
+Ana Carolina atualizou o negócio: HUGO | HG VEÍCULOS
+Proprietário:
+Raissa Mayra
+Giovanna Conde
+27 de julho de 2026 às 07:56Ana Carolina
+Ana Carolina atualizou o negócio: Jose Neto | Auto Elite
+Proprietário:
+Raissa Mayra
+Karine Azevedo
+27 de julho de 2026 às 07:55Ana Carolina
+Ana Carolina negócio atualizado Flavio Henrique Paes Rocha | Coliseu Motors
+Nota:
+Adicionou uma nova nota
+24 de julho de 2026 às 16:38Ana Carolina
+Ana Carolina negócio atualizado JOSÉ PAULO DE ALMEIDA| GARAGEM MODERNA VEÍCULOS
+Nota:
+Adicionou uma nova nota
+24 de julho de 2026 às 15:02Ana Carolina
+Ana Carolina atualizou o negócio: JOSÉ PAULO DE ALMEIDA| GARAGEM MODERNA VEÍCULOS
+Etapa:
+Base
+Fechamento
+24 de julho de 2026 às 15:02Ana Carolina
+Ana Carolina atualizou o negócio: Bruno | Santa Maria Veículos
+Proprietário:
+Raissa Mayra
+Karine Azevedo
+24 de julho de 2026 às 14:39Ana Carolina
+Ana Carolina atualizou o negócio: Ivan I Player 2
+Título:
+Ivan
+Ivan I Player 2
+24 de julho de 2026 às 14:12Ana Carolina
+Ana Carolina negócio atualizado Ivan I Player 2
+Nota:
+Adicionou uma nova nota
+24 de julho de 2026 às 14:08Ana Carolina
+Ana Carolina adicionou uma nova atividade: Realizar PPL
+24 de julho de 2026 às 13:59Ana Carolina
+Ana Carolina adicionou uma nova atividade: Realizar cadastro dos contatos na plataformna plataforma e grupo do WPP
+24 de julho de 2026 às 13:59Ana Carolina
+Ana Carolina adicionou uma nova atividade: Definir pilar - Primeiro impacto
+24 de julho de 2026 às 13:59Ana Carolina
+Ana Carolina adicionou uma nova atividade: Realizar cadastro dos contatos no G30 Hub
+24 de julho de 2026 às 13:59Ana Carolina
+Ana Carolina adicionou uma nova atividade: Cliente assistir a trilha inicial
+24 de julho de 2026 às 13:59Ana Carolina
+Ana Carolina adicionou uma nova atividade: Realizar cadastro dos contatos na plataforma
+24 de julho de 2026 às 13:59Ana Carolina
+Ana Carolina atualizou o negócio: Nelson Gonçalves | COVEPI
+Etapa:
+Kick-off agendado
+Kick-off realizado
+24 de julho de 2026 às 13:59Ana Carolina
+Ana Carolina excluiu a atividade: (título não disponível)
+24 de julho de 2026 às 13:47Ana Carolina
+Ana Carolina adicionou uma nova atividade: Realizar Kick-off
+24 de julho de 2026 às 13:47Ana Carolina
+Ana Carolina atualizou o negócio: Nelson Gonçalves | COVEPI
+Etapa:
+Contrato assinado
+Kick-off agendado
+24 de julho de 2026 às 13:47Ana Carolina
+Ana Carolina atualizou a atividade: Agendar reunião de Kick-off
+Status:
+Pendente
+Concluída
+24 de julho de 2026 às 13:47Ana Carolina
+Ana Carolina atualizou a pessoa: nelson
+Telefone:
+19999740509
++55 19 97405-0939 (work)
+24 de julho de 2026 às 13:33Ana Carolina
+Ana Carolina adicionou uma nova atividade: Planejamento de tráfego pago
+24 de julho de 2026 às 13:30Ana Carolina
+Ana Carolina adicionou uma nova atividade: Planejamento de tráfego pago - no show
+24 de julho de 2026 às 13:29Ana Carolina
+Ana Carolina atualizou a pessoa: nelson
+Telefone:
+55551999740509
+19999740509 (work)
+24 de julho de 2026 às 13:23Ana Carolina
+Ana Carolina atualizou a pessoa: nelson
+Telefone:
+5555199740509
+55551999740509 (work)
+24 de julho de 2026 às 13:21Ana Carolina
+Ana Carolina atualizou o negócio: Pedro Henrique barcelos Ávila
+Etapa:
+Contrato assinado
+Kick-off agendado
+24 de julho de 2026 às 13:10Ana Carolina
+Ana Carolina negócio atualizado Ivan I Player 2
+Nota:
+Adicionou uma nova nota
+24 de julho de 2026 às 12:53Ana Carolina
+Ana Carolina atualizou o negócio: Danilo Pizzirani l Pizzirani Veiculos
+Proprietário:
+Daniel Fernandes
+Karine Azevedo
+24 de julho de 2026 às 12:02Ana Carolina
+Ana Carolina negócio atualizado Lindomar José da Silva | Limera Multimarcas
+Nota:
+Adicionou uma nova nota
+24 de julho de 2026 às 11:50Ana Carolina
+Ana Carolina negócio atualizado Lindomar José da Silva | Limera Multimarcas
+Nota:
+Adicionou uma nova nota
+24 de julho de 2026 às 11:49Ana Carolina
+Ana Carolina atualizou a atividade: Realizar Kick-off
+Status:
+Pendente
+Concluída
+24 de julho de 2026 às 10:52Ana Carolina
+Ana Carolina atualizou o negócio: Pedro | PEPE VEÍCULOS
+Etiqueta:
+Neutro, Carchat, CONVIDADO LIONS
+Insatisfeito ,Carchat ,CONVIDADO LIONS
+24 de julho de 2026 às 10:41Ana Carolina
+Ana Carolina adicionou uma nova atividade: Reunião mensal (CS)
+24 de julho de 2026 às 10:39Ana Carolina
+Ana Carolina adicionou uma nova atividade: Reunião mensal - no show (da minha parte, estava com outra demanda)
+24 de julho de 2026 às 10:39Ana Carolina
+Ana Carolina adicionou uma nova atividade: Reunião mensal - no show
+24 de julho de 2026 às 10:27Ana Carolina
+Ana Carolina atualizou o negócio: Jose Carlos | Carlão Automóveis
+Proprietário:
+Daniel Fernandes
+Giovana Matos
+24 de julho de 2026 às 10:05Ana Carolina
+Ana Carolina negócio atualizado Décio I JD
+Nota:
+Adicionou uma nova nota
+23 de julho de 2026 às 17:22Ana Carolina
+Ana Carolina excluiu a atividade: (título não disponível)
+23 de julho de 2026 às 17:19Ana Carolina
+Ana Carolina atualizou o negócio: Décio I JD
+Título:
+JD
+Décio I JD
+23 de julho de 2026 às 17:16Ana Carolina
+Ana Carolina negócio atualizado LUCIANO MARQUES MOREIRA
+Nota:
+Editou uma nota
+23 de julho de 2026 às 17:14Ana Carolina
+Ana Carolina excluiu a atividade: (título não disponível)
+23 de julho de 2026 às 17:14Ana Carolina
+Ana Carolina negócio atualizado LUCIANO MARQUES MOREIRA
+Nota:
+Adicionou uma nova nota
+23 de julho de 2026 às 17:14Ana Carolina
+Ana Carolina atualizou o negócio: Claudio
+Etapa:
+Contrato assinado
+Ativo
+23 de julho de 2026 às 17:06Ana Carolina
+Ana Carolina atualizou o negócio: Elizon Alexandre Soares neto
+Etapa:
+Contrato assinado
+Ativo
+23 de julho de 2026 às 17:06Ana Carolina
+Ana Carolina negócio atualizado Elizon Alexandre Soares neto
+Nota:
+Adicionou uma nova nota
+23 de julho de 2026 às 17:06Ana Carolina
+Ana Carolina excluiu a atividade: (título não disponível)
+23 de julho de 2026 às 17:05Ana Carolina
+Ana Carolina negócio atualizado Claudio
+Nota:
+Adicionou uma nova nota
+23 de julho de 2026 às 16:39Ana Carolina
+Ana Carolina negócio atualizado ELTON
+Nota:
+Adicionou uma nova nota
+23 de julho de 2026 às 16:38Ana Carolina
+Ana Carolina atualizou a pessoa: ELTON
+Telefone:
+55551999740891
+55551999740891 (work)
+23 de julho de 2026 às 16:37Ana Carolina
+Ana Carolina atualizou a pessoa: ELTON
+Telefone:
+5555199740891
+55551999740891 (work)
+23 de julho de 2026 às 16:34Ana Carolina
+Ana Carolina atualizou o negócio: Nelson Gonçalves | COVEPI
+Proprietário:
+Giovanna Conde
+Karine Azevedo
+23 de julho de 2026 às 16:30Ana Carolina
+Ana Carolina atualizou o negócio: Lindomar José da Silva | Limera Multimarcas
+Título:
+Lindomar José da Silva | limeramultimarcas
+Lindomar José da Silva | Limera Multimarcas
+23 de julho de 2026 às 15:38Ana Carolina
+Ana Carolina atualizou o negócio: Lindomar José da Silva | Limera Multimarcas
+Título:
+Lindomar José da Silva
+Lindomar José da Silva | limeramultimarcas
+23 de julho de 2026 às 15:38Ana Carolina
+Ana Carolina atualizou o negócio: Camila Ornaghi I 299 Motors
+Etiqueta:
+Média
+Satisfeito ,Média ,G30 IA
+23 de julho de 2026 às 13:47Ana Carolina
+Ana Carolina negócio atualizado Camila Ornaghi I 299 Motors
+Nota:
+Adicionou uma nova nota
+23 de julho de 2026 às 13:34Ana Carolina
+Ana Carolina adicionou uma nova atividade: Atingir primeiro impacto com cliente
+23 de julho de 2026 às 13:27Ana Carolina
+Ana Carolina atualizou o negócio: Camila Ornaghi I 299 Motors
+Etapa:
+Kick-off realizado
+Comercial
+23 de julho de 2026 às 13:27Ana Carolina
+Ana Carolina atualizou o negócio: Camila Ornaghi I 299 Motors
+Proprietário:
+Karine Azevedo
+Giovanna Conde
+23 de julho de 2026 às 13:26Ana Carolina
+Ana Carolina negócio atualizado Camila Ornaghi I 299 Motors
+Nota:
+Adicionou uma nova nota
+23 de julho de 2026 às 12:49Ana Carolina
+Ana Carolina adicionou uma nova atividade: Realizar PPL
+23 de julho de 2026 às 12:48Ana Carolina
+Ana Carolina adicionou uma nova atividade: Realizar cadastro dos contatos na plataformna plataforma e grupo do WPP
+23 de julho de 2026 às 12:48Ana Carolina
+Ana Carolina adicionou uma nova atividade: Definir pilar - Primeiro impacto
+23 de julho de 2026 às 12:48Ana Carolina
+Ana Carolina adicionou uma nova atividade: Cliente assistir a trilha inicial
+23 de julho de 2026 às 12:48Ana Carolina
+Ana Carolina adicionou uma nova atividade: Realizar cadastro dos contatos no G30 Hub
+23 de julho de 2026 às 12:48Ana Carolina
+Ana Carolina adicionou uma nova atividade: Realizar cadastro dos contatos na plataforma
+23 de julho de 2026 às 12:48Ana Carolina
+Ana Carolina atualizou o negócio: Camila Ornaghi I 299 Motors
+Etapa:
+Kick-off agendado
+Kick-off realizado
+23 de julho de 2026 às 12:48Ana Carolina
+Ana Carolina atualizou a atividade: Realizar Kick-off
+Status:
+Pendente
+Concluída
+23 de julho de 2026 às 12:48Ana Carolina
+Ana Carolina atualizou o negócio: Camila Ornaghi I 299 Motors
+Título:
+Camila Ornaghi
+Camila Ornaghi I 299 Motors
+23 de julho de 2026 às 12:15Ana Carolina
+Ana Carolina adicionou uma nova atividade: Realizar Kick-off
+23 de julho de 2026 às 12:13Ana Carolina
+Ana Carolina atualizou o negócio: Camila Ornaghi I 299 Motors
+Etapa:
+Contrato assinado
+Kick-off agendado
+23 de julho de 2026 às 12:13Ana Carolina
+Ana Carolina atualizou a atividade: Agendar reunião de Kick-off
+Status:
+Pendente
+Concluída
+23 de julho de 2026 às 12:13Ana Carolina
+Ana Carolina atualizou o negócio: Pedro Henrique barcelos Ávila
+Proprietário:
+Daniel Fernandes
+Giovanna Conde
+23 de julho de 2026 às 11:34Ana Carolina
+Ana Carolina atualizou o negócio: Nelson Gonçalves | COVEPI
+Proprietário:
+Daniel Fernandes
+Giovanna Conde
+23 de julho de 2026 às 11:34Ana Carolina
+Ana Carolina atualizou o negócio: Carlos Ernesto | Lecar Veículos
+Proprietário:
+Daniel Fernandes
+Giovanna Conde
+23 de julho de 2026 às 11:34Ana Carolina
+Ana Carolina atualizou o negócio: Lindomar José da Silva | Limera Multimarcas
+Proprietário:
+Daniel Fernandes
+Karine Azevedo
+23 de julho de 2026 às 11:33Ana Carolina
+Ana Carolina atualizou o negócio: Camila Ornaghi I 299 Motors
+Proprietário:
+Daniel Fernandes
+Karine Azevedo
+23 de julho de 2026 às 11:33Ana Carolina
+Ana Carolina adicionou uma nova atividade: Realizar PPL
+22 de julho de 2026 às 16:47Ana Carolina
+Ana Carolina adicionou uma nova atividade: Realizar cadastro dos contatos na plataformna plataforma e grupo do WPP
+22 de julho de 2026 às 16:47Ana Carolina
+Ana Carolina adicionou uma nova atividade: Definir pilar - Primeiro impacto
+22 de julho de 2026 às 16:47Ana Carolina
+Ana Carolina adicionou uma nova atividade: Cliente assistir a trilha inicial
+22 de julho de 2026 às 16:47Ana Carolina
+Ana Carolina adicionou uma nova atividade: Realizar cadastro dos contatos na plataforma
+22 de julho de 2026 às 16:47Ana Carolina
+Ana Carolina adicionou uma nova atividade: Realizar cadastro dos contatos no G30 Hub
+22 de julho de 2026 às 16:47Ana Carolina
+Ana Carolina atualizou o negócio: Anderson Ferreira l Anju Motors
+Etapa:
+Kick-off agendado
+Kick-off realizado
+22 de julho de 2026 às 16:47Ana Carolina
+Ana Carolina atualizou a atividade: Realizar Kick-off
+Status:
+Pendente
+Concluída
+22 de julho de 2026 às 16:47Ana Carolina
+Ana Carolina negócio atualizado Anderson Ferreira l Anju Motors
+Nota:
+Adicionou uma nova nota
+22 de julho de 2026 às 16:47Ana Carolina
+Ana Carolina negócio atualizado Anderson da Silva | DF Veículos Manaus
+Nota:
+Adicionou uma nova nota
+22 de julho de 2026 às 14:25Ana Carolina
+Ana Carolina atualizou a atividade: Realizar Kick-off
+Status:
+Pendente
+Concluída
+22 de julho de 2026 às 13:51Ana Carolina
+Ana Carolina negócio atualizado Thiago Magno| CAR BOSS MULTIMARCAS
+Nota:
+Adicionou uma nova nota
+22 de julho de 2026 às 12:27Ana Carolina
+Ana Carolina negócio atualizado Anderson Ferreira l Anju Motors
+Nota:
+Adicionou uma nova nota
+22 de julho de 2026 às 09:52Ana Carolina
+Ana Carolina adicionou uma nova atividade: Dashboard de bloco de ligações
+21 de julho de 2026 às 17:14Ana Carolina
+Ana Carolina atualizou a atividade: Planejamento de Método MAPA (CS)
+Nota:
+Editou uma nota
+21 de julho de 2026 às 17:13Ana Carolina
+Ana Carolina atualizou a atividade: Planejamento de Método MAPA (CS)
+Nota:
+Adicionou uma nova nota
+21 de julho de 2026 às 17:12Ana Carolina
+Ana Carolina atualizou a atividade: Planejamento de Método MAPA (CS)
+Status:
+Pendente
+Concluída
+21 de julho de 2026 às 17:12Ana Carolina
+Ana Carolina atualizou o negócio: Reginaldo Felicio | Lilian | Renova Multimarcas
+Etiqueta:
+Insatisfeito, Carchat, RC
+Insatisfeito ,Carchat ,G30 IA ,RC
+21 de julho de 2026 às 17:07Ana Carolina
+Ana Carolina adicionou uma nova atividade: Planejamento de Método MAPA (CS)
+21 de julho de 2026 às 17:01Ana Carolina
+Ana Carolina atualizou o negócio: Cesar Carlos | Arena Auto Natal - Natal-RN
+Título:
+Cesar Carlos Silveira Mariz | Arena Auto Natal - Natal-RN
+Cesar Carlos | Arena Auto Natal - Natal-RN
+21 de julho de 2026 às 14:25Ana Carolina
+Ana Carolina negócio atualizado Claudio Cagion I Auto Business Cars
+Nota:
+Excluiu uma nota
+21 de julho de 2026 às 14:21Ana Carolina
+Ana Carolina negócio atualizado Claudio Cagion I Auto Business Cars
+Nota:
+Adicionou uma nova nota
+21 de julho de 2026 às 14:21Ana Carolina
+Ana Carolina atualizou a atividade: Planejamento de treinamento de vendedores
+Nota:
+Adicionou uma nova nota
+21 de julho de 2026 às 13:59Ana Carolina
+Ana Carolina atualizou a atividade: Planejamento de treinamento de vendedores
+Status:
+Pendente
+Concluída
+21 de julho de 2026 às 13:59Ana Carolina
+Ana Carolina atualizou o negócio: José | Assis Multimarcas
+Proprietário:
+Raissa Mayra
+Karine Azevedo
+21 de julho de 2026 às 13:09Ana Carolina
+Ana Carolina negócio atualizado Bispo I Prime Multimarcas
+Nota:
+Adicionou uma nova nota
+21 de julho de 2026 às 13:08Ana Carolina
+Ana Carolina atualizou a atividade: Bispo I Prime Multimarcas Captar feedback da aplicação do método na loja
+Nota:
+Adicionou uma nova nota
+21 de julho de 2026 às 13:07Ana Carolina
+Ana Carolina atualizou a atividade: Bispo I Prime Multimarcas Captar feedback da aplicação do método na loja
+Status:
+Pendente
+Concluída
+21 de julho de 2026 às 13:07Ana Carolina
+Ana Carolina adicionou uma nova atividade: Planejamento de SDR (CS)
+21 de julho de 2026 às 12:40Ana Carolina
+Ana Carolina negócio atualizado André Luiz I Comfort Auto
+Nota:
+Adicionou uma nova nota
+21 de julho de 2026 às 12:00Ana Carolina
+Ana Carolina atualizou a atividade: Ligar
+Nota:
+Editou uma nota
+21 de julho de 2026 às 11:52Ana Carolina
+Ana Carolina adicionou uma nova atividade: Ligar
+21 de julho de 2026 às 11:51Ana Carolina
+Ana Carolina atualizou a atividade: Realizar Kick-off
+Prazo:
+2026-07-24
+2026-07-22
+21 de julho de 2026 às 11:49Ana Carolina
+Ana Carolina adicionou uma nova atividade: Realizar Kick-off
+21 de julho de 2026 às 11:47Ana Carolina
+Ana Carolina atualizou o negócio: Anderson Ferreira l Anju Motors
+Etapa:
+Contrato assinado
+Kick-off agendado
+21 de julho de 2026 às 11:47Ana Carolina
+Ana Carolina atualizou a atividade: Agendar reunião de Kick-off
+Status:
+Pendente
+Concluída
+21 de julho de 2026 às 11:47Ana Carolina
+Ana Carolina atualizou a atividade: Distribuição do cliente
+Status:
+Pendente
+Concluída
+21 de julho de 2026 às 11:32Ana Carolina
+Ana Carolina atualizou o negócio: Anderson Ferreira l Anju Motors
+Proprietário:
+Daniel Fernandes
+Karine Azevedo
+21 de julho de 2026 às 11:32Ana Carolina
+Ana Carolina atualizou o negócio: Claudio Cagion I Auto Business Cars
+Proprietário:
+Daniel Fernandes
+Karine Azevedo
+21 de julho de 2026 às 11:30Ana Carolina
+Ana Carolina atualizou a atividade: Realizar Kick-off
+Prazo:
+2026-07-23
+2026-07-22
+21 de julho de 2026 às 11:28Ana Carolina
+Ana Carolina negócio atualizado Claudio Cagion I Auto Business Cars
+Nota:
+Adicionou uma nova nota
+21 de julho de 2026 às 11:28Ana Carolina
+Ana Carolina adicionou uma nova atividade: Planejamento de treinamento de vendedores
+21 de julho de 2026 às 10:49Ana Carolina
+Ana Carolina negócio atualizado Jose Paulo I Garagem Moderna
+Nota:
+Adicionou uma nova nota
+21 de julho de 2026 às 10:49Ana Carolina
+Ana Carolina atualizou a atividade: Agendar plano mensal
+Status:
+Pendente
+Concluída
+21 de julho de 2026 às 10:48Ana Carolina
+Ana Carolina negócio atualizado Douglas I Machado's
+Nota:
+Excluiu uma nota
+21 de julho de 2026 às 09:00Ana Carolina
+Ana Carolina negócio atualizado Douglas I Machado's
+Nota:
+Adicionou uma nova nota
+21 de julho de 2026 às 08:51Ana Carolina
+Ana Carolina adicionou uma nova atividade: Reunião mensal (CS)
+21 de julho de 2026 às 08:47Ana Carolina
+Ana Carolina negócio atualizado Roberto Amadio | Lexus MOTORS
+Nota:
+Adicionou uma nova nota
+21 de julho de 2026 às 08:47Ana Carolina
+Ana Carolina adicionou uma nova atividade: Atingir primeiro impacto com cliente
+21 de julho de 2026 às 08:46Ana Carolina
+Ana Carolina atualizou o negócio: Roberto Amadio | Lexus MOTORS
+Etapa:
+Operacional
+Marketing
+21 de julho de 2026 às 08:45Ana Carolina
+Ana Carolina atualizou a atividade: Atingir primeiro impacto com cliente
+Nota:
+Editou uma nota
+21 de julho de 2026 às 08:45Ana Carolina
+Ana Carolina atualizou a atividade: Atingir primeiro impacto com cliente
+Status:
+Pendente
+Concluída
+21 de julho de 2026 às 08:45Ana Carolina
+Ana Carolina atualizou a atividade: Roberto Amadio | Lexus MOTORS Captar feedback da aplicação do método na loja
+Nota:
+Adicionou uma nova nota
+21 de julho de 2026 às 08:44Ana Carolina
+Ana Carolina atualizou a atividade: Roberto Amadio | Lexus MOTORS Captar feedback da aplicação do método na loja
+Status:
+Pendente
+Concluída
+21 de julho de 2026 às 08:44Ana Carolina
+Ana Carolina adicionou uma nova atividade: Planejamento de Tráfego Pago (CS)
+21 de julho de 2026 às 08:43Ana Carolina
+Ana Carolina adicionou uma nova atividade: Reunião mensal (CS)
+20 de julho de 2026 às 17:20Ana Carolina
+Ana Carolina adicionou uma nova atividade: Planejamento de Tráfego Pago (CS)
+20 de julho de 2026 às 17:03Ana Carolina
+Ana Carolina atualizou a atividade: Planejamento de Tráfego Pago (CS) - no show
+Assunto:
+Planejamento de Tráfego Pago (CS)
+Planejamento de Tráfego Pago (CS) - no show
+20 de julho de 2026 às 17:03Ana Carolina
+Ana Carolina atualizou a atividade: Planejamento de Tráfego Pago (CS) - no show
+Status:
+Pendente
+Concluída
+20 de julho de 2026 às 17:03Ana Carolina
+Ana Carolina negócio atualizado Claudio Cagion I Auto Business Cars
+Nota:
+Editou uma nota
+20 de julho de 2026 às 16:55Ana Carolina
+Ana Carolina negócio atualizado Claudio Cagion I Auto Business Cars
+Nota:
+Adicionou uma nova nota
+20 de julho de 2026 às 16:55Ana Carolina
+Ana Carolina atualizou o negócio: Claudio Cagion I Auto Business Cars
+Título:
+Claudio Cagion
+Claudio Cagion I Auto Business Cars
+20 de julho de 2026 às 16:41Ana Carolina
+Ana Carolina negócio atualizado Luana Gomes | GS Automóveis
+Nota:
+Excluiu uma nota
+20 de julho de 2026 às 16:04Ana Carolina
+Ana Carolina negócio atualizado Luana Gomes | GS Automóveis
+Nota:
+Adicionou uma nova nota
+20 de julho de 2026 às 16:04Ana Carolina
+Ana Carolina adicionou uma nova atividade: NOSHOW - Reunião mensal (CS)
+20 de julho de 2026 às 15:51Ana Carolina
+Ana Carolina atualizou a atividade: Enviar sugestão de Bio
+Nota:
+Editou uma nota
+20 de julho de 2026 às 11:22Ana Carolina
+Ana Carolina atualizou a atividade: Enviar sugestão de Bio
+Status:
+Pendente
+Concluída
+20 de julho de 2026 às 11:22Ana Carolina
+Ana Carolina atualizou a atividade: Iniciar Prospecção
+Status:
+Pendente
+Concluída
+20 de julho de 2026 às 11:07Ana Carolina
+Ana Carolina atualizou o negócio: Kauan de Souza Alves
+Etapa:
+Contrato assinado
+Ativo
+20 de julho de 2026 às 11:05Ana Carolina
+Ana Carolina atualizou o negócio: Kauan de Souza Alves
+Proprietário:
+Daniel Fernandes
+Ana Carolina
+20 de julho de 2026 às 11:05Ana Carolina
+Ana Carolina negócio atualizado Kauan de Souza Alves
+Nota:
+Adicionou uma nova nota
+20 de julho de 2026 às 10:47Ana Carolina
+Ana Carolina atualizou o negócio: Kauan de Souza Alves
+Etapa:
+Base
+Fechamento
+20 de julho de 2026 às 10:46Ana Carolina
+Ana Carolina negócio atualizado Edson Castanha I EloMixMultimarcas
+Nota:
+Adicionou uma nova nota
+17 de julho de 2026 às 15:49Ana Carolina
+Ana Carolina adicionou uma nova atividade: Planejamento de Tráfego Pago (CS)
+17 de julho de 2026 às 15:24Ana Carolina
+Ana Carolina negócio atualizado Lago.auto@hotmail.com - Ronaldo
+Nota:
+Adicionou uma nova nota
+17 de julho de 2026 às 13:27Ana Carolina
+Ana Carolina atualizou o negócio: Lago.auto@hotmail.com - Ronaldo
+Etapa:
+Base
+Fechamento
+17 de julho de 2026 às 13:27Ana Carolina
+Ana Carolina atualizou o negócio: Lago.auto@hotmail.com - Ronaldo
+Proprietário:
+Renan Biancalana
+Ana Carolina
+17 de julho de 2026 às 12:34Ana Carolina
+Ana Carolina adicionou uma nova atividade: Atingir primeiro impacto com cliente
+17 de julho de 2026 às 12:31Ana Carolina
+Ana Carolina atualizou o negócio: RONALDO LAGO - LAGO AUTOMOVEIS LTDA
+Etapa:
+Adm/fin
+Comercial
+17 de julho de 2026 às 12:30Ana Carolina
+Ana Carolina atualizou a atividade: Atingir primeiro impacto com cliente
+Status:
+Pendente
+Concluída
+17 de julho de 2026 às 12:30Ana Carolina
+Ana Carolina atualizou a atividade: Planejamento de Tráfego Pago (CS)
+Nota:
+Adicionou uma nova nota
+17 de julho de 2026 às 12:13Ana Carolina
+Ana Carolina atualizou a atividade: Planejamento de Tráfego Pago (CS)
+Status:
+Pendente
+Concluída
+17 de julho de 2026 às 12:13Ana Carolina
+Ana Carolina atualizou a atividade: Reunião mensal (CS)
+Nota:
+Adicionou uma nova nota
+17 de julho de 2026 às 09:17Ana Carolina
+Ana Carolina atualizou a atividade: Reunião mensal (CS)
+Status:
+Pendente
+Concluída
+17 de julho de 2026 às 09:17Ana Carolina
+Ana Carolina excluiu a atividade: (título não disponível)
+17 de julho de 2026 às 09:02Ana Carolina
+Ana Carolina excluiu a atividade: (título não disponível)
+17 de julho de 2026 às 08:44Ana Carolina
+Ana Carolina excluiu a atividade: (título não disponível)
+17 de julho de 2026 às 08:44Ana Carolina
+Ana Carolina negócio atualizado Victor Fabiano | VICTOR MULTIMARCAS LTDA
+Nota:
+Adicionou uma nova nota
+16 de julho de 2026 às 15:40Ana Carolina
+Ana Carolina negócio atualizado Victor Fabiano | VICTOR MULTIMARCAS LTDA
+Nota:
+Adicionou uma nova nota
+16 de julho de 2026 às 15:24Ana Carolina
+Ana Carolina atualizou a atividade: Realizar cadastro dos contatos na plataformna plataforma e grupo do WPP
+Status:
+Pendente
+Concluída
+16 de julho de 2026 às 13:59Ana Carolina
+Ana Carolina negócio atualizado Eloan Guimarães | ELO VEICULOS LTDA
+Nota:
+Adicionou uma nova nota
+16 de julho de 2026 às 13:59Ana Carolina
+Ana Carolina adicionou uma nova atividade: Implantação da Metodologia
+16 de julho de 2026 às 13:58Ana Carolina
+Ana Carolina adicionou uma nova atividade: RETORNAR CONTATO PARA INICIAR TODO PROCESSO
+16 de julho de 2026 às 13:39Ana Carolina
+Ana Carolina negócio atualizado Eloan Guimarães | ELO VEICULOS LTDA
+Nota:
+Adicionou uma nova nota
+16 de julho de 2026 às 13:32Ana Carolina
+Ana Carolina atualizou o negócio: Eloan Guimarães | ELO VEICULOS LTDA
+Etiqueta:
+Alta
+Alta ,G30 IA
+16 de julho de 2026 às 13:28Ana Carolina
+Ana Carolina negócio atualizado Eloan Guimarães | ELO VEICULOS LTDA
+Nota:
+Adicionou uma nova nota
+16 de julho de 2026 às 13:27Ana Carolina
+Ana Carolina negócio atualizado Cesar Carlos | Arena Auto Natal - Natal-RN
+Nota:
+Adicionou uma nova nota
+16 de julho de 2026 às 13:25Ana Carolina
+Ana Carolina atualizou a atividade: Aplicação na loja
+Assunto:
+Ligar
+Aplicação na loja
+16 de julho de 2026 às 12:26Ana Carolina
+Ana Carolina adicionou uma nova atividade: Aplicação na loja
+16 de julho de 2026 às 12:26Ana Carolina
+Ana Carolina atualizou a atividade: Realizar cadastro dos contatos na plataformna plataforma e grupo do WPP
+Status:
+Pendente
+Concluída
+16 de julho de 2026 às 12:25Ana Carolina
+Ana Carolina atualizou a atividade: Realizar cadastro dos contatos na plataforma
+Status:
+Pendente
+Concluída
+16 de julho de 2026 às 12:25Ana Carolina
+Ana Carolina atualizou a atividade: Realizar cadastro dos contatos no G30 Hub
+Status:
+Pendente
+Concluída
+16 de julho de 2026 às 12:24Ana Carolina
+Ana Carolina atualizou o negócio: Raja Seminovos
+Proprietário:
+Daniel Fernandes
+Ana Carolina
+16 de julho de 2026 às 12:23Ana Carolina
+Ana Carolina negócio atualizado Raja Seminovos
+Nota:
+Adicionou uma nova nota
+16 de julho de 2026 às 12:23Ana Carolina
+Ana Carolina adicionou uma nova atividade: Planejamento de Tráfego Pago (CS)
+16 de julho de 2026 às 12:02Ana Carolina
+Ana Carolina negócio atualizado RONALDO LAGO - LAGO AUTOMOVEIS LTDA
+Nota:
+Adicionou uma nova nota
+16 de julho de 2026 às 12:02Ana Carolina
+Ana Carolina negócio atualizado Thales e Diego I Digicar Automóveis
+Nota:
+Adicionou uma nova nota
+16 de julho de 2026 às 10:35Ana Carolina
+Ana Carolina negócio atualizado Thales e Diego I Digicar Automóveis
+Nota:
+Adicionou uma nova nota
+16 de julho de 2026 às 10:25Ana Carolina
+Ana Carolina atualizou a atividade: Realizar cadastro dos contatos na plataformna plataforma e grupo do WPP
+Status:
+Pendente
+Concluída
+16 de julho de 2026 às 10:20Ana Carolina
+Ana Carolina atualizou a atividade: Realizar cadastro dos contatos no G30 Hub
+Status:
+Pendente
+Concluída
+16 de julho de 2026 às 10:19Ana Carolina
+Ana Carolina atualizou a atividade: Realizar cadastro dos contatos na plataforma
+Status:
+Pendente
+Concluída
+16 de julho de 2026 às 10:19Ana Carolina
+Ana Carolina atualizou a atividade: Cliente assistir a trilha inicial
+Status:
+Pendente
+Concluída
+15 de julho de 2026 às 10:54Ana Carolina
+Ana Carolina adicionou uma nova atividade: Retorno sobre uso da planilha
+15 de julho de 2026 às 10:54Ana Carolina
+Ana Carolina negócio atualizado Alessandra I Miro Motors
+Nota:
+Adicionou uma nova nota
+15 de julho de 2026 às 10:53Ana Carolina
+Ana Carolina excluiu a atividade: (título não disponível)
+15 de julho de 2026 às 10:51Ana Carolina
+Ana Carolina atualizou a atividade: Analisar os dados da planilha. Quantos leads viraram agendamentos reais na loja?
+Nota:
+Adicionou uma nova nota
+15 de julho de 2026 às 10:51Ana Carolina
+Ana Carolina atualizou a atividade: Analisar os dados da planilha. Quantos leads viraram agendamentos reais na loja?
+Status:
+Pendente
+Concluída
+15 de julho de 2026 às 10:51Ana Carolina
+Ana Carolina atualizou a atividade: Alessandra I Miro Motors Captar feedback da aplicação do método na loja
+Status:
+Pendente
+Concluída
+15 de julho de 2026 às 10:49Ana Carolina
+Ana Carolina negócio atualizado Divino Cláudio e Tainara - Elisangela | Goiânia Veículos
+Nota:
+Adicionou uma nova nota
+14 de julho de 2026 às 17:18Ana Carolina
+Ana Carolina atualizou o negócio: Artêmio Jesus I ArteCar
+Título:
+Artêmio Jesus Reis de Souza - A J R DE SOUZA VEICULOS LTDA
+Artêmio Jesus I ArteCar
+14 de julho de 2026 às 13:43Ana Carolina
+Ana Carolina negócio atualizado Victor Fabiano | VICTOR MULTIMARCAS LTDA
+Nota:
+Adicionou uma nova nota
+14 de julho de 2026 às 13:07Ana Carolina
+Ana Carolina excluiu a atividade: (título não disponível)
+14 de julho de 2026 às 12:54Ana Carolina
+Ana Carolina atualizou a atividade: Realizar cadastro dos contatos na plataforma
+Status:
+Pendente
+Concluída
+14 de julho de 2026 às 10:53Ana Carolina
+Ana Carolina atualizou a atividade: Realizar cadastro dos contatos no G30 Hub
+Status:
+Pendente
+Concluída
+14 de julho de 2026 às 10:53Ana Carolina
+Ana Carolina atualizou a atividade: Reunião mensal (CS) - no show
+Nota:
+Adicionou uma nova nota
+14 de julho de 2026 às 10:53Ana Carolina
+Ana Carolina atualizou a atividade: Reunião mensal (CS) - no show
+Assunto:
+Reunião mensal (CS)
+Reunião mensal (CS) - no show
+14 de julho de 2026 às 10:53Ana Carolina
+Ana Carolina atualizou a atividade: Reunião mensal (CS) - no show
+Status:
+Pendente
+Concluída
+14 de julho de 2026 às 10:53Ana Carolina
+Ana Carolina atualizou a atividade: Planejamento de Método MAPA (CS)
+Nota:
+Adicionou uma nova nota
+14 de julho de 2026 às 10:08Ana Carolina
+Ana Carolina atualizou a atividade: Planejamento de Método MAPA (CS)
+Status:
+Pendente
+Concluída
+14 de julho de 2026 às 10:08Ana Carolina
+Ana Carolina atualizou o negócio: Iran Teixeira Ramos
+Proprietário:
+Daniel Fernandes
+Raissa Mayra
+14 de julho de 2026 às 10:02Ana Carolina
+Ana Carolina atualizou o negócio: Luís Henhique Souza dos Santos
+Proprietário:
+Daniel Fernandes
+Luigi
+14 de julho de 2026 às 10:02Ana Carolina
+Ana Carolina atualizou o negócio: Cassio Sella
+Proprietário:
+Daniel Fernandes
+Thiago
+14 de julho de 2026 às 10:01Ana Carolina
+Ana Carolina atualizou o negócio: Anderson Marques Vieita
+Proprietário:
+Daniel Fernandes
+Luigi
+14 de julho de 2026 às 10:01Ana Carolina
+Ana Carolina atualizou o negócio: Ailton Bonetti
+Proprietário:
+Daniel Fernandes
+Luigi
+14 de julho de 2026 às 10:00Ana Carolina
+Ana Carolina atualizou o negócio: Gleisin
+Proprietário:
+Daniel Fernandes
+Thiago
+14 de julho de 2026 às 10:00Ana Carolina
+Ana Carolina atualizou o negócio: Ariovaldo Thomazini Junior
+Proprietário:
+Daniel Fernandes
+Luigi
+14 de julho de 2026 às 10:00Ana Carolina
+Ana Carolina atualizou o negócio: Victor Fabiano
+Proprietário:
+Daniel Fernandes
+Thiago
+14 de julho de 2026 às 09:58Ana Carolina
+Ana Carolina atualizou o negócio: Ricardo
+Proprietário:
+Daniel Fernandes
+Luigi
+14 de julho de 2026 às 09:57Ana Carolina
+Ana Carolina atualizou o negócio: Eloan
+Proprietário:
+Daniel Fernandes
+Thiago
+14 de julho de 2026 às 09:57Ana Carolina
+Ana Carolina atualizou o negócio: Rodrigo
+Proprietário:
+Daniel Fernandes
+Thiago
+14 de julho de 2026 às 09:56Ana Carolina
+Ana Carolina atualizou o negócio: Pedroconci@gmail.com - Pedro
+Proprietário:
+Daniel Fernandes
+Giovana Matos
+14 de julho de 2026 às 09:56Ana Carolina
+Ana Carolina atualizou o negócio: Anderson da Silva | DF Veículos Manaus
+Proprietário:
+Daniel Fernandes
+Thiago
+14 de julho de 2026 às 09:55Ana Carolina
+Ana Carolina atualizou o negócio: Rafael I Belém
+Proprietário:
+Daniel Fernandes
+Thiago
+14 de julho de 2026 às 09:17Ana Carolina
+Ana Carolina atualizou o negócio: jardelrosaalmeida@gmail.com - Jardel (carvoice)
+Proprietário:
+Daniel Fernandes
+Luigi
+14 de julho de 2026 às 09:05Ana Carolina
+Ana Carolina atualizou o negócio: Ricardo | AUTO FACIL REPASSE LTDA
+Proprietário:
+Luigi
+14 de julho de 2026 às 08:57Ana Carolina
+Ana Carolina atualizou o negócio: gustavo13murta@icloud.com - Gustavo (Carvoice)
+Proprietário:
+Mariana Pisciottano
+Luigi
+14 de julho de 2026 às 08:56Ana Carolina
+Ana Carolina negócio atualizado Rafael I Belém
+Nota:
+Adicionou uma nova nota
+14 de julho de 2026 às 08:50Ana Carolina
+Ana Carolina atualizou o negócio: Daniel
+Proprietário:
+Daniel Fernandes
+Beatriz
+14 de julho de 2026 às 08:44Ana Carolina
+Ana Carolina excluiu a atividade: (título não disponível)
+13 de julho de 2026 às 16:55Ana Carolina
+Ana Carolina adicionou uma nova atividade: Realizar PPL
+13 de julho de 2026 às 16:50Ana Carolina
+Ana Carolina adicionou uma nova atividade: Realizar cadastro dos contatos na plataformna plataforma e grupo do WPP
+13 de julho de 2026 às 16:50Ana Carolina
+Ana Carolina negócio atualizado Rafael I Belém
+Nota:
+Editou uma nota
+13 de julho de 2026 às 16:50Ana Carolina
+Ana Carolina adicionou uma nova atividade: Definir pilar - Primeiro impacto
+13 de julho de 2026 às 16:50Ana Carolina
+Ana Carolina adicionou uma nova atividade: Cliente assistir a trilha inicial
+13 de julho de 2026 às 16:50Ana Carolina
+Ana Carolina adicionou uma nova atividade: Realizar cadastro dos contatos na plataforma
+13 de julho de 2026 às 16:50Ana Carolina
+Ana Carolina adicionou uma nova atividade: Realizar cadastro dos contatos no G30 Hub
+13 de julho de 2026 às 16:50Ana Carolina
+Ana Carolina atualizou o negócio: Rafael I Belém
+Etapa:
+Kick-off agendado
+Kick-off realizado
+13 de julho de 2026 às 16:50Ana Carolina
+Ana Carolina atualizou a atividade: Realizar Kick-off
+Status:
+Pendente
+Concluída
+13 de julho de 2026 às 16:50Ana Carolina
+Ana Carolina excluiu a atividade: (título não disponível)
+13 de julho de 2026 às 16:49Ana Carolina
+Ana Carolina negócio atualizado Rafael I Belém
+Nota:
+Adicionou uma nova nota
+13 de julho de 2026 às 16:49Ana Carolina
+Ana Carolina atualizou o negócio: Rafael I Belém
+Título:
+Rafael
+Rafael I Belém
+13 de julho de 2026 às 16:48Ana Carolina
+Ana Carolina adicionou uma nova atividade: Reunião mensal (CS)
+13 de julho de 2026 às 15:49Ana Carolina
+Ana Carolina atualizou a atividade: Reunião mensal (CS)
+Nota:
+Adicionou uma nova nota
+13 de julho de 2026 às 15:38Ana Carolina
+Ana Carolina atualizou a atividade: Reunião mensal (CS)
+Status:
+Pendente
+Concluída
+13 de julho de 2026 às 15:38Ana Carolina
+Ana Carolina negócio atualizado Alessandro I Irmãos Aguiar Automóveis
+Nota:
+Adicionou uma nova nota
+13 de julho de 2026 às 15:31Ana Carolina
+Ana Carolina atualizou a atividade: Check-in mensal
+Status:
+Pendente
+Concluída
+13 de julho de 2026 às 15:31Ana Carolina
+Ana Carolina adicionou uma nova atividade: Ligar
+13 de julho de 2026 às 15:26Ana Carolina
+Ana Carolina excluiu a atividade: (título não disponível)
+13 de julho de 2026 às 13:57Ana Carolina
+Ana Carolina adicionou uma nova atividade: Ligar
+13 de julho de 2026 às 13:56Ana Carolina
+Ana Carolina adicionou uma nova atividade: (título não disponível)
+13 de julho de 2026 às 13:55Ana Carolina
+Ana Carolina atualizou a atividade: Onboarding (CS) - no show
+Assunto:
+Onboarding (CS)
+Onboarding (CS) - no show
+13 de julho de 2026 às 13:55Ana Carolina
+Ana Carolina atualizou a atividade: Onboarding (CS) - no show
+Status:
+Pendente
+Concluída
+13 de julho de 2026 às 13:55Ana Carolina
+Ana Carolina atualizou a atividade: Mover para etapa último mês
+Status:
+Pendente
+Concluída
+13 de julho de 2026 às 13:20Ana Carolina
+Ana Carolina adicionou uma nova atividade: Ligar
+13 de julho de 2026 às 13:19Ana Carolina
+Ana Carolina atualizou a atividade: Planejar aniversário da Loja em 31 de Julho ( 35 anos )
+Nota:
+Adicionou uma nova nota
+13 de julho de 2026 às 13:15Ana Carolina
+Ana Carolina atualizou a atividade: Planejar aniversário da Loja em 31 de Julho ( 35 anos )
+Status:
+Pendente
+Concluída
+13 de julho de 2026 às 13:15Ana Carolina
+Ana Carolina atualizou a atividade: Planejamento de Método MAPA (CS)
+Nota:
+Adicionou uma nova nota
+13 de julho de 2026 às 13:09Ana Carolina
+Ana Carolina atualizou a atividade: Planejamento de Método MAPA (CS)
+Status:
+Pendente
+Concluída
+13 de julho de 2026 às 13:09Ana Carolina
+Ana Carolina adicionou uma nova atividade: Planejamento de Método MAPA (CS)
+13 de julho de 2026 às 12:03Ana Carolina
+Ana Carolina atualizou o negócio: Fabricio I BFC AUTOSHOW
+Etiqueta:
+Mega Feirão, Satisfeito, NÃO TEM CARCHAT, Iniciar Plano de Renovação
+Mega Feirão ,Satisfeito ,NÃO TEM CARCHAT ,Iniciar Plano de Renovação ,G30 IA
+13 de julho de 2026 às 12:02Ana Carolina
+Ana Carolina atualizou a atividade: Analise do desempenho de uso do CRM
+Nota:
+Adicionou uma nova nota
+13 de julho de 2026 às 11:42Ana Carolina
+Ana Carolina atualizou a atividade: Analise do desempenho de uso do CRM
+Status:
+Pendente
+Concluída
+13 de julho de 2026 às 11:42Ana Carolina
+Ana Carolina atualizou a atividade: Andamento da contratação
+Nota:
+Adicionou uma nova nota
+13 de julho de 2026 às 11:41Ana Carolina
+Ana Carolina atualizou a atividade: Andamento da contratação
+Status:
+Pendente
+Concluída
+13 de julho de 2026 às 11:41Ana Carolina
+Ana Carolina atualizou a atividade: Nova contratação? agendamento médoto MAPA
+Status:
+Pendente
+Concluída
+13 de julho de 2026 às 11:40Ana Carolina
+Ana Carolina negócio atualizado Gabriel Sanches | CVV Veículos
+Nota:
+Adicionou uma nova nota
+10 de julho de 2026 às 15:28Ana Carolina
+Ana Carolina atualizou a atividade: Gabriel Sanches | CVV Veículos Captar feedback da aplicação do método na loja
+Nota:
+Adicionou uma nova nota
+10 de julho de 2026 às 15:25Ana Carolina
+Ana Carolina atualizou a atividade: Gabriel Sanches | CVV Veículos Captar feedback da aplicação do método na loja
+Status:
+Pendente
+Concluída
+10 de julho de 2026 às 15:25Ana Carolina
+Ana Carolina atualizou a atividade: Realizar PPL
+Prazo:
+2026-06-29
+2026-07-14
+10 de julho de 2026 às 15:25Ana Carolina
+Ana Carolina negócio atualizado Rafael I Belém
+Nota:
+Adicionou uma nova nota
+10 de julho de 2026 às 15:06Ana Carolina
+Ana Carolina atualizou o negócio: Tiago Bis | META WHOLESALE
+Proprietário:
+Daniel Fernandes
+Luigi
+10 de julho de 2026 às 14:16Ana Carolina
+Ana Carolina atualizou o negócio: FERNANDO | FERNANDO REPASSES
+Proprietário:
+Daniel Fernandes
+Luigi
+10 de julho de 2026 às 10:15Ana Carolina
+Ana Carolina excluiu a atividade: (título não disponível)
+10 de julho de 2026 às 09:51Ana Carolina
+Ana Carolina excluiu a atividade: (título não disponível)
+10 de julho de 2026 às 09:51Ana Carolina
+Ana Carolina atualizou a atividade: Carvoice
+Proprietário:
+Ana Carolina
+Giovana Matos
+10 de julho de 2026 às 09:48Ana Carolina
+Ana Carolina adicionou uma nova atividade: Carvoice
+10 de julho de 2026 às 09:48Ana Carolina
+Ana Carolina negócio atualizado Andre I Alencar Motors
+Nota:
+Adicionou uma nova nota
+10 de julho de 2026 às 09:48Ana Carolina
+Ana Carolina adicionou uma nova atividade: Realizar Kick-off
+10 de julho de 2026 às 09:44Ana Carolina
+Ana Carolina atualizou o negócio: Rafael I Belém
+Etapa:
+Contrato assinado
+Kick-off agendado
+10 de julho de 2026 às 09:43Ana Carolina
+Ana Carolina atualizou a atividade: Agendar reunião de Kick-off
+Status:
+Pendente
+Concluída
+10 de julho de 2026 às 09:43Ana Carolina
+Ana Carolina negócio atualizado Rafael I Belém
+Nota:
+Adicionou uma nova nota
+10 de julho de 2026 às 09:38Ana Carolina
+Ana Carolina negócio atualizado Rafael I Belém
+Nota:
+Adicionou uma nova nota
+10 de julho de 2026 às 09:21Ana Carolina
+Ana Carolina negócio atualizado Rafael I Belém
+Nota:
+Adicionou uma nova nota
+10 de julho de 2026 às 09:11Ana Carolina
+Ana Carolina atualizou o negócio: Rafael I Belém
+Proprietário:
+Ana Carolina
+Daniel Fernandes
+10 de julho de 2026 às 09:05Ana Carolina
+Ana Carolina atualizou o negócio: Rafael I Belém
+Proprietário:
+Ana Carolina
+10 de julho de 2026 às 08:26Ana Carolina
+Ana Carolina atualizou o negócio: Sabrina da Rosa Gomes
+Proprietário:
+Daniel Fernandes
+Ana Carolina
+9 de julho de 2026 às 10:44Ana Carolina
+Ana Carolina atualizou o negócio: Sabrina da Rosa Gomes
+Etapa:
+Contrato assinado
+Ativo
+9 de julho de 2026 às 10:44Ana Carolina
+Ana Carolina negócio atualizado Sabrina da Rosa Gomes
+Nota:
+Adicionou uma nova nota
+9 de julho de 2026 às 10:27Ana Carolina
+Ana Carolina atualizou o negócio: Sabrina da Rosa Gomes
+Etapa:
+Prospecção (Fluxo de cadência)
+Fechamento
+9 de julho de 2026 às 10:27Ana Carolina
+Ana Carolina negócio atualizado Anderson Marques Vieira | suzuki moto marques
+Nota:
+Adicionou uma nova nota
+8 de julho de 2026 às 20:58Ana Carolina
+Ana Carolina negócio atualizado Marcos Perazza - MAVI VEICULOS LTDA.
+Nota:
+Adicionou uma nova nota
+8 de julho de 2026 às 20:46Ana Carolina
+Ana Carolina adicionou uma nova atividade: Pesquisa de ativação - Inbound
+8 de julho de 2026 às 20:31Ana Carolina
+Ana Carolina atualizou o negócio: Sabrina da Rosa Gomes
+Etapa:
+Base
+Prospecção (Fluxo de cadência)
+8 de julho de 2026 às 20:31Ana Carolina
+Ana Carolina atualizou a atividade: Iniciar Prospecção
+Status:
+Pendente
+Concluída
+8 de julho de 2026 às 20:30Ana Carolina
+Ana Carolina atualizou o negócio: Rafael I Belém
+Proprietário:
+Daniel Fernandes
+26807838
+8 de julho de 2026 às 20:22Ana Carolina
+Ana Carolina negócio atualizado Fabio Novo | Unimais
+Nota:
+Adicionou uma nova nota
+8 de julho de 2026 às 20:14Ana Carolina
+Ana Carolina adicionou uma nova atividade: Reunião mensal (CS) - no show
+8 de julho de 2026 às 17:18Ana Carolina
+Ana Carolina atualizou a atividade: Planejamento de Tráfego Pago (CS) - no show
+Nota:
+Adicionou uma nova nota
+8 de julho de 2026 às 14:52Ana Carolina
+Ana Carolina atualizou a atividade: Planejamento de Tráfego Pago (CS) - no show
+Assunto:
+Planejamento de Tráfego Pago (CS)
+Planejamento de Tráfego Pago (CS) - no show
+8 de julho de 2026 às 14:52Ana Carolina
+Ana Carolina atualizou a atividade: Planejamento de Tráfego Pago (CS) - no show
+Status:
+Pendente
+Concluída
+8 de julho de 2026 às 14:52Ana Carolina
+Ana Carolina excluiu a atividade: (título não disponível)
+8 de julho de 2026 às 14:39Ana Carolina
+Ana Carolina excluiu a atividade: (título não disponível)
+8 de julho de 2026 às 14:39Ana Carolina
+Ana Carolina negócio atualizado Eglae I Sofix Car
+Nota:
+Adicionou uma nova nota
+8 de julho de 2026 às 14:39Ana Carolina
+Ana Carolina negócio atualizado Alessandra I Miro Motors
+Nota:
+Adicionou uma nova nota
+8 de julho de 2026 às 12:27Ana Carolina
+Ana Carolina atualizou a atividade: Empresa que fornece preparação foi atualizada - NÃO FOI
+Assunto:
+Empresa que fornece preparação foi atualizada
+Empresa que fornece preparação foi atualizada - NÃO FOI
+8 de julho de 2026 às 11:14Ana Carolina
+Ana Carolina atualizou a atividade: Empresa que fornece preparação foi atualizada - NÃO FOI
+Status:
+Pendente
+Concluída
+8 de julho de 2026 às 11:14Ana Carolina
+Ana Carolina adicionou uma nova atividade: Planejamento de Método MAPA (CS)
+8 de julho de 2026 às 09:37Ana Carolina
+Ana Carolina excluiu a atividade: (título não disponível)
+7 de julho de 2026 às 18:53Ana Carolina
+Ana Carolina adicionou uma nova atividade: (título não disponível)
+7 de julho de 2026 às 18:52Ana Carolina
+Ana Carolina adicionou uma nova atividade: Planejamento de Tráfego Pago (CS)
+7 de julho de 2026 às 18:50Ana Carolina
+Ana Carolina adicionou uma nova atividade: Alinhamento de tráfego - no show
+7 de julho de 2026 às 18:49Ana Carolina
+Ana Carolina atualizou o negócio: Ariovaldo Thomazini Junior | juninho automoveis
+Proprietário:
+Daniel Fernandes
+Luigi
+7 de julho de 2026 às 17:19Ana Carolina
+Ana Carolina excluiu a atividade: (título não disponível)
+7 de julho de 2026 às 16:14Ana Carolina
+Ana Carolina negócio atualizado Farley I Itália Veículos
+Nota:
+Adicionou uma nova nota
+7 de julho de 2026 às 16:14Ana Carolina
+Ana Carolina negócio atualizado Edson Castanha I EloMixMultimarcas
+Nota:
+Adicionou uma nova nota
+7 de julho de 2026 às 16:07Ana Carolina
+Ana Carolina adicionou uma nova atividade: Planejamento de Método MAPA (CS)
+7 de julho de 2026 às 16:01Ana Carolina
+Ana Carolina negócio atualizado Claudio Oliveira | Reveauto
+Nota:
+Adicionou uma nova nota
+7 de julho de 2026 às 15:49Ana Carolina
+Ana Carolina negócio atualizado Fabricio | UZ VEICULOS
+Nota:
+Adicionou uma nova nota
+7 de julho de 2026 às 15:39Ana Carolina
+Ana Carolina atualizou a atividade: Planejamento de SDR (CS)
+Nota:
+Adicionou uma nova nota
+7 de julho de 2026 às 15:32Ana Carolina
+Ana Carolina atualizou a atividade: Planejamento de SDR (CS)
+Status:
+Pendente
+Concluída
+7 de julho de 2026 às 15:32Ana Carolina
+Ana Carolina adicionou uma nova atividade: Ligar
+7 de julho de 2026 às 15:32Ana Carolina
+Ana Carolina adicionou uma nova atividade: Reunião mensal (CS)
+7 de julho de 2026 às 15:29Ana Carolina
+Ana Carolina negócio atualizado Juliana Carrion | Perfil Veículos
+Nota:
+Adicionou uma nova nota
+7 de julho de 2026 às 15:29Ana Carolina
+Ana Carolina negócio atualizado RONALDO LAGO - LAGO AUTOMOVEIS LTDA
+Nota:
+Adicionou uma nova nota
+7 de julho de 2026 às 14:54Ana Carolina
+Ana Carolina excluiu a atividade: (título não disponível)
+7 de julho de 2026 às 14:51Ana Carolina
+Ana Carolina atualizou a pessoa: Everton Paludo
+Telefone:
+41987030910
+5541987030910 (work)
+7 de julho de 2026 às 13:44Ana Carolina
+Ana Carolina excluiu a atividade: (título não disponível)
+7 de julho de 2026 às 13:15Ana Carolina
+Ana Carolina adicionou uma nova atividade: Alinhamento de troca de CS
+7 de julho de 2026 às 13:14Ana Carolina
+Ana Carolina atualizou a atividade: Onboarding SDR
+Nota:
+Editou uma nota
+7 de julho de 2026 às 13:11Ana Carolina
+Ana Carolina atualizou a atividade: Onboarding SDR
+Status:
+Pendente
+Concluída
+7 de julho de 2026 às 13:11Ana Carolina
+Ana Carolina atualizou a atividade: Onboarding SDR
+Proprietário:
+Ana Carolina
+26807838
+7 de julho de 2026 às 13:11Ana Carolina
+Ana Carolina excluiu a atividade: (título não disponível)
+7 de julho de 2026 às 13:06Ana Carolina
+Ana Carolina atualizou o negócio: Gilmar Garcia|MultiplaCar
+Etiqueta:
+Satisfeito, Neutro, Carchat, Sexta-Feira, Média
+Satisfeito ,Neutro ,Insatisfeito ,Carchat ,Sexta-Feira ,Média
+7 de julho de 2026 às 13:00Ana Carolina
+Ana Carolina negócio atualizado Junior | Abraao Car
+Nota:
+Adicionou uma nova nota
+7 de julho de 2026 às 12:51Ana Carolina
+Ana Carolina atualizou a atividade: Financeiro - no show
+Nota:
+Adicionou uma nova nota
+7 de julho de 2026 às 12:51Ana Carolina
+Ana Carolina atualizou a atividade: Financeiro - no show
+Assunto:
+Financeiro
+Financeiro - no show
+7 de julho de 2026 às 12:51Ana Carolina
+Ana Carolina atualizou a atividade: Financeiro - no show
+Status:
+Pendente
+Concluída
+7 de julho de 2026 às 12:51Ana Carolina
+Ana Carolina negócio atualizado JUNIOR MACARIO - JR VEICULOS LTDA
+Nota:
+Adicionou uma nova nota
+7 de julho de 2026 às 12:50Ana Carolina
+Ana Carolina negócio atualizado JUNIOR MACARIO - JR VEICULOS LTDA
+Nota:
+Adicionou uma nova nota
+7 de julho de 2026 às 12:49Ana Carolina
+Ana Carolina negócio atualizado Matheus | Panther Motors
+Nota:
+Adicionou uma nova nota
+7 de julho de 2026 às 12:46Ana Carolina
+Ana Carolina adicionou uma nova atividade: Onboarding (CS) - no show
+7 de julho de 2026 às 09:51Ana Carolina
+Ana Carolina adicionou uma nova atividade: Realizar Kick-off
+7 de julho de 2026 às 09:51Ana Carolina
+Ana Carolina atualizou o negócio: Artêmio Jesus I ArteCar
+Etapa:
+Contrato assinado
+Kick-off agendado
+7 de julho de 2026 às 09:51Ana Carolina
+Ana Carolina atualizou a atividade: Agendar reunião de Kick-off
+Status:
+Pendente
+Concluída
+7 de julho de 2026 às 09:51Ana Carolina
+Ana Carolina atualizou a atividade: Alinhamento com equipe - no show
+Assunto:
+Alinhamento com equipe
+Alinhamento com equipe - no show
+7 de julho de 2026 às 09:33Ana Carolina
+Ana Carolina atualizou a atividade: Alinhamento com equipe - no show
+Nota:
+Adicionou uma nova nota
+7 de julho de 2026 às 09:31Ana Carolina
+Ana Carolina atualizou a atividade: Alinhamento com equipe - no show
+Assunto:
+Planejamento de Tráfego Pago (CS)
+Alinhamento com equipe
+7 de julho de 2026 às 09:31Ana Carolina
+Ana Carolina atualizou a atividade: Alinhamento com equipe - no show
+Status:
+Pendente
+Concluída
+7 de julho de 2026 às 09:31Ana Carolina
+Ana Carolina negócio atualizado Ediel de Oliveira I ME Veiculos
+Nota:
+Adicionou uma nova nota
+6 de julho de 2026 às 16:18Ana Carolina
+Ana Carolina atualizou a atividade: Distribuição do cliente
+Status:
+Pendente
+Concluída
+6 de julho de 2026 às 16:01Ana Carolina
+Ana Carolina negócio atualizado Sergio Shimomoto - Auto Nobre
+Nota:
+Adicionou uma nova nota
+6 de julho de 2026 às 15:53Ana Carolina
+Ana Carolina adicionou uma nova atividade: tentativa de contato evento carpago
+6 de julho de 2026 às 15:53Ana Carolina
+Ana Carolina adicionou uma nova atividade: Tentativa de convide coquetel carpago
+6 de julho de 2026 às 15:47Ana Carolina
+Ana Carolina negócio atualizado Anderson Marques Vieira | suzuki moto marques
+Nota:
+Adicionou uma nova nota
+6 de julho de 2026 às 15:28Ana Carolina
+Ana Carolina atualizou a atividade: Reunião mensal (CS)
+Nota:
+Adicionou uma nova nota
+6 de julho de 2026 às 15:10Ana Carolina
+Ana Carolina atualizou a atividade: Reunião mensal (CS)
+Status:
+Pendente
+Concluída
+6 de julho de 2026 às 15:10Ana Carolina
+Ana Carolina negócio atualizado Juliano | Autoplusbr
+Nota:
+Adicionou uma nova nota
+6 de julho de 2026 às 15:08Ana Carolina
+Ana Carolina atualizou a atividade: Reunião mensal (CS)
+Nota:
+Adicionou uma nova nota
+6 de julho de 2026 às 15:06Ana Carolina
+Ana Carolina atualizou a atividade: Reunião mensal (CS)
+Status:
+Pendente
+Concluída
+6 de julho de 2026 às 15:06Ana Carolina
+Ana Carolina adicionou uma nova atividade: Convite carpago e g30 house
+6 de julho de 2026 às 14:50Ana Carolina
+Ana Carolina excluiu a atividade: (título não disponível)
+6 de julho de 2026 às 14:31Ana Carolina
+Ana Carolina excluiu a atividade: (título não disponível)
+6 de julho de 2026 às 14:31Ana Carolina
+Ana Carolina atualizou a atividade: Desempenho das lives
+Nota:
+Adicionou uma nova nota
+6 de julho de 2026 às 14:31Ana Carolina
+Ana Carolina atualizou a atividade: Desempenho das lives
+Status:
+Pendente
+Concluída
+6 de julho de 2026 às 14:31Ana Carolina
+Ana Carolina atualizou a atividade: Video de reposição de estoque - não fizeram
+Assunto:
+Video de reposição de estoque
+Video de reposição de estoque - não fizeram
+6 de julho de 2026 às 14:31Ana Carolina
+Ana Carolina atualizou a atividade: Video de reposição de estoque - não fizeram
+Status:
+Pendente
+Concluída
+6 de julho de 2026 às 14:31Ana Carolina
+Ana Carolina negócio atualizado Raja Seminovos
+Nota:
+Adicionou uma nova nota
+6 de julho de 2026 às 12:35Ana Carolina
+Ana Carolina adicionou uma nova atividade: Reunião mensal (CS)
+6 de julho de 2026 às 10:50Ana Carolina
+Ana Carolina adicionou uma nova atividade: Reunião mensal (CS)
+6 de julho de 2026 às 10:50Ana Carolina
+Ana Carolina atualizou a atividade: Distribuição do cliente
+Status:
+Pendente
+Concluída
+5 de julho de 2026 às 19:58Ana Carolina
+Ana Carolina atualizou o negócio: Artêmio Jesus I ArteCar
+Proprietário:
+Daniel Fernandes
+Ana Carolina
+5 de julho de 2026 às 19:58Ana Carolina
+Ana Carolina negócio atualizado Matheus | Panther Motors
+Nota:
+Adicionou uma nova nota
+5 de julho de 2026 às 19:57Ana Carolina
+Ana Carolina adicionou uma nova atividade: Realizar PPL
+5 de julho de 2026 às 19:57Ana Carolina
+Ana Carolina adicionou uma nova atividade: Realizar cadastro dos contatos na plataformna plataforma e grupo do WPP
+5 de julho de 2026 às 19:57Ana Carolina
+Ana Carolina adicionou uma nova atividade: Definir pilar - Primeiro impacto
+5 de julho de 2026 às 19:56Ana Carolina
+Ana Carolina adicionou uma nova atividade: Realizar cadastro dos contatos na plataforma
+5 de julho de 2026 às 19:56Ana Carolina
+Ana Carolina adicionou uma nova atividade: Realizar cadastro dos contatos no G30 Hub
+5 de julho de 2026 às 19:56Ana Carolina
+Ana Carolina adicionou uma nova atividade: Cliente assistir a trilha inicial
+5 de julho de 2026 às 19:56Ana Carolina
+Ana Carolina atualizou o negócio: Matheus | Panther Motors
+Etapa:
+Kick-off agendado
+Kick-off realizado
+5 de julho de 2026 às 19:56Ana Carolina
+Ana Carolina atualizou a atividade: Realizar Kick-off
+Status:
+Pendente
+Concluída
+5 de julho de 2026 às 19:56Ana Carolina
+Ana Carolina excluiu a atividade: (título não disponível)
+5 de julho de 2026 às 19:56Ana Carolina
+Ana Carolina atualizou a atividade: Agendar reunião de Kick-off
+Status:
+Pendente
+Concluída
+5 de julho de 2026 às 19:56Ana Carolina
+Ana Carolina adicionou uma nova atividade: Realizar Kick-off
+5 de julho de 2026 às 19:56Ana Carolina
+Ana Carolina atualizou a atividade: Agendar reunião de Kick-off
+Status:
+Pendente
+Concluída
+5 de julho de 2026 às 19:56Ana Carolina
+Ana Carolina atualizou o negócio: Matheus | Panther Motors
+Etapa:
+Contrato assinado
+Kick-off agendado
+5 de julho de 2026 às 19:56Ana Carolina
+Ana Carolina atualizou a atividade: Agendar reunião de Kick-off
+Status:
+Pendente
+Concluída
+5 de julho de 2026 às 19:56Ana Carolina
+Ana Carolina excluiu a atividade: (título não disponível)
+5 de julho de 2026 às 19:56Ana Carolina
+Ana Carolina atualizou a atividade: Mover para etapa último mês
+Status:
+Pendente
+Concluída
+5 de julho de 2026 às 19:56Ana Carolina
+Ana Carolina excluiu a atividade: (título não disponível)
+5 de julho de 2026 às 19:56Ana Carolina
+Ana Carolina excluiu a atividade: (título não disponível)
+3 de julho de 2026 às 17:03Ana Carolina
+Ana Carolina adicionou uma nova atividade: (título não disponível)
+3 de julho de 2026 às 17:03Ana Carolina
+Ana Carolina negócio atualizado Claudio Oliveira | Reveauto
+Nota:
+Adicionou uma nova nota
+3 de julho de 2026 às 16:47Ana Carolina
+Ana Carolina negócio atualizado Vinícius Mota | VIVA MOTORS
+Nota:
+Adicionou uma nova nota
+3 de julho de 2026 às 16:43Ana Carolina
+Ana Carolina negócio atualizado Marcos Reis | MR Multimarcas
+Nota:
+Adicionou uma nova nota
+3 de julho de 2026 às 16:41Ana Carolina
+Ana Carolina negócio atualizado Maninho Caicó | Multicon Autos
+Nota:
+Adicionou uma nova nota
+3 de julho de 2026 às 16:34Ana Carolina
+Ana Carolina atualizou a atividade: Definir pilar - Primeiro impacto
+Status:
+Pendente
+Concluída
+3 de julho de 2026 às 16:16Ana Carolina
+Ana Carolina adicionou uma nova atividade: Planejamento de SDR (CS)
+3 de julho de 2026 às 14:56Ana Carolina
+Ana Carolina atualizou a atividade: Planejamento de SDR (CS)
+Nota:
+Adicionou uma nova nota
+3 de julho de 2026 às 12:56Ana Carolina
+Ana Carolina atualizou a atividade: Planejamento de SDR (CS)
+Status:
+Pendente
+Concluída
+3 de julho de 2026 às 12:56Ana Carolina
+Ana Carolina negócio atualizado GABRIEL BORTOLUCCI - Hiperauto
+Nota:
+Adicionou uma nova nota
+3 de julho de 2026 às 12:25Ana Carolina
+Ana Carolina negócio atualizado Thales e Diego I Digicar Automóveis
+Nota:
+Adicionou uma nova nota
+3 de julho de 2026 às 11:33Ana Carolina
+Ana Carolina adicionou uma nova atividade: Planejamento de Tráfego Pago (CS) - no show
+3 de julho de 2026 às 11:32Ana Carolina
+Ana Carolina negócio atualizado Guilherme Hissashi | Gui Automóveis
+Nota:
+Adicionou uma nova nota
+3 de julho de 2026 às 11:13Ana Carolina
+Ana Carolina adicionou uma nova atividade: Convite Evento Carpago
+3 de julho de 2026 às 11:02Ana Carolina
+Ana Carolina atualizou o negócio: Luciana Ortunho| Ferpacar Veículos
+Proprietário:
+Luigi
+Beatriz
+3 de julho de 2026 às 10:45Ana Carolina
+Ana Carolina negócio atualizado Gustavo H Murta Tavares | Auto Ellite
+Nota:
+Adicionou uma nova nota
+3 de julho de 2026 às 10:32Ana Carolina
+Ana Carolina atualizou o negócio: Gustavo H Murta Tavares | Auto Ellite
+Etiqueta:
+Mega Feirão, Satisfeito
+Mega Feirão ,Satisfeito ,G30 IA
+3 de julho de 2026 às 10:23Ana Carolina
+Ana Carolina atualizou o negócio: Ivan Santos | NORTE AUTOMOVEIS
+Proprietário:
+Daniel Fernandes
+Luigi
+3 de julho de 2026 às 09:14Ana Carolina
+Ana Carolina atualizou o negócio: Gleisin | Destak B & C AUTOMOVEIS LTDA
+Proprietário:
+Daniel Fernandes
+26807838
+3 de julho de 2026 às 09:14Ana Carolina
+Ana Carolina excluiu a atividade: (título não disponível)
+3 de julho de 2026 às 08:11Ana Carolina
+Ana Carolina excluiu a atividade: (título não disponível)
+3 de julho de 2026 às 08:11Ana Carolina
+Ana Carolina atualizou o negócio: Jose Paulo I Garagem Moderna
+Proprietário:
+Ana Carolina
+26807838
+2 de julho de 2026 às 17:28Ana Carolina
+Ana Carolina adicionou uma nova atividade: Agendar plano mensal
+2 de julho de 2026 às 17:28Ana Carolina
+Ana Carolina atualizou o negócio: Roberto Amadio | Lexus MOTORS
+Proprietário:
+Ana Carolina
+26807838
+2 de julho de 2026 às 17:27Ana Carolina
+Ana Carolina negócio atualizado Kauan I Dante Automóveis
+Nota:
+Adicionou uma nova nota
+2 de julho de 2026 às 16:20Ana Carolina
+Ana Carolina adicionou uma nova atividade: Alinhamento com equipe - no show
+2 de julho de 2026 às 16:06Ana Carolina
+Ana Carolina adicionou uma nova atividade: Planejamento de Instagram (CS)
+2 de julho de 2026 às 16:05Ana Carolina
+Ana Carolina negócio atualizado Roberto - AGENCIA DE AUTOMOVEIS ROBMAR LTDA
+Nota:
+Adicionou uma nova nota
+2 de julho de 2026 às 14:55Ana Carolina
+Ana Carolina negócio atualizado JUNIOR MACARIO - JR VEICULOS LTDA
+Nota:
+Adicionou uma nova nota
+2 de julho de 2026 às 14:47Ana Carolina
+Ana Carolina negócio atualizado JUNIOR MACARIO - JR VEICULOS LTDA
+Nota:
+Adicionou uma nova nota
+2 de julho de 2026 às 14:46Ana Carolina
+Ana Carolina adicionou uma nova atividade: Reunião mensal (CS)
+2 de julho de 2026 às 12:58Ana Carolina
+Ana Carolina negócio atualizado Carlos I Martini Veículos
+Nota:
+Adicionou uma nova nota
+2 de julho de 2026 às 12:23Ana Carolina
+Ana Carolina atualizou a atividade: Mover para etapa último mês
+Status:
+Pendente
+Concluída
+2 de julho de 2026 às 12:22Ana Carolina
+Ana Carolina atualizou o negócio: Juliano Martins Cabral - CÓPIA PARA REGISTRO
+Proprietário:
+Misael (ADM)
+Wirley Junior
+2 de julho de 2026 às 12:14Ana Carolina
+Ana Carolina atualizou o negócio: EDILSON CRUZ - GENERAL CARROS
+Proprietário:
+Misael (ADM)
+Wirley Junior
+2 de julho de 2026 às 12:10Ana Carolina
+Ana Carolina atualizou o negócio: Marco Cardoso - Grupo Cardoso
+Proprietário:
+Misael (ADM)
+Wirley Junior
+2 de julho de 2026 às 12:09Ana Carolina
+Ana Carolina negócio atualizado WELINGTON - WR VEICULOS
+Nota:
+Adicionou uma nova nota
+2 de julho de 2026 às 11:13Ana Carolina
+Ana Carolina negócio atualizado EDILSON CRUZ - GENERAL CARROS
+Nota:
+Adicionou uma nova nota
+2 de julho de 2026 às 10:47Ana Carolina
+Ana Carolina negócio atualizado Fabiano Andreozi | Molti Veículos
+Nota:
+Adicionou uma nova nota
+2 de julho de 2026 às 10:39Ana Carolina
+Ana Carolina negócio atualizado Jean Paulo Evaristo | GREEN MULTIMARCAS LTDA
+Nota:
+Adicionou uma nova nota
+2 de julho de 2026 às 09:43Ana Carolina
+Ana Carolina negócio atualizado A4 Veículos - AROLDO FÁVERO
+Nota:
+Adicionou uma nova nota
+2 de julho de 2026 às 09:39Ana Carolina
+Ana Carolina atualizou o negócio: Gabriel Sanches | CVV Veículos
+Proprietário:
+Luigi
+26807838
+2 de julho de 2026 às 09:34Ana Carolina
+Ana Carolina atualizou a atividade: Verificar se Misa já convidou pro Encontro dos Lions
+Status:
+Pendente
+Concluída
+2 de julho de 2026 às 09:07Ana Carolina
+Ana Carolina atualizou o negócio: Tadeu | Avant Multimarcas
+Proprietário:
+Beatriz
+26807838
+1 de julho de 2026 às 20:40Ana Carolina
+Ana Carolina negócio atualizado Tadeu | Avant Multimarcas
+Nota:
+Excluiu uma nota
+1 de julho de 2026 às 20:40Ana Carolina
+Ana Carolina negócio atualizado Tadeu | Avant Multimarcas
+Nota:
+Adicionou uma nova nota
+1 de julho de 2026 às 20:39Ana Carolina
+Ana Carolina atualizou o negócio: Tadeu | Avant Multimarcas
+Proprietário:
+Beatriz
+1 de julho de 2026 às 20:39Ana Carolina
+Ana Carolina negócio atualizado Jonatas Aguiar Canuto | UAI Veículos
+Nota:
+Adicionou uma nova nota
+1 de julho de 2026 às 20:35Ana Carolina
+Ana Carolina negócio atualizado Eduardo | Marcão Veículos
+Nota:
+Adicionou uma nova nota
+1 de julho de 2026 às 20:30Ana Carolina
+Ana Carolina negócio atualizado GLAUCO VALLE MULTIMARCAS
+Nota:
+Adicionou uma nova nota
+1 de julho de 2026 às 20:20Ana Carolina
+Ana Carolina negócio atualizado Fernando e Laryssa | Fernando Veículos
+Nota:
+Adicionou uma nova nota
+1 de julho de 2026 às 19:59Ana Carolina
+Ana Carolina negócio atualizado Jorge Eduardo I Du Veículos
+Nota:
+Adicionou uma nova nota
+1 de julho de 2026 às 19:54Ana Carolina
+Ana Carolina atualizou o negócio: Luciana Ortunho| Ferpacar Veículos
+Proprietário:
+Luigi
+1 de julho de 2026 às 19:46Ana Carolina
+Ana Carolina atualizou o negócio: Gabriel Sanches | CVV Veículos
+Proprietário:
+Luigi
+1 de julho de 2026 às 19:46Ana Carolina
+Ana Carolina atualizou o negócio: Luciana Ortunho| Ferpacar Veículos
+Proprietário:
+Beatriz
+26807838
+1 de julho de 2026 às 19:42Ana Carolina
+Ana Carolina adicionou uma nova atividade: Acompanhamento semanal (CS)
+1 de julho de 2026 às 19:42Ana Carolina
+Ana Carolina atualizou o negócio: Gilmar Garcia|MultiplaCar
+Proprietário:
+Beatriz
+26807838
+1 de julho de 2026 às 19:40Ana Carolina
+Ana Carolina adicionou uma nova atividade: Acompanhamento semanal (CS)
+1 de julho de 2026 às 19:40Ana Carolina
+Ana Carolina atualizou o negócio: Saulo | Movize Veículos
+Proprietário:
+Beatriz
+26807838
+1 de julho de 2026 às 19:40Ana Carolina
+Ana Carolina adicionou uma nova atividade: Acompanhamento semanal (CS)
+1 de julho de 2026 às 19:40Ana Carolina
+Ana Carolina atualizou o negócio: Gilson Lemos Viana | Suprema Seminovos
+Proprietário:
+Beatriz
+26807838
+1 de julho de 2026 às 19:39Ana Carolina
+Ana Carolina adicionou uma nova atividade: Acompanhamento semanal (CS)
+1 de julho de 2026 às 19:39Ana Carolina
+Ana Carolina atualizou o negócio: Tadeu | Avant Multimarcas
+Proprietário:
+Beatriz
+26807838
+1 de julho de 2026 às 19:38Ana Carolina
+Ana Carolina atualizou a atividade: Acompanhamento semanal (CS)
+Prazo:
+2026-07-01
+2026-07-02
+1 de julho de 2026 às 19:38Ana Carolina
+Ana Carolina adicionou uma nova atividade: Acompanhamento semanal (CS)
+1 de julho de 2026 às 19:38Ana Carolina
+Ana Carolina negócio atualizado Samuel|josaemultimarcasfranca
+Nota:
+Adicionou uma nova nota
+1 de julho de 2026 às 19:28Ana Carolina
+Ana Carolina atualizou o negócio: Luiz alves da silva filho| DAVICAR AUTOMOVEIS
+Proprietário:
+Beatriz
+26807838
+1 de julho de 2026 às 19:26Ana Carolina
+Ana Carolina atualizou o negócio: Carlos e Thiago| Auto Seg
+Proprietário:
+Beatriz
+26807838
+1 de julho de 2026 às 19:25Ana Carolina
+Ana Carolina adicionou uma nova atividade: Acompanhamento semanal (CS)
+1 de julho de 2026 às 19:25Ana Carolina
+Ana Carolina atualizou o negócio: Thiago Magno| CAR BOSS MULTIMARCAS
+Proprietário:
+Beatriz
+26807838
+1 de julho de 2026 às 19:22Ana Carolina
+Ana Carolina adicionou uma nova atividade: Acompanhamento semanal (CS)
+1 de julho de 2026 às 19:22Ana Carolina
+Ana Carolina atualizou o negócio: Wilian Fernandes de maraes| Aki Automoveis
+Proprietário:
+Beatriz
+26807838
+1 de julho de 2026 às 19:21Ana Carolina
+Ana Carolina adicionou uma nova atividade: Acompanhamento semanal (CS)
+1 de julho de 2026 às 19:21Ana Carolina
+Ana Carolina atualizou o negócio: José Roberto Penaforte Viana filho | Forte Veículos
+Proprietário:
+Beatriz
+26807838
+1 de julho de 2026 às 19:20Ana Carolina
+Ana Carolina atualizou a atividade: Contato semanal
+Prazo:
+2026-07-01
+2026-07-02
+1 de julho de 2026 às 19:20Ana Carolina
+Ana Carolina adicionou uma nova atividade: Contato semanal
+1 de julho de 2026 às 19:20Ana Carolina
+Ana Carolina atualizou o negócio: DAVID| DEMP MOTORS
+Proprietário:
+Beatriz
+26807838
+1 de julho de 2026 às 19:19Ana Carolina
+Ana Carolina adicionou uma nova atividade: Acompanhamento semanal (CS)
+1 de julho de 2026 às 19:19Ana Carolina
+Ana Carolina atualizou o negócio: Fabrício Ramalho Marraschi da Costa | zoom Veiculos
+Proprietário:
+Beatriz
+Luigi
+1 de julho de 2026 às 19:18Ana Carolina
+Ana Carolina adicionou uma nova atividade: Fazer o contato semanal, deixar informações sobre o perfil do cliente destacado
+1 de julho de 2026 às 19:18Ana Carolina
+Ana Carolina atualizou o negócio: Thales e Diego I Digicar Automóveis
+Proprietário:
+Ana Carolina
+Luigi
+1 de julho de 2026 às 19:15Ana Carolina
+Ana Carolina negócio atualizado Thales e Diego I Digicar Automóveis
+Nota:
+Adicionou uma nova nota
+1 de julho de 2026 às 19:14Ana Carolina
+Ana Carolina atualizou o negócio: Thales e Diego I Digicar Automóveis
+Etiqueta:
+Mega Feirão, Satisfeito, Carchat, segunda-feira
+Mega Feirão ,Neutro ,Carchat ,segunda-feira
+1 de julho de 2026 às 19:13Ana Carolina
+Ana Carolina negócio atualizado Thales e Diego I Digicar Automóveis
+Nota:
+Adicionou uma nova nota
+1 de julho de 2026 às 19:13Ana Carolina
+Ana Carolina negócio atualizado Thales e Diego I Digicar Automóveis
+Nota:
+Adicionou uma nova nota
+1 de julho de 2026 às 19:11Ana Carolina
+Ana Carolina atualizou o negócio: Daniel | shop car multimarcas - PR
+Proprietário:
+Ana Carolina
+26807838
+1 de julho de 2026 às 19:10Ana Carolina
+Ana Carolina negócio atualizado Daniel | shop car multimarcas - PR
+Nota:
+Adicionou uma nova nota
+1 de julho de 2026 às 19:10Ana Carolina
+Ana Carolina atualizou o negócio: Danilo | Premium Auto Car
+Proprietário:
+Ana Carolina
+26807838
+1 de julho de 2026 às 19:08Ana Carolina
+Ana Carolina negócio atualizado Danilo | Premium Auto Car
+Nota:
+Adicionou uma nova nota
+1 de julho de 2026 às 19:07Ana Carolina
+Ana Carolina atualizou a atividade: Uso do Gideão
+Status:
+Pendente
+Concluída
+1 de julho de 2026 às 19:06Ana Carolina
+Ana Carolina atualizou o negócio: Danilo | Premium Auto Car
+Etiqueta:
+Mega Feirão, Insatisfeito, NÃO TEM CARCHAT, Quarta-Feira
+Mega Feirão ,Neutro ,NÃO TEM CARCHAT ,Quarta-Feira
+1 de julho de 2026 às 19:06Ana Carolina
+Ana Carolina atualizou a atividade: Reunião mensal (CS)
+Nota:
+Editou uma nota
+1 de julho de 2026 às 19:03Ana Carolina
+Ana Carolina atualizou a atividade: Reunião mensal (CS)
+Nota:
+Adicionou uma nova nota
+1 de julho de 2026 às 19:02Ana Carolina
+Ana Carolina atualizou a atividade: Reunião mensal (CS)
+Status:
+Pendente
+Concluída
+1 de julho de 2026 às 19:02Ana Carolina
+Ana Carolina atualizou o negócio: Bispo I Prime Multimarcas
+Proprietário:
+Ana Carolina
+26807838
+1 de julho de 2026 às 19:00Ana Carolina
+Ana Carolina atualizou a atividade: Enviar sugestão de Bio
+Prazo:
+2026-07-01
+2026-07-02
+1 de julho de 2026 às 19:00Ana Carolina
+Ana Carolina adicionou uma nova atividade: Enviar sugestão de Bio
+1 de julho de 2026 às 19:00Ana Carolina
+Ana Carolina negócio atualizado Bispo I Prime Multimarcas
+Nota:
+Adicionou uma nova nota
+1 de julho de 2026 às 18:57Ana Carolina
+Ana Carolina atualizou o negócio: Alessandra I Miro Motors
+Proprietário:
+Ana Carolina
+26807838
+1 de julho de 2026 às 18:52Ana Carolina
+Ana Carolina negócio atualizado Alessandra I Miro Motors
+Nota:
+Adicionou uma nova nota
+1 de julho de 2026 às 18:52Ana Carolina
+Ana Carolina atualizou o negócio: Paulo I Auto Melo
+Proprietário:
+Ana Carolina
+26807838
+1 de julho de 2026 às 18:49Ana Carolina
+Ana Carolina atualizou o negócio: André Luiz I Comfort Auto
+Proprietário:
+Ana Carolina
+26807838
+1 de julho de 2026 às 18:48Ana Carolina
+Ana Carolina negócio atualizado André Luiz I Comfort Auto
+Nota:
+Adicionou uma nova nota
+1 de julho de 2026 às 18:48Ana Carolina
+Ana Carolina adicionou uma nova atividade: Planejamento de Tráfego Pago (CS) - no show
+1 de julho de 2026 às 18:47Ana Carolina
+Ana Carolina atualizou o negócio: Marcílio - M & R REPASSE
+Proprietário:
+Ana Carolina
+Luigi
+1 de julho de 2026 às 18:45Ana Carolina
+Ana Carolina negócio atualizado Marcílio - M & R REPASSE
+Nota:
+Adicionou uma nova nota
+1 de julho de 2026 às 18:45Ana Carolina
+Ana Carolina atualizou o negócio: Douglas I Machado's
+Etiqueta:
+Satisfeito, Insatisfeito, NÃO TEM CARCHAT, não ira part. mega feirão, Quarta-Feira
+Satisfeito ,Insatisfeito ,NÃO TEM CARCHAT ,não ira part. mega feirão ,(1 mês antes de renovação) Próximo do vencimento ,Quarta-Feira
+1 de julho de 2026 às 18:36Ana Carolina
+Ana Carolina negócio atualizado Douglas I Machado's
+Nota:
+Adicionou uma nova nota
+1 de julho de 2026 às 18:35Ana Carolina
+Ana Carolina atualizou o negócio: Douglas I Machado's
+Etiqueta:
+Satisfeito, NÃO TEM CARCHAT, não ira part. mega feirão, Quarta-Feira
+Satisfeito ,Insatisfeito ,NÃO TEM CARCHAT ,não ira part. mega feirão ,Quarta-Feira
+1 de julho de 2026 às 18:35Ana Carolina
+Ana Carolina atualizou a atividade: Planejamento de Método MAPA (CS) - NO SHOW
+Assunto:
+Planejamento de Método MAPA (CS)
+Planejamento de Método MAPA (CS) - NO SHOW
+1 de julho de 2026 às 18:34Ana Carolina
+Ana Carolina atualizou a atividade: Planejamento de Método MAPA (CS) - NO SHOW
+Status:
+Pendente
+Concluída
+1 de julho de 2026 às 18:34Ana Carolina
+Ana Carolina atualizou o negócio: Phyllipe I Pacheco Veículos
+Proprietário:
+Ana Carolina
+Wirley Junior
+1 de julho de 2026 às 18:28Ana Carolina
+Ana Carolina negócio atualizado Phyllipe I Pacheco Veículos
+Nota:
+Adicionou uma nova nota
+1 de julho de 2026 às 18:28Ana Carolina
+Ana Carolina atualizou o negócio: Ediel de Oliveira I ME Veiculos
+Proprietário:
+Ana Carolina
+Luigi
+1 de julho de 2026 às 18:27Ana Carolina
+Ana Carolina negócio atualizado Ediel de Oliveira I ME Veiculos
+Nota:
+Adicionou uma nova nota
+1 de julho de 2026 às 18:27Ana Carolina
+Ana Carolina atualizou o negócio: Ediel de Oliveira I ME Veiculos
+Etiqueta:
+Mega Feirão, Carchat, Terça-Feira, G30 IA
+Mega Feirão ,Neutro ,Carchat ,Terça-Feira ,G30 IA
+1 de julho de 2026 às 18:26Ana Carolina
+Ana Carolina atualizou o negócio: Porcino Neto I Canal Automóveis
+Proprietário:
+Ana Carolina
+26807838
+1 de julho de 2026 às 18:25Ana Carolina
+Ana Carolina atualizou o negócio: Porcino Neto I Canal Automóveis
+Etiqueta:
+NÃO TEM CARCHAT, Terça-Feira
+Insatisfeito ,NÃO TEM CARCHAT ,Terça-Feira
+1 de julho de 2026 às 18:25Ana Carolina
+Ana Carolina negócio atualizado Porcino Neto I Canal Automóveis
+Nota:
+Adicionou uma nova nota
+1 de julho de 2026 às 18:25Ana Carolina
+Ana Carolina negócio atualizado Porcino Neto I Canal Automóveis
+Nota:
+Adicionou uma nova nota
+1 de julho de 2026 às 18:24Ana Carolina
+Ana Carolina adicionou uma nova atividade: Atingir primeiro impacto com cliente
+1 de julho de 2026 às 16:42Ana Carolina
+Ana Carolina atualizou o negócio: Marcelo Pereira costa | CHAMA VEICULOS
+Etapa:
+Kick-off agendado
+Marketing
+1 de julho de 2026 às 16:42Ana Carolina
+Ana Carolina negócio atualizado Kauan I Dante Automóveis
+Nota:
+Adicionou uma nova nota
+1 de julho de 2026 às 16:41Ana Carolina
+Ana Carolina negócio atualizado Iran Teixeira Ramos | NATO CAR
+Nota:
+Adicionou uma nova nota
+1 de julho de 2026 às 16:32Ana Carolina
+Ana Carolina atualizou o negócio: Renato Weber I Online Carros
+Proprietário:
+Ana Carolina
+26807838
+1 de julho de 2026 às 15:17Ana Carolina
+Ana Carolina atualizou o negócio: Victor Fabiano | VICTOR MULTIMARCAS LTDA
+Proprietário:
+Daniel Fernandes
+26807838
+1 de julho de 2026 às 15:12Ana Carolina
+Ana Carolina negócio atualizado Renato Weber I Online Carros
+Nota:
+Adicionou uma nova nota
+1 de julho de 2026 às 14:53Ana Carolina
+Ana Carolina atualizou o negócio: Rodrigo Costa I Real Veiculos
+Proprietário:
+Ana Carolina
+Luigi
+1 de julho de 2026 às 14:51Ana Carolina
+Ana Carolina negócio atualizado Rodrigo Costa I Real Veiculos
+Nota:
+Adicionou uma nova nota
+1 de julho de 2026 às 14:51Ana Carolina
+Ana Carolina atualizou a atividade: Rodrigo Costa I Real Veiculos COLETAR VENDAS DE ABRIL - sem retorno
+Assunto:
+Rodrigo Costa I Real Veiculos COLETAR VENDAS DE ABRIL
+Rodrigo Costa I Real Veiculos COLETAR VENDAS DE ABRIL - sem retorno
+1 de julho de 2026 às 14:50Ana Carolina
+Ana Carolina atualizou a atividade: Rodrigo Costa I Real Veiculos COLETAR VENDAS DE ABRIL - sem retorno
+Status:
+Pendente
+Concluída
+1 de julho de 2026 às 14:50Ana Carolina
+Ana Carolina negócio atualizado Rodrigo Costa I Real Veiculos
+Nota:
+Adicionou uma nova nota
+1 de julho de 2026 às 14:49Ana Carolina
+Ana Carolina atualizou o negócio: Émerson | GRACIANO MULTIMARCAS
+Etapa:
+Marketing
+Impacto recorrente
+1 de julho de 2026 às 14:44Ana Carolina
+Ana Carolina atualizou o negócio: Fabio Pereira I FABIO VEICULOS
+Proprietário:
+Ana Carolina
+26807838
+1 de julho de 2026 às 14:44Ana Carolina
+Ana Carolina negócio atualizado Fabio Pereira I FABIO VEICULOS
+Nota:
+Adicionou uma nova nota
+1 de julho de 2026 às 14:44Ana Carolina
+Ana Carolina atualizou o negócio: Wilson Junior I Junior Veículos
+Proprietário:
+Ana Carolina
+Wirley Junior
+1 de julho de 2026 às 14:35Ana Carolina
+Ana Carolina negócio atualizado Wilson Junior I Junior Veículos
+Nota:
+Adicionou uma nova nota
+1 de julho de 2026 às 14:35Ana Carolina
+Ana Carolina atualizou a atividade: Reunião mensal (CS)
+Nota:
+Editou uma nota
+1 de julho de 2026 às 14:32Ana Carolina
+Ana Carolina negócio atualizado Wilson Junior I Junior Veículos
+Nota:
+Adicionou uma nova nota
+1 de julho de 2026 às 14:30Ana Carolina
+Ana Carolina atualizou a atividade: Reunião mensal (CS)
+Nota:
+Adicionou uma nova nota
+1 de julho de 2026 às 14:30Ana Carolina
+Ana Carolina atualizou a atividade: Reunião mensal (CS)
+Status:
+Pendente
+Concluída
+1 de julho de 2026 às 14:30Ana Carolina
+Ana Carolina atualizou o negócio: Lucas | autenza veiculos
+Proprietário:
+Ana Carolina
+26807838
+1 de julho de 2026 às 14:27Ana Carolina
+Ana Carolina negócio atualizado Lucas | autenza veiculos
+Nota:
+Adicionou uma nova nota
+1 de julho de 2026 às 14:27Ana Carolina
+Ana Carolina atualizou o negócio: Neto I Personal Car
+Proprietário:
+Ana Carolina
+Luigi
+1 de julho de 2026 às 14:18Ana Carolina
+Ana Carolina negócio atualizado Neto I Personal Car
+Nota:
+Adicionou uma nova nota
+1 de julho de 2026 às 14:17Ana Carolina
+Ana Carolina negócio atualizado Juliano Martins Cabral - CÓPIA PARA REGISTRO
+Nota:
+Adicionou uma nova nota
+1 de julho de 2026 às 14:00Ana Carolina
+Ana Carolina atualizou o negócio: MAZINHO E FELIPE - S D MULTIMARCAS LTDA
+Proprietário:
+Daniel Fernandes
+Luigi
+1 de julho de 2026 às 12:33Ana Carolina`;
+
+        // Renderizar relatórios na inicialização se a aba for aberta
+        let reportsRendered = false;
+        
+        // Sobrescrever switchAppView para renderizar gráfico
+        const originalSwitchAppView = window.switchAppView;
+        window.switchAppView = function(viewId) {
+            originalSwitchAppView(viewId);
+            if (viewId === 'relatorios' && !reportsRendered) {
+                allParsedActivities = processReportsData(sampleLog);
+                window.updateRelatoriosFilter();
+                reportsRendered = true;
+            }
+        };
+
     </script>
 </body>
 </html>
